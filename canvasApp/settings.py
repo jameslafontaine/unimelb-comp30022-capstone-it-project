@@ -75,8 +75,12 @@ WSGI_APPLICATION = 'canvasApp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME'  : 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'local',
+        'USER': 'root',
+        'PASSWORD': 'admin',
+        'HOST':'db',
+        'PORT':'3306',
     }
 }
 
