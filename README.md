@@ -1,6 +1,6 @@
 # IT-Project-6-People
 
-(Name is tentative)
+These are the members that make up our team (sorted in alphabetical order!)
 
 | **Name** | **Student Code** | **Email** |
 |-------------------|------------------	|----------- |
@@ -31,20 +31,35 @@ After installing these settings, you can
 4. Django and any necessary dependencies should now be installed!
 
 
-## Running the Application
+## Using Docker
 
-To run the server through Docker, 
+Make sure you have Docker Desktop open (otherwise you'll get an error)
 
-1. Navigate into the root directory ```IT-Project-6-People```
+To run everything:
 
-2. Run ```docker build -t canvasapp .``` 
+1. Navigate into root directory ```IT-Project-6-People``` in your terminal 
+
+2. Run ```docker compose up``` in your terminal
+
+    This runs everything.
+
+    ```it-project-6-people-db-1``` is the database container. This runs tasks first to initialise all the database-related stuff within the container
+
+    ```it=project-6-people-webapp-1``` The server is running if you see ```it-project-6-people-webapp-1  | Watching for file changes with StatReloader```, the server is running!
+
+3. To stop everything, press CTRL+C in the terminal and wait
+
+
+If you want to run the db and webapp separately, then
+
+- ```docker compose run db``` to run the server in its own container
+
+    This will make a randomly named container (not it-project-6-people-db-1). 
     
-    This build the docker image (this may take a while first run but consequent runs of this command are much faster)
+    I personally don't recommend doing this, but rather:
 
-3. Run ```docker run -it -p 8000:8000 canvasapp``` 
+- ```docker compose run webapp``` to run the webapp (this might take a bit)
 
-    This runs the image you just built. Navigate to localhost:8000 in your browser to look at your build.
-
-4. To stop the server, just press CTRL+C in the terminal
-
-5. If you make any changes, you have to rebuild the Docker image
+    ```it-project-6-people-db-1``` is created and run, but the webapp container isn't called ```it-project-6-people-webapp-1```.
+    
+    I like this command more than ```docker compose up```, as you can quit the server with CTRL+C but have ```it-project-6-people-db-1 run``` in the background, meaning you can run ```docker compose run webapp``` over and over with any relevant changes made to the Django code but have the database untouched (to my knowledge?)
