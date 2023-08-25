@@ -41,13 +41,13 @@ To run everything:
 
 2. Run ```docker compose up``` in your terminal
 
-    This runs everything.
-
     ```it-project-6-people-db-1``` is the database container. This runs tasks first to initialise all the database-related stuff within the container
 
     ```it=project-6-people-webapp-1``` The server is running if you see ```it-project-6-people-webapp-1  | Watching for file changes with StatReloader```, the server is running!
 
-3. To stop everything, press CTRL+C in the terminal and wait
+   If you want to view the website, go to localhost:8000 in your browser.
+
+4. To stop everything, press CTRL+C in the terminal and wait
 
 
 If you want to run the db and webapp separately, then
