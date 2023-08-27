@@ -7,7 +7,7 @@ These are the members that make up our team (sorted in alphabetical order!)
 |Callum Sharman| | |
 |James La Fontaine|1079860|jlafontaine@student.unimelb.edu.au|
 |Jun Youn |1171924|younj@student.unimelb.edu.au|
-| Ryan Goh | | |
+| Ryan Goh |1191761|rrgoh@student.unimelb.edu.au|
 | Yan Zong Goh |1250945|yanzongg@student.unimelb.edu.au |
 
 ## Basic Setup
