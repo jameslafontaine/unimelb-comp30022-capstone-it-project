@@ -8,7 +8,7 @@ These are the members that make up our team (sorted in alphabetical order!)
 |James La Fortaine| | |
 |Jun Youn |1171924|younj@student.unimelb.edu.au|
 | Ryan Goh | | |
-| Yan Zong Goh | | |
+| Yan Zong Goh |1250945|yanzongg@student.unimelb.edu.au |
 
 ## Basic Setup
 
