@@ -4,7 +4,7 @@ These are the members that make up our team (sorted in alphabetical order!)
 
 | **Name** | **Student Code** | **Email** |
 |-------------------|------------------	|----------- |
-|Callum Sharman| | |
+|Callum Sharman|1171371|csharman@student.unimelb.edu.au|
 |James La Fontaine|1079860|jlafontaine@student.unimelb.edu.au|
 |Jun Youn |1171924|younj@student.unimelb.edu.au|
 | Ryan Goh | | |
