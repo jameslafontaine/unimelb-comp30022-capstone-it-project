@@ -117,3 +117,5 @@ if __name__ == "__main__":
                 for user_id, role in all_users:
                     # Writing data row by row
                     csv_writer.writerow([course_id, course_name, assignment_id, assignment_name, due_date, user_id, role])
+
+
