@@ -1,5 +1,21 @@
 import requests as rq
 import csv
+import mysql.connector
+
+# Replace these values with your MySQL server details
+host = "localhost"
+user = "root"
+password = "-" #INSERT password here
+database = "mydb"
+
+# Create a connection
+connection = mysql.connector.connect(
+    host=host,
+    user=user,
+    password=password,
+    database=database
+)
+
 
 def fetch_courses(base_url_courses, headers, params):
     all_courses = []
@@ -37,6 +53,23 @@ if __name__ == "__main__":
         "id": 1250945
     }
 
-    all_courses = dict(fetch_courses(base_url_courses, headers, params))
-    print(all_courses)
+    all_courses = fetch_courses(base_url_courses, headers, params)
+
+    #sql stuff
+    cursor = connection.cursor()
+
+    table_name = "`mydb`.`course (subject)`"
+    data_to_upload = all_courses
+
+    insert_query = f"INSERT INTO {table_name} VALUES (%s, %s)"
+
+    cursor.executemany(insert_query, data_to_upload)
+
+    # Commit the changes to the database
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    
 
