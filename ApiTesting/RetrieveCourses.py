@@ -17,21 +17,21 @@ connection = mysql.connector.connect(
 )
 
 
-def fetch_courses(base_url_courses, headers, params):
+def fetch_all_courses(headers, params):
     all_courses = []
-
-    while base_url_courses:
-        response_courses = rq.get(base_url_courses, headers=headers, params=params)
+    base_url = 'https://canvas.instructure.com/api/v1/courses?enrollment_state=active'
+    while base_url:
+        response = rq.get(base_url, headers=headers, params=params)
         
-        if response_courses.status_code == 200 and response_courses.text:
-            data_courses = response_courses.json()
+        if response.status_code == 200 and response.text:
+            data = response.json()
             
-            for course in data_courses:
+            for course in data:
                 if 'id' in course and 'name' in course:
                     all_courses.append((course['id'], course['name']))
             
-            if 'next' in response_courses.links:
-                base_url_courses = response_courses.links['next']['url']
+            if 'next' in response.links:
+                base_url = response.links['next']['url']
             else:
                 base_url_courses = None
 
@@ -70,6 +70,3 @@ if __name__ == "__main__":
 
     cursor.close()
     connection.close()
-
-    
-
