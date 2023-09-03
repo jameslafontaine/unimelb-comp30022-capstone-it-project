@@ -68,7 +68,7 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`course (subject)` (
   `idCourse (subject)` INT NOT NULL,
-  `Subject name` VARCHAR(45) NOT NULL,
+  `Subject name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`idCourse (subject)`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
