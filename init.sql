@@ -7,19 +7,19 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema db
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema db
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8mb3 ;
-USE `mydb` ;
+CREATE SCHEMA IF NOT EXISTS `db` DEFAULT CHARACTER SET utf8mb3 ;
+USE `db` ;
 
 -- -----------------------------------------------------
--- Table `mydb`.`users`
+-- Table `db`.`users`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`users` (
+CREATE TABLE IF NOT EXISTS `db`.`users` (
   `idusers` INT NOT NULL,
   `First name` VARCHAR(45) NOT NULL,
   `Last name` VARCHAR(45) NOT NULL,
@@ -30,23 +30,23 @@ DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`student`
+-- Table `db`.`student`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`student` (
+CREATE TABLE IF NOT EXISTS `db`.`student` (
   `student_idusers` INT NOT NULL,
   PRIMARY KEY (`student_idusers`),
   INDEX `fk_Instructor_users_idx` (`student_idusers` ASC) VISIBLE,
   CONSTRAINT `fk_Instructor_users`
     FOREIGN KEY (`student_idusers`)
-    REFERENCES `mydb`.`users` (`idusers`))
+    REFERENCES `db`.`users` (`idusers`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`aap`
+-- Table `db`.`aap`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`aap` (
+CREATE TABLE IF NOT EXISTS `db`.`aap` (
   `AAP ID` INT NOT NULL,
   `Living in Aus status` TINYINT NOT NULL,
   `Reason List` VARCHAR(45) NOT NULL,
@@ -58,15 +58,15 @@ CREATE TABLE IF NOT EXISTS `mydb`.`aap` (
   PRIMARY KEY (`AAP ID`),
   CONSTRAINT `fk_AAP_Student1`
     FOREIGN KEY (`AAP ID`)
-    REFERENCES `mydb`.`student` (`student_idusers`))
+    REFERENCES `db`.`student` (`student_idusers`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`course (subject)`
+-- Table `db`.`course (subject)`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`course (subject)` (
+CREATE TABLE IF NOT EXISTS `db`.`course (subject)` (
   `idCourse (subject)` INT NOT NULL,
   `Subject name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`idCourse (subject)`))
@@ -75,9 +75,9 @@ DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`subject term`
+-- Table `db`.`subject term`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`subject term` (
+CREATE TABLE IF NOT EXISTS `db`.`subject term` (
   `Subject start date` DATE NOT NULL,
   `Subject end date` DATE NOT NULL,
   `course subject term id` INT NOT NULL,
@@ -85,15 +85,15 @@ CREATE TABLE IF NOT EXISTS `mydb`.`subject term` (
   INDEX `fk_Subject term_Course (subject)1_idx` (`course subject term id` ASC) VISIBLE,
   CONSTRAINT `fk_Subject term_Course (subject)1`
     FOREIGN KEY (`course subject term id`)
-    REFERENCES `mydb`.`course (subject)` (`idCourse (subject)`))
+    REFERENCES `db`.`course (subject)` (`idCourse (subject)`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`assignments`
+-- Table `db`.`assignments`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`assignments` (
+CREATE TABLE IF NOT EXISTS `db`.`assignments` (
   `Assignment type` VARCHAR(45) NOT NULL,
   `Assignment weightage` INT NULL DEFAULT NULL,
   `Due date` DATETIME NULL DEFAULT NULL,
@@ -103,15 +103,15 @@ CREATE TABLE IF NOT EXISTS `mydb`.`assignments` (
   INDEX `fk_Assignments_Subject term1_idx` (`assignment id` ASC) VISIBLE,
   CONSTRAINT `fk_Assignments_Subject term1`
     FOREIGN KEY (`assignment id`)
-    REFERENCES `mydb`.`subject term` (`course subject term id`))
+    REFERENCES `db`.`subject term` (`course subject term id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`course (subject)_has_users`
+-- Table `db`.`course (subject)_has_users`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`course (subject)_has_users` (
+CREATE TABLE IF NOT EXISTS `db`.`course (subject)_has_users` (
   `Course (subject)_idCourse (subject)` INT NOT NULL,
   `users_idusers` INT NOT NULL,
   PRIMARY KEY (`Course (subject)_idCourse (subject)`, `users_idusers`),
@@ -119,25 +119,25 @@ CREATE TABLE IF NOT EXISTS `mydb`.`course (subject)_has_users` (
   INDEX `fk_Course (subject)_has_users_Course (subject)1_idx` (`Course (subject)_idCourse (subject)` ASC) VISIBLE,
   CONSTRAINT `fk_Course (subject)_has_users_Course (subject)1`
     FOREIGN KEY (`Course (subject)_idCourse (subject)`)
-    REFERENCES `mydb`.`course (subject)` (`idCourse (subject)`),
+    REFERENCES `db`.`course (subject)` (`idCourse (subject)`),
   CONSTRAINT `fk_Course (subject)_has_users_users1`
     FOREIGN KEY (`users_idusers`)
-    REFERENCES `mydb`.`users` (`idusers`))
+    REFERENCES `db`.`users` (`idusers`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Case`
+-- Table `db`.`Case`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Case` (
+CREATE TABLE IF NOT EXISTS `db`.`Case` (
   `Date created` DATE NOT NULL,
   `Date updated` DATE NOT NULL,
   `student_student_idusers` INT NOT NULL,
   PRIMARY KEY (`student_student_idusers`),
   CONSTRAINT `fk_Case_student1`
     FOREIGN KEY (`student_student_idusers`)
-    REFERENCES `mydb`.`student` (`student_idusers`)
+    REFERENCES `db`.`student` (`student_idusers`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -145,15 +145,15 @@ DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Thread`
+-- Table `db`.`Thread`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Thread` (
+CREATE TABLE IF NOT EXISTS `db`.`Thread` (
   `ComplexCase` TINYINT NOT NULL,
   `Case_student_student_idusers` INT NOT NULL,
   PRIMARY KEY (`Case_student_student_idusers`),
   CONSTRAINT `fk_Thread_Case1`
     FOREIGN KEY (`Case_student_student_idusers`)
-    REFERENCES `mydb`.`Case` (`student_student_idusers`)
+    REFERENCES `db`.`Case` (`student_student_idusers`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -161,9 +161,9 @@ DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`extention request`
+-- Table `db`.`extention request`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`extention request` (
+CREATE TABLE IF NOT EXISTS `db`.`extention request` (
   `Proposed due date` DATE NOT NULL,
   `Supporting document` BLOB NOT NULL,
   `Reasons for extentions` VARCHAR(45) NOT NULL,
@@ -174,12 +174,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`extention request` (
   INDEX `fk_extention request_assignments1_idx` (`assignments_assignment id` ASC) VISIBLE,
   CONSTRAINT `fk_extention request_Thread1`
     FOREIGN KEY (`Thread_Case_student_student_idusers`)
-    REFERENCES `mydb`.`Thread` (`Case_student_student_idusers`)
+    REFERENCES `db`.`Thread` (`Case_student_student_idusers`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_extention request_assignments1`
     FOREIGN KEY (`assignments_assignment id`)
-    REFERENCES `mydb`.`assignments` (`assignment id`)
+    REFERENCES `db`.`assignments` (`assignment id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -187,41 +187,41 @@ DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`instructor`
+-- Table `db`.`instructor`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`instructor` (
+CREATE TABLE IF NOT EXISTS `db`.`instructor` (
   `instructor_idusers` INT NOT NULL,
   PRIMARY KEY (`instructor_idusers`),
   INDEX `fk_Instructor_users_idx` (`instructor_idusers` ASC) VISIBLE,
   CONSTRAINT `fk_Instructor_users0`
     FOREIGN KEY (`instructor_idusers`)
-    REFERENCES `mydb`.`users` (`idusers`))
+    REFERENCES `db`.`users` (`idusers`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`subject coordinator`
+-- Table `db`.`subject coordinator`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`subject coordinator` (
+CREATE TABLE IF NOT EXISTS `db`.`subject coordinator` (
   `subjectcoord_instructor_idusers` INT NOT NULL,
   PRIMARY KEY (`subjectcoord_instructor_idusers`),
   CONSTRAINT `fk_Subject Coordinator_Instructor1`
     FOREIGN KEY (`subjectcoord_instructor_idusers`)
-    REFERENCES `mydb`.`instructor` (`instructor_idusers`))
+    REFERENCES `db`.`instructor` (`instructor_idusers`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`tutor`
+-- Table `db`.`tutor`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`tutor` (
+CREATE TABLE IF NOT EXISTS `db`.`tutor` (
   `tutor_instructor_idusers` INT NOT NULL,
   PRIMARY KEY (`tutor_instructor_idusers`),
   CONSTRAINT `fk_Tutor_Instructor1`
     FOREIGN KEY (`tutor_instructor_idusers`)
-    REFERENCES `mydb`.`instructor` (`instructor_idusers`))
+    REFERENCES `db`.`instructor` (`instructor_idusers`))
 
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
@@ -235,5 +235,5 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 SELECT * FROM USERS;
 #CREATE USER 'root'@'%' IDENTIFIED BY 'PASSWORD';
 #GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
-#GRANT SELECT, INSERT ON mydb.* TO 'user'@'localhost';
-#GRANT INSERT, SELECT, DELETE, UPDATE ON mydb.* TO 'user'@'localhost' IDENTIFIED BY 'password';
+#GRANT SELECT, INSERT ON db.* TO 'user'@'localhost';
+#GRANT INSERT, SELECT, DELETE, UPDATE ON db.* TO 'user'@'localhost' IDENTIFIED BY 'password';
