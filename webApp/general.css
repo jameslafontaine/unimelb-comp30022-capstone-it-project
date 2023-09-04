@@ -61,8 +61,6 @@ body{
 }
 
 .expandableBox{
-    margin-top:5px;
-    margin-bottom:5px;
     background-color: rgb(191, 191, 191);
     border-style: solid;
     border-width: 1px;
@@ -89,6 +87,18 @@ body{
 }
 .expandableBox:hover{
     background-color: rgb(175, 175, 175);
+}
+.expandableBoxSection{
+    background-color: rgb(146, 146, 146);
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    border-top: none;
+    height: 30px;
+    transition: background-color 0.2s;
+
+    display:grid;
+    align-items: center;
 }
 
 .textBox{
