@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../general.css">
+        <link rel="stylesheet" href="../tables.css">
+
+        <style>
+            .pageAsATable{
+                display: grid;
+                grid-template-columns: 70% 1fr;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="headerText">
+                headerText 
+                <button class="headerButton">
+                    headerButton
+                </button>
+            </div>
+        </div>
+        <div class="mainBody" style="width: 90%;">
+            <div class="pageAsATable">
+                <div class="leftSide">
+                    <p class="title">Submit a request</p>
+                    
+                    <p class="text">Course</p>
+                    <textarea class="textBox" style="height:17px;"></textarea>
+
+                    <p class="text">Request Type</p>
+                    <textarea class="textBox" style="height:17px;"></textarea>
+
+                    <p class="text">Request Title</p>
+                    <textarea class="textBox" style="height:17px"></textarea>
+
+                    <p class="text">Message</p>
+                    <textarea class="textBox"></textarea>
+
+                    <p class="text">Relevant Supporting Documents</p>
+                    <div class="tableSubmitting">
+                        <!--row1-->
+                        <span class="tableHeading">Name</span>
+                        <span class="tableHeading">Size</span>
+                        <span class="tableHeading">Status</span>
+                        <span class="emptyTableEntry"></span>
+                        <!--row2-->
+                        <span class="tableEntry">filename.pdf</span>
+                        <span class="tableEntry">29.15MB</span>
+                        <span class="tableEntry">Ready for Upload</span>
+                        <span class="emptyTableEntry">
+                            <button class="standardButton">
+                                Upload
+                            </button>
+                        </span>
+                        <!--row3-->
+                        <span class="tableEntry">dogatemyhomework.jpeg</span>
+                        <span class="tableEntry">420.69TB</span>
+                        <span class="tableEntry">Ready for Upload</span>
+                        <span class="emptyTableEntry">
+                            <button class="standardButton">
+                                Upload
+                            </button>
+                        </span>
+                    </div>
+                    <button class="standardButton"> Choose file </button>
+                    <p></p>
+                    <button class="standardButton"> Add Request + </button>
+                </div>
+                <div class="rightSide">
+                    <p class="text" style="display:inline;">Disclaimer - This portal should be 
+                        used for any questions or requests that may be 
+                        personal or less suited towards existing 
+                        discussion boards. Otherwise, please refer to 
+                        those
+                    </p>
+                </div>
+            </div>
+            
+            
+            
+            
+
+
+
+
+        </div>
+    </body>
+</html>

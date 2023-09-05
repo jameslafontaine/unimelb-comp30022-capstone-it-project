@@ -107,4 +107,5 @@ body{
 .textBox{
     width:60%;
     height:100px;
+    background-color: rgb(191, 191, 191);
 }
