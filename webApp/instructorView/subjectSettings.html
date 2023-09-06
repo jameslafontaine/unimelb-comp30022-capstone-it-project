@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../general.css">
+        <link rel="stylesheet" href="../tables.css">
+        <style>
+            .tableEntry {
+                display: flex; /* Make the span a block-level element */
+                justify-content: center; /* Center horizontally */
+                align-items: center; /* Center vertically */
+                height: auto; /* Auto height */
+                border: 1px solid #ccc; /* Add a border for visualization */
+                font-size: 13px; /* Decrease font size */
+            }
+
+            .textBox {
+                background-color: rgb(191, 191, 191);
+                width:400px;
+                height:40px;
+            }
+        
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="headerText">
+                Signed in as: Instructor
+                <button class="headerButton">
+                    Settings
+                </button>
+            </div>
+        </div>
+        <div class="mainBody">
+            <p class="title">COMP30022 Subject Settings</p>
+
+            <p></p>
+            
+            <p class="subTitle">Extensions</p>
+            <p></p>
+            <span>Default extension length: &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" size="2" placeholder="3">
+                days&nbsp;&nbsp;&nbsp;   
+                <span class="standardButton">
+                    Save
+                </span>
+            </span>
+            <p></p>
+            <span>Maximum extension length: <input type="text" size="2" placeholder="10">
+                days&nbsp;&nbsp;&nbsp;
+                <span class="standardButton">
+                    Save
+                </span>
+            </span>
+
+            <p></p>
+
+            <br><br><br>
+
+            <p class="subTitle">Permissions and Response Templates</p>
+
+            <p></p>
+
+            <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(4, 1fr);">
+                <!--row1-->
+                <span class="tableHeading">Request Type</span>
+                <span class="tableHeading">Tutor</span>
+                <span class="tableHeading">Reservable for SC</span>
+                <span class="tableHeading">Template Response</span>
+                <!--row2-->
+                <span class="tableEntry">Extension</span>
+                <span class="tableEntry">
+                    <input type="checkbox">
+                </span>
+                <span class="tableEntry">
+                    <input type="checkbox">
+                </span>
+                <span class="tableEntry" style="display:block;">
+                    <textarea class="textBox" placeholder="Your extension has been approved"></textarea>
+                    <button class="standardButton">
+                        Edit
+                    </button>
+                    <br>
+                    <textarea class="textBox" placeholder="Your extension has been rejected"></textarea>
+                    <button class="standardButton">
+                        Edit
+                    </button>
+                </span>
+                <!--row3-->
+                <span class="tableEntry" style="white-space:nowrap">General Query</span>
+                <span class="tableEntry">
+                    <input type="checkbox">
+                </span>
+                <span class="tableEntry">
+                    <input type="checkbox">
+                </span>
+                <span class="tableEntry" style="display:block;">
+                    <textarea class="textBox" placeholder="Lorem ipsum dolor sit amet"></textarea>
+                    <button class="standardButton">
+                        Edit
+                    </button>
+                    <br>
+                    <textarea class="textBox" placeholder="Lorem ipsum dolor sit amet"></textarea>
+                    <button class="standardButton">
+                        Edit
+                    </button>
+                </span>
+                <!--row4-->
+                <span class="tableEntry" style="white-space:nowrap">Remark</span>
+                <span class="tableEntry">
+                    <input type="checkbox">
+                </span>
+                <span class="tableEntry">
+                    <input type="checkbox">
+                </span>
+                <span class="tableEntry" style="display:block;">
+                    <textarea class="textBox" placeholder="Lorem ipsum dolor sit amet"></textarea>
+                    <button class="standardButton">
+                        Edit
+                    </button>
+                    <br>
+                    <textarea class="textBox" placeholder="Lorem ipsum dolor sit amet"></textarea>
+                    <button class="standardButton">
+                        Edit
+                    </button>
+                </span>
+                <!--row5-->
+                <span class="tableEntry">Quiz Code</span>
+                <span class="tableEntry">
+                    <input type="checkbox">
+                </span>
+                <span class="tableEntry">
+                    <input type="checkbox">
+                </span>
+                <span class="tableEntry" style="display:block;">
+                    <textarea class="textBox" placeholder="Lorem ipsum dolor sit amet"></textarea>
+                    <button class="standardButton">
+                        Edit
+                    </button>
+                    <br>
+                    <textarea class="textBox" placeholder="Lorem ipsum dolor sit amet"></textarea>
+                    <button class="standardButton">
+                        Edit
+                    </button>
+                </span>
+                <!--row6-->
+                <span class="tableEntry">Other</span>
+                <span class="tableEntry">
+                    <input type="checkbox">
+                </span>
+                <span class="tableEntry">
+                    <input type="checkbox">
+                </span>
+                <span class="tableEntry" style="display:block;">
+                    <textarea class="textBox" placeholder="Lorem ipsum dolor sit amet"></textarea>
+                    <button class="standardButton">
+                        Edit
+                    </button>
+                    <br>
+                    <textarea class="textBox" placeholder="Lorem ipsum dolor sit amet"></textarea>
+                    <button class="standardButton">
+                        Edit
+                    </button>
+                </span>   
+            </div>
+            <p></p>
+        </div>
+    </body>
+</html>

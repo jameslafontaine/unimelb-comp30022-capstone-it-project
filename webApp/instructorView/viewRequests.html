@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../general.css">
+        <link rel="stylesheet" href="../tables.css">
+    </head>
+    <body>
+        <div class="header">
+            <div class="headerText">
+                Signed in as: Instructor
+                <button class="headerButton">
+                    Settings
+                </button>
+            </div>
+        </div>
+        <div class="mainBody">
+            <p class="title">COMP30022 Requests & Queries</p>
+            <!-- <p class="subTitle">subTitle</p>
+            <p class="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                 Cras molestie nunc in urna dignissim auctor. Aenean ullamcorper nec 
+                 nisl dictum aliquam. Mauris convallis eu urna id dictum. Nulla eu 
+                 tellus at mi volutpat volutpat. Quisque venenatis eget massa nec tincidunt. 
+                 Pellentesque scelerisque ac erat nec convallis. Mauris aliquet sed enim vel
+                 dictum. Nulla eu est ac mauris efficitur volutpat nec et ipsum. Ut ut metus 
+                 vitae mauris pharetra semper ut quis turpis. Sed efficitur dolor mi, quis 
+                 laoreet sem commodo vitae. Duis vel nibh sed metus finibus interdum vitae 
+                 et justo. Vivamus sit amet rutrum tortor.</p> -->
+
+            <p></p>
+            
+            <div class="expandableBox">
+                <div class="expandableBoxContents">
+                    Awaiting action
+                    <span class="expandButton">
+                        expandButton
+                    </span>
+                </div>
+            </div>
+            <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(6, 1fr);">
+                <!--row1-->
+                <span class="tableHeading">Reserved</span>
+                <span class="tableHeading">Date</span>
+                <span class="tableHeading">Student Name</span>
+                <span class="tableHeading">Request Type</span>
+                <span class="tableHeading">Status</span>
+                <span class="tableHeading"></span>
+                <!--row2-->
+                <span class="tableEntry"><span style="font-size:300%;color:yellow;text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span></span>
+                <span class="tableEntry">29/08/2023</span>
+                <span class="tableEntry">Callum<br>  Sharman</span>
+                <span class="tableEntry">Extension</span>
+                <span class="tableEntry">Pending</span>
+                <span class="tableEntry">
+                    <button class="standardButton" onclick="window.location.href='reviewRequest.html'">
+                        Review
+                    </button>
+                </span>
+            </div>
+            
+            <p></p>
+
+            <div class="expandableBox">
+                <div class="expandableBoxContents">
+                    Resolved
+                    <span class="expandButton">
+                        expandButton
+                    </span>
+                </div>
+            </div>
+            <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(6, 1fr);">
+                <!--row1-->
+                <span class="tableHeading">Reserved</span>
+                <span class="tableHeading">Date</span>
+                <span class="tableHeading">Student Name</span>
+                <span class="tableHeading">Request Type</span>
+                <span class="tableHeading">Status</span>
+                <span class="tableHeading"></span>
+                <!--row2-->
+                <span class="tableEntry"><span style="font-size:300%;">&star;</span></span>
+                <span class="tableEntry">20/08/2023</span>
+                <span class="tableEntry">Jun<br>  Youn</span>
+                <span class="tableEntry">Extension</span>
+                <span class="tableEntry">Resolved</span>
+                <span class="tableEntry">
+                    <button class="standardButton" onclick="window.location.href='viewResolved.html'">
+                        View details
+                    </button>
+                </span>
+                <!--row3-->
+                <span class="tableEntry"><span style="font-size:300%;color:yellow;text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span></span>
+                <span class="tableEntry">12/08/2023</span>
+                <span class="tableEntry">James<br> La Fontaine</span>
+                <span class="tableEntry">General Query</span>
+                <span class="tableEntry">Resolved</span>
+                <span class="tableEntry">
+                    <button class="standardButton">
+                        View details
+                    </button>
+                </span>
+            </div>
+        </div>
+    </body>
+</html>
