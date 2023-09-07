@@ -3,24 +3,44 @@
     <head>
         <link rel="stylesheet" href="../general.css">
         <link rel="stylesheet" href="../tables.css">
+        <link rel="stylesheet" href="../header.css">
     </head>
     <body>
         <div class="header">
-            <div class="headerText">
-                headerText 
-                <button class="headerButton">
-                    headerButton
-                </button>
+            <div class="dropDown">
+                <div class="dropDownBtn">
+                    <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
+                </div>
+                <div class="dropDownMenu">
+                    <div class="dDSection" onclick="window.location.href='home.html'">
+                        <p class="dDSectionText">Home</p>
+                    </div>
+                    <div class="dDSection" onclick="window.location.href='submitRequest.html'">
+                        <P class="dDSectionText">Submit a request</P>
+                    </div>
+                    <div class="dDSection" onclick="window.location.href='viewCases.html'">
+                        <P class="dDSectionText">View all cases</P>
+                    </div>
+                    <div class="dDSection" onclick="window.location.href='viewAAPs.html'">
+                        <P class="dDSectionText">View AAPs</P>
+                    </div>
+                </div>
             </div>
+            <img src="../images/uomLogo.JPG" style="height: 38px;">
+            <div class="headerText">
+                Signed in as:_____ 
+            </div>
+            <img class="settingsBtn" src="../images/settingsIcon.png">
         </div>
+        
         <div class="mainBody">
             <p class="title">Request #293594</p>
             <p class="text">Version 3 Created 08/09/25</p><p></p>
             <P class="subTitle">COMP30022 - Deadline extension for *assessment name*</P>
             <p class="text">Message:</p>
-            <textarea class="textBox"></textarea>
+            <textarea class="textBox" readonly>I was unwell</textarea>
             <p class="text">Status</p>
-            <textarea placeholder="Pending" class="textBox" style="height:17px"></textarea>
+            <textarea class="textBox" style="height:17px" readonly>Pending</textarea>
 
 
             <p class="text">Supporting documents</p>
@@ -59,7 +79,7 @@
             <div class="expandableBoxSection" style="height: auto;">
                 <div class="expandableBoxContents" style="display: block;">
                     <p class="text">Message:</p>
-                    <textarea class="textBox" placeholder="The dog ate my homework"></textarea>
+                    <textarea class="textBox" readonly>The dog ate my homework</textarea>
                     <p class="text">Supporting documents</p>
                     <div class="tableSubmitted">
                         <!--row1-->
@@ -98,7 +118,7 @@
             <div class="expandableBoxSection" style="height: auto;">
                 <div class="expandableBoxContents" style="display: block;">
                     <p class="text">Message:</p>
-                    <textarea class="textBox" placeholder="The dog ate my homework"></textarea>
+                    <textarea class="textBox" readonly>The dog ate my homework</textarea>
                     <p class="text">Supporting documents</p>
                     <div class="tableSubmitted">
                         <!--row1-->
