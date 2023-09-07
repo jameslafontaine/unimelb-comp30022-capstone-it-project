@@ -2,6 +2,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="../general.css">
+        <link rel="stylesheet" href="../tables.css">
     </head>
     <body>
         <div class="header">
@@ -13,22 +14,13 @@
             </div>
         </div>
         <div class="mainBody">
-            <p class="title">Get Started</p>
-            <p class="text">Did anything unexpected happen to you, 
-                or do you have a question not suited for dicussion boards?
-            </p>
-            <button class="standardButton" onclick="window.location.href='submitRequest.html'">Submit a request</button>
-            <p class="text"> If you'd like to review or edit your cases, or any
-                Academic Adjustment Plans that you might have, click below:
-            </p>
-            <button class="standardButton" onclick="window.location.href='viewCases.html'">View Cases</button>
-            <button class="standardButton" onclick="window.location.href='viewAAPs.html'">View AAPs</button>
-            <p class="title">Active Cases</p>
+            <p class="title">All Cases</p>
+
 
             <div class="expandableBox">
                 <div class="expandableBoxContents">
                     Case #100296 Last updated 11/09/24
-                    <span class="expandButton" onclick="window.location.href='viewRequest.html'">
+                    <span class="expandButton">
                         4/4 Waiting for Action, 0/4 Approved, 0/4 Rejected -
                     </span>
                 </div>
@@ -77,9 +69,8 @@
                     </span>
                 </div>
             </div>
-            <p></p>
-            
 
+            <p></p>
 
             <div class="expandableBox">
                 <div class="expandableBoxContents">
@@ -123,8 +114,49 @@
                 </div>
             </div>
 
+            <p></p>
 
-
+            <div class="expandableBox">
+                <div class="expandableBoxContents">
+                    Case #100031 Last updated 05/08/23
+                    <span class="expandButton">
+                        0/3 Waiting for Action, 0/3 Approved, 3/3 Rejected -
+                    </span>
+                </div>
+            </div>
+            <div class="expandableBoxSection">
+                <div class="expandableBoxContents">
+                    #244502 COMP30022 Name of Assessment
+                    <span class="rightItems">
+                        Rejected
+                        <button class="standardButton" onclick="window.location.href='viewRequest.html'">
+                            View Details
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="expandableBoxSection">
+                <div class="expandableBoxContents">
+                    #244501 COMP30022 Name of Assessment
+                    <span class="rightItems">
+                        Rejected
+                        <button class="standardButton" onclick="window.location.href='viewRequest.html'">
+                            View Details
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="expandableBoxSection">
+                <div class="expandableBoxContents">
+                    #244500 COMP30022 Name of Assessment
+                    <span class="rightItems">
+                        Rejected
+                        <button class="standardButton" onclick="window.location.href='viewRequest.html'">
+                            View Details
+                        </button>
+                    </span>
+                </div>
+            </div>
         </div>
     </body>
 </html>

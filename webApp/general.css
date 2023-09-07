@@ -4,6 +4,8 @@ body{
 
 .header{
     background-color: rgb(0,15,70);
+    position: fixed;
+    width:100%;
 }
 .headerText{
     color: white;
@@ -30,6 +32,7 @@ body{
     border-width: 1px;
     border-radius: 2px;
     border-color: black;
+    cursor: pointer;
 }
 .bigButton{
     color: white;
@@ -40,11 +43,13 @@ body{
     border-radius: 2px;
     font-size: 18px;
     border-color: black;
+    cursor: pointer;
 }
 
 .mainBody{
     padding:20px;
     width: 80%;
+    padding-top: 60px;
 }
 
 .title{
