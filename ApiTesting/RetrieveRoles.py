@@ -47,7 +47,7 @@ def get_enrolled_users_with_roles(course_id, headers):
 
 if __name__ == "__main__":
     headers = {
-        "Authorization": "Bearer 7~OcYkQYb52NI19cPauyXWRa0FAfO66YCg3iGBu9yEFudIiGcCnNT1IPfkXhNm7MmC"
+        "Authorization": "Bearer 7~I922O0TAC0vKRh89bhZp36BzuzhLIpFnQ7bQlA8j2ZokvGVI1kplOD7m1cpII3Oo"
     }
 
     params = {"per_page": 100}
