@@ -12,12 +12,15 @@ def fetch_all_users(course_id, headers, params):
         for user in data:
             # Extract user details using the 'get' method to handle missing fields
             user_id = user.get('id', '')
-            user_name = user.get('name', '')
+            first_name = user.get('first_name', '')
+            name = user.get('name')
+            print(name)
+            last_name = user.get('last_name', '')
             # Note: email might not always be available, so we provide a default value
             user_email = user.get('email', '')
 
             # Append the user details to the all_users list
-            all_users.append((user_id, user_name, user_email))
+            all_users.append((user_id, first_name, last_name, user_email))
     else:
         # Print an error message if the response is not successful
         print(f"Error {response.status_code}: {response.text}")
@@ -40,5 +43,5 @@ if __name__ == "__main__":
     all_users = fetch_all_users(course_id, headers, params)
 
     # Loop through each user and print their details
-    for user_id, user_name, user_email in all_users:
-        print(f"ID: {user_id}, Name: {user_name}, Email: {user_email}")
+    for user_id, first_name, last_name, user_email in all_users:
+        print(f"ID: {user_id}, first_name: {first_name}, last_name: {last_name}, Email: {user_email}")
