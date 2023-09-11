@@ -1,6 +1,6 @@
 import requests as rq
 
-# Retrieves assignments 
+# Retrieves assignments based on course_id
 def retrieveAssignments(course_id, headers, params):
     base_url = f"https://canvas.instructure.com/api/v1/courses/{course_id}/assignments"
     all_assignments = []
@@ -22,6 +22,7 @@ def retrieveAssignments(course_id, headers, params):
 
     return all_assignments
 
+# Main
 if __name__ == "__main__":
     headers = {
         "Authorization": "Bearer 7~I922O0TAC0vKRh89bhZp36BzuzhLIpFnQ7bQlA8j2ZokvGVI1kplOD7m1cpII3Oo"

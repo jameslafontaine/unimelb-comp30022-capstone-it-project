@@ -24,6 +24,7 @@ def fetch_all_users(headers, account_id=1):
 
     return all_users
 
+# Main
 if __name__ == "__main__":
     headers = {
         "Authorization": "Bearer 7~I922O0TAC0vKRh89bhZp36BzuzhLIpFnQ7bQlA8j2ZokvGVI1kplOD7m1cpII3Oo"
