@@ -41,7 +41,7 @@ def fetch_all_courses(headers, params):
     return all_courses
 
 if __name__ == "__main__":
-    base_url_courses = 'https://canvas.lms.unimelb.edu.au/api/v1/courses?enrollment_state=active'
+    base_url_courses = 'https://canvas.instructure.com/api/v1/courses?enrollment_state=active'
 
     headers = {
         "Authorization": "Bearer 7~I922O0TAC0vKRh89bhZp36BzuzhLIpFnQ7bQlA8j2ZokvGVI1kplOD7m1cpII3Oo"

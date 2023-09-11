@@ -28,9 +28,9 @@ if __name__ == "__main__":
     }
 
     params = {"per_page": 100}
-    course_id = 7677732
+    course_id = 7677734
     all_assignments = retrieveAssignments(course_id, headers, params)
     
     # Printing the assignments
     for assignment in all_assignments:
-        print(f"assignment_ID: {assignment[0]}, Name: {assignment[1]}, Type: {assignment[2]}, Points: {assignment[3]}, Due At: {assignment[4]}, Created At: {assignment[5]}")
+        print(f"Assignment_ID: {assignment[0]}, Name: {assignment[1]}, Type: {assignment[2]}, Points: {assignment[3]}, Due At: {assignment[4]}, Created At: {assignment[5]}")
