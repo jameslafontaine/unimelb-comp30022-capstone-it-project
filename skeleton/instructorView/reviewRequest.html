@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../styleSheets/general.css">
+    <link rel="stylesheet" href="../styleSheets/header.css">
+    <link rel="stylesheet" href="../styleSheets/tables.css">
+
+    <style>
+        .pageAsATable {
+            display: grid;
+            grid-template-columns: 70% 1fr;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <!-- menu -->
+        <div class="dropDown">
+            <div class="dropDownBtn">
+                <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
+            </div>
+            <div class="dropDownMenu">
+                <div class="dDSection">
+                    <p class="dDSectionText">Home</p>
+                </div>
+                <div class="dDSection">
+                    <p class="dDSectionText">Submit a request</p>
+                </div>
+                <div class="dDSection">
+                    <p class="dDSectionText">View all cases</p>
+                </div>
+                <div class="dDSection">
+                    <p class="dDSectionText">View AAPs</p>
+                </div>
+            </div>
+        </div>
+
+        <img src="../images/uomLogo.JPG" style="height: 38px;">
+        <div class="headerText">Signed in as:_____</div>
+
+        <!-- settings -->
+        <div class="dropDown settings">
+            <div class="dropDownBtn" style="display: flex;">
+                <img class="settingsBtn" src="../images/settingsIcon.png" style="align-self: center;">
+            </div>
+            <div class="dropDownMenu inwards">
+                <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
+                    <p class="dDSectionText">Email notifications</p>
+                    <input type="checkbox" style="width: 17px;height: 17px;">
+                </div>
+                <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
+                    <p class="dDSectionText">Dark mode</p>
+                    <input type="checkbox" style="width: 17px;height: 17px;">
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="mainBody" style="width: 90%;">
+        <div class="pageAsATable">
+            <div class="leftSide">
+                <p class="title">Request #123456</p>
+                <p class="text">Created 2012/10/10</p>
+                <br>
+                <p class="text">Course</p>
+                <textarea class="textBox" style="height:17px;" readonly>COMP30022 - IT Project</textarea>
+
+                <p class="text">Assessment</p>
+                <textarea class="textBox" style="height:17px;" readonly>Project 1</textarea>
+
+                <p class="text">Request Type</p>
+                <textarea class="textBox" style="height:17px;" readonly>Extension</textarea>
+
+                <p class="text">Request Title</p>
+                <textarea class="textBox" style="height:17px" readonly>Project 1 Extension Request</textarea>
+
+                <p class="text">Message</p>
+                <textarea class="textBox" readonly>I am sick ;'( why must misfortune happen to me
+                </textarea>
+
+                <p class="text">Status</p>
+                <textarea class="textBox" style="height:17px" readonly>Waiting for action</textarea>
+                
+                <p></p>
+
+                <p class="text">Supporting Documents</p>
+                <div class="tableSubmitted">
+                    <!--row1-->
+                    <span class="tableHeading">Name</span>
+                    <span class="tableHeading">Size</span>
+                    <span class="emptyTableEntry"></span>
+                    <!--row2-->
+                    <span class="tableEntry">iamsick.pdf</span>
+                    <span class="tableEntry">20 TB</span>
+                    <span class="emptyTableEntry">&nbsp;
+                        <button class="standardButton">
+                            Download
+                        </button>
+                    </span>
+                    <!--row3-->
+                    <span class="tableEntry">bible.pdf</span>
+                    <span class="tableEntry">40 MB</span>
+                    <span class="emptyTableEntry">&nbsp;
+                        <button class="standardButton">
+                            Download
+                        </button>
+                    </span>
+                    <!--row4-->
+                    <span class="tableEntry">medcert.pdf</span>
+                    <span class="tableEntry">3 MB</span>
+                    <span class="emptyTableEntry">&nbsp;
+                        <button class="standardButton">
+                            Download
+                        </button>
+                    </span>
+                </div>
+                <br><br><br>
+                <p class="title" style="font-size:24px">Request History</p>
+                <div class="expandableBox">
+                    <div class="expandableBoxContents">
+                        Version #2 (2011/09/24)
+                        <span class="expandButton" style="font-size:20px;">
+                            -
+                        </span>
+                    </div>
+                </div>
+                <div class="expandableBoxSection" style="height:auto;display: block;">
+                    <div class="expandableBoxContents" style="height:auto;display: block;">
+                        <span class="text">Message</span>
+                        <br>
+                        <textarea class="textBox" readonly>The power has died!! :(
+                        </textarea>
+                        <br><br><br>
+                        <p class="text">Supporting Documents</p>
+                        <div class="tableSubmitted">
+                            <!--row1-->
+                            <span class="tableHeading" style="border-bottom: solid; border-left: solid; border-right: solid; border-top: solid;">Name</span>
+                            <span class="tableHeading" style="border-bottom: solid; border-left: solid; border-right: solid; border-top: solid;">Size</span>
+                            <span class="emptyTableEntry"></span>
+                            <!--row2-->
+                            <span class="tableEntry">iamsick.pdf</span>
+                            <span class="tableEntry">20 TB</span>
+                            <span class="emptyTableEntry">&nbsp;
+                                <button class="standardButton">
+                                    Download
+                                </button>
+                            </span>
+                            <!--row3-->
+                            <span class="tableEntry">bible.pdf</span>
+                            <span class="tableEntry">40 MB</span>
+                            <span class="emptyTableEntry">&nbsp;
+                                <button class="standardButton">
+                                    Download
+                                </button>
+                            </span>
+                            <!--row4-->
+                            <span class="tableEntry">medcert.pdf</span>
+                            <span class="tableEntry">3 MB</span>
+                            <span class="emptyTableEntry">&nbsp;
+                                <button class="standardButton">
+                                    Download
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <br><br>
+                <div class="expandableBox">
+                    <div class="expandableBoxContents">
+                        Version #1 (2011/09/23)
+                        <span class="expandButton" style="font-size:20px;">
+                            -
+                        </span>
+                    </div>
+                </div>
+                <div class="expandableBoxSection" style="height:auto;display: block;">
+                    <div class="expandableBoxContents" style="height:auto;display: block;">
+                        <span class="text">Message</span>
+                        <br>
+                        <textarea class="textBox" readonly>Haven't thought of an excuse yet.
+                        </textarea>
+                        <br><br><br>
+                        <p class="text">Supporting Documents</p>
+                        <div class="tableSubmitted">
+                            <!--row1-->
+                            <span class="tableHeading" style="border-bottom: solid; border-left: solid; border-right: solid; border-top: solid;">Name</span>
+                            <span class="tableHeading" style="border-bottom: solid; border-left: solid; border-right: solid; border-top: solid;">Size</span>
+                            <span class="emptyTableEntry"></span>
+                            <!--row2-->
+                            <span class="tableEntry">bible.pdf</span>
+                            <span class="tableEntry">40 MB</span>
+                            <span class="emptyTableEntry">&nbsp;
+                                <button class="standardButton">
+                                    Download
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rightSide" style="text-align: center;">
+                <br><br>
+                <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
+                <div style="display: inline-block; text-align: center;">
+                    <p class="expandableBox" style="width: 300px; height: 200px;">
+                        <span class="text">Callum Sharman</span>
+                        <span class="text">1178429</span>
+                        <span class="text" style="font-size: 14px;">csharman@student.unimelb.edu.au</span>
+                        <span>
+                            <button class="standardButton" onclick="window.location.href='viewProfile.html'">
+                                View Profile
+                            </button>
+                        </span>
+                    </p>
+                </div>
+                <br><br><br><br>
+                <div style="text-align: center; width: fit-content; margin: 0 auto;">
+                    <div>
+                        <p class="bigButton">
+                            Mark as complex
+                        </p>
+                        <p class="bigButton">
+                            Approve Request
+                        </p>
+                        <p class="bigButton">
+                            Reject Request
+                        </p>
+                        <p class="bigButton" onclick="window.location.href='viewRequests.html'">
+                            Back
+                        </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>

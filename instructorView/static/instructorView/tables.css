@@ -1,0 +1,38 @@
+.tableSubmitted{
+    display: grid;
+    grid-template-columns: 50% 1fr 1fr;
+    width: 50%;
+    
+}
+.tableEntry{
+    background-color: rgb(191, 191, 191);
+    border-left: solid;
+    border-right: solid;
+    height: 40px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: solid;
+}
+.tableHeading{
+    background-color: rgb(146, 146, 146);
+    border-bottom: solid;
+    height: 40px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+.emptyTableEntry{
+    background-color: none;
+    height: 40px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.tableSubmitting{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    width: 70%;
+}
