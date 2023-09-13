@@ -9,12 +9,8 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema db
 -- -----------------------------------------------------
-
--- -----------------------------------------------------
--- Schema db
--- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `db` DEFAULT CHARACTER SET utf8mb3 ;
-USE `db` ;
+USE `db`;
 
 -- -----------------------------------------------------
 -- Table `db`.`users`
@@ -231,9 +227,3 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
-
-SELECT * FROM USERS;
-#CREATE USER 'root'@'%' IDENTIFIED BY 'PASSWORD';
-#GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
-#GRANT SELECT, INSERT ON db.* TO 'user'@'localhost';
-#GRANT INSERT, SELECT, DELETE, UPDATE ON db.* TO 'user'@'localhost' IDENTIFIED BY 'password';

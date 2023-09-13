@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../styleSheets/general.css">
+        <link rel="stylesheet" href="../styleSheets/header.css">
+        <link rel="stylesheet" href="../styleSheets/tables.css">
+
+    <style>
+        .pageAsATable {
+            display: grid;
+            grid-template-columns: 70% 1fr;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <!-- menu -->
+        <div class="dropDown">
+            <div class="dropDownBtn">
+                <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
+            </div>
+            <div class="dropDownMenu">
+                <div class="dDSection">
+                    <p class="dDSectionText">Home</p>
+                </div>
+                <div class="dDSection">
+                    <p class="dDSectionText">Submit a request</p>
+                </div>
+                <div class="dDSection">
+                    <p class="dDSectionText">View all cases</p>
+                </div>
+                <div class="dDSection">
+                    <p class="dDSectionText">View AAPs</p>
+                </div>
+            </div>
+        </div>
+
+        <img src="../images/uomLogo.JPG" style="height: 38px;">
+        <div class="headerText">Signed in as:_____</div>
+
+        <!-- settings -->
+        <div class="dropDown settings">
+            <div class="dropDownBtn" style="display: flex;">
+                <img class="settingsBtn" src="../images/settingsIcon.png" style="align-self: center;">
+            </div>
+            <div class="dropDownMenu inwards">
+                <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
+                    <p class="dDSectionText">Email notifications</p>
+                    <input type="checkbox" style="width: 17px;height: 17px;">
+                </div>
+                <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
+                    <p class="dDSectionText">Dark mode</p>
+                    <input type="checkbox" style="width: 17px;height: 17px;">
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="mainBody" style="width: 90%;">
+        <div class="pageAsATable">
+            <div class="leftSide">
+                <p class="title">Student Profile</p>
+                <br>
+                <p class="title" style="font-size: 24px;">Academic Adjustment Plans</p>
+                <br>
+                <div class="expandableBox">
+                    <div class="expandableBoxContents">
+                        View AAPs
+                        <span class="expandButton" style="font-size:20px;">
+                            -
+                        </span>
+                    </div>
+                </div>
+                <div class="expandableBoxSection" style="height:auto;display: block;">
+                    <div class="expandableBoxContents" style="height:auto;display: block;">
+                        <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(5, 1fr);">
+                            <!--row1-->
+                            <span class="tableHeading" style="border-bottom: solid; border-left: solid; border-right: solid; border-top: solid;">Name</span>
+                            <span class="tableHeading" style="border-bottom: solid; border-left: solid; border-right: solid; border-top: solid;">Size</span>
+                            <span class="tableHeading" style="text-align:center;border-bottom: solid; border-left: solid; border-right: solid; border-top: solid;">Date Updated</span>
+                            <span class="emptyTableEntry"></span>
+                            <span class="emptyTableEntry"></span>
+                            <!--row2-->
+                            <span class="tableEntry">aap1.pdf</span>
+                            <span class="tableEntry">20 TB</span>
+                            <span class="tableEntry">2001/10/10</span>
+                            <span class="emptyTableEntry">&nbsp;
+                                <button class="standardButton">
+                                    Download
+                                </button>
+                            </span>
+                            <span class="emptyTableEntry">&nbsp;
+                                <button class="standardButton">
+                                    Remove
+                                </button>
+                            </span>
+                            <!--row3-->
+                            <span class="tableEntry">aap2.pdf</span>
+                            <span class="tableEntry">40 MB</span>
+                            <span class="tableEntry">2001/10/10</span>
+                            <span class="emptyTableEntry">&nbsp;
+                                <button class="standardButton">
+                                    Download
+                                </button>
+                            </span>
+                            <span class="emptyTableEntry">&nbsp;
+                                <button class="standardButton">
+                                    Remove
+                                </button>
+                            </span>
+                            <!--row3-->
+                            <span class="emptyTableEntry">&nbsp;
+                                <button class="standardButton">
+                                    Upload
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <br><br>
+                <p class="title" style="font-size: 24px;">Request and Query History</p>
+                <br>
+                <div class="expandableBox">
+                    <div class="expandableBoxContents">
+                        View History
+                        <span class="expandButton" style="font-size:20px;">
+                            -
+                        </span>
+                    </div>
+                </div>
+                <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(6, 1fr);">
+                    <!--row1-->
+                    <span class="tableHeading">Reserved</span>
+                    <span class="tableHeading">Date</span>
+                    <span class="tableHeading">Student Name</span>
+                    <span class="tableHeading">Request Type</span>
+                    <span class="tableHeading">Status</span>
+                    <span class="tableHeading"></span>
+                    <!--row2-->
+                    <span class="tableEntry"><span style="font-size:300%;">&star;</span></span>
+                    <span class="tableEntry">20/08/2023</span>
+                    <span class="tableEntry">Jun<br>  Youn</span>
+                    <span class="tableEntry">Extension</span>
+                    <span class="tableEntry">Resolved</span>
+                    <span class="tableEntry">
+                        <button class="standardButton" onclick="window.location.href='viewResolved.html'">
+                            View details
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="rightSide" style="text-align: center;">
+                <br><br><br>
+                <p class="title" style="font-size: 24px;">Student Details</p>
+                <div style="display: inline-block; text-align: centre;">
+                    <p class="expandableBox" style="width: 300px; height: 150px;">
+                        <span class="text">Jun Youn</span>
+                        <span class="text">1171924</span>
+                        <span class="text" style="font-size: 14px;">younj@student.unimelb.edu.au</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
