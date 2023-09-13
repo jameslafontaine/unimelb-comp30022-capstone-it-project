@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="{% static 'instructorView/general.css' %}">
         <link rel="stylesheet" href="{% static 'instructorView/header.css' %}">
         <link rel="stylesheet" href="{% static 'instructorView/tables.css' %}">
+        <script src="{% static 'instructorView/test.js' %}"></script>
     </head>
     <body>
         <div class="header">
@@ -25,7 +26,8 @@
             </div>
 
             <img src="{% static 'instructorView/uomLogo.JPG' %}" style="height: 38px;">
-            <div class="headerText">Signed in as:_____</div>
+            <div class="headerText" id="headerText">Signed in as:_____</div>
+
 
             <!-- settings -->
             <div class="dropDown settings">
@@ -57,7 +59,7 @@
                 <div class="expandableBoxContents" style="font-size: 13px;">
                     COMP30022 (1 reserved, 1 unresolved)
                     <span class="rightItems">
-                        <button class="standardButton" onclick="window.location.href='viewRequests.html'">
+                        <button class="standardButton" onclick="window.location.href='/viewRequests'">
                             View Requests & Queries
                         </button>
                         <button class="standardButton" onclick="window.location.href='subjectSettings.html'">
