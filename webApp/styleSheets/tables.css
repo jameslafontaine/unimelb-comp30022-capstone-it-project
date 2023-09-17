@@ -9,7 +9,7 @@
     border-left: solid;
     border-right: solid;
     height: 40px;
-    display:flex;
+    /* display:flex; */
     align-items: center;
     justify-content: center;
     border-bottom: solid;
@@ -18,10 +18,11 @@
     background-color: rgb(146, 146, 146);
     border-bottom: solid;
     height: 40px;
-    display:flex;
+    /* display:flex;*/
     align-items: center;
     justify-content: center;
 }
+
 .emptyTableEntry{
     background-color: none;
     height: 40px;

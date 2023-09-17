@@ -37,21 +37,21 @@ function createAndPopulateSubjectBox(subject) {
 	rightItems.classList.add('rightItems');
   
 	// Create the "View Requests & Queries" button
-    // Will have to grey out and have popup on hover if tutor has not been given permission by subject coordinator to view any requests
+    // Will have to hide or grey out and have popup on hover if tutor has not been given permission by subject coordinator to view any requests
 	const viewRequestsButton = document.createElement('button');
 	viewRequestsButton.classList.add('standardButton');
 	viewRequestsButton.textContent = 'View Requests & Queries';
 	viewRequestsButton.onclick = function() {
-	  // Handle button click (navigate to viewRequests.html or perform other actions)
+		window.location.href = 'viewRequests.html'; 
 	};
   
 	// Create the "Settings" button,
-    // Will have to grey out and have popup on hover if instructor is not subject coordinator
+    // Will have to hide or grey out and have popup on hover if instructor is not subject coordinator
 	const settingsButton = document.createElement('button');
 	settingsButton.classList.add('standardButton');
 	settingsButton.textContent = 'Settings';
 	settingsButton.onclick = function() {
-	  // Handle button click (navigate to subjectSettings.html or perform other actions)
+		window.location.href = 'subjectSettings.html'; 
 	};
   
 	// Append the elements to their respective parent elements
@@ -61,7 +61,7 @@ function createAndPopulateSubjectBox(subject) {
 	standardBoxContents.appendChild(rightItems);
 	standardBox.appendChild(standardBoxContents);
   
-	// Append the expandable box to the container
+	// Append the standard box to the container
 	document.getElementById('subjectBoxContainer').appendChild(standardBox );
   }
   

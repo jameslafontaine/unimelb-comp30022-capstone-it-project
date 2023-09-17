@@ -13,43 +13,8 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <!-- menu -->
-        <div class="dropDown">
-            <div class="dropDownBtn">
-                <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
-            </div>
-            <div class="dropDownMenu">
-                <div class="dDSection" onclick="window.location.href='home.html'">
-                    <p class="dDSectionText">Home</p>
-                </div>
-                <div class="dDSection" onclick="window.location.href='viewRequests.html'">
-                    <p class="dDSectionText">View all requests</p>
-                </div>
-            </div>
-        </div>
+    <div id="headerContainer"></div>
 
-        <img src="../images/uomLogo.JPG" style="height: 38px;">
-        <div class="headerText">Signed in as:_____</div>
-
-        <!-- settings -->
-        <div class="dropDown settings">
-            <div class="dropDownBtn" style="display: flex;">
-                <img class="settingsBtn" src="../images/settingsIcon.png" style="align-self: center;">
-            </div>
-            <div class="dropDownMenu inwards">
-                <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
-                    <p class="dDSectionText">Email notifications</p>
-                    <input type="checkbox" style="width: 17px;height: 17px;">
-                </div>
-                <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
-                    <p class="dDSectionText">Dark mode</p>
-                    <input type="checkbox" style="width: 17px;height: 17px;">
-                </div>
-
-            </div>
-        </div>
-    </div>
     <div class="mainBody" style="width: 90%;">
         <div class="pageAsATable">
             <div class="leftSide">
@@ -65,6 +30,11 @@
                         </span>
                     </div>
                 </div>
+
+                <div id="dynamicTableContainer">
+                    <!-- The table will be generated here -->
+                  </div>
+
                 <div class="expandableBoxSection" style="height:auto;display: block;">
                     <div class="expandableBoxContents" style="height:auto;display: block;">
                         <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(5, 1fr);">
@@ -157,5 +127,6 @@
             </div>
         </div>
     </div>
+    <script src = "../header.js"></script>
 </body>
 </html>

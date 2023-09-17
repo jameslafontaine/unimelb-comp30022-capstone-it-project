@@ -72,26 +72,34 @@
                     </span>
                 </div>
             </div>
-            <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(6, 1fr);">
-                <!--row1-->
-                <span class="tableHeading">Reserved</span>
-                <span class="tableHeading">Date</span>
-                <span class="tableHeading">Student Name</span>
-                <span class="tableHeading">Request Type</span>
-                <span class="tableHeading">Status</span>
-                <span class="tableHeading"></span>
-                <!--row2-->
-                <span class="tableEntry"><span style="font-size:300%;color:yellow;text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span></span>
-                <span class="tableEntry">29/08/2023</span>
-                <span class="tableEntry">Callum<br>  Sharman</span>
-                <span class="tableEntry">Extension</span>
-                <span class="tableEntry">Pending</span>
-                <span class="tableEntry">
+            <table style="width: 100%;">
+                <tr>
+                  <!-- Header row -->
+                  <th class="tableHeading">Reserved</th>
+                  <th class="tableHeading">Date</th>
+                  <th class="tableHeading">Student Name</th>
+                  <th class="tableHeading">Request Type</th>
+                  <th class="tableHeading">Status</th>
+                  <th class="tableHeading"></th>
+                </tr>
+                <tr>
+                  <!-- Data row -->
+                  <td class="tableEntry">
+                    <span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">
+                      &bigstar;
+                    </span>
+                  </td>
+                  <td class="tableEntry">29/08/2023</td>
+                  <td class="tableEntry">Joe<br>Bloggs</td>
+                  <td class="tableEntry">Extension</td>
+                  <td class="tableEntry">Pending</td>
+                  <td class="tableEntry">
                     <button class="standardButton" onclick="window.location.href='reviewRequest.html'">
-                        Review
+                      Review
                     </button>
-                </span>
-            </div>
+                  </td>
+                </tr>
+              </table>
             
             <p></p>
 

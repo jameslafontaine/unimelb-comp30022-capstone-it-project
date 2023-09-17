@@ -43,15 +43,15 @@ function populateSignIn(user) {
 // Use Fetch API to load the header.html file
 function createHeader(user) {
 	fetch('header.html')
-            .then(response => response.text())
-            .then(data => {
-                // Insert the loaded header into the headerContainer
-                document.getElementById('headerContainer').innerHTML = data;
+        .then(response => response.text())
+        .then(data => {
+            // Insert the loaded header into the headerContainer
+            document.getElementById('headerContainer').innerHTML = data;
 
-                // Call populateSignIn function to populate header text
-                populateSignIn(user);
-            })
-            .catch(error => console.error(error));
+            // Call populateSignIn function to populate header text
+            populateSignIn(user);
+        })
+        .catch(error => console.error(error));
 }
 
 createHeader(subjectCoordinator);
