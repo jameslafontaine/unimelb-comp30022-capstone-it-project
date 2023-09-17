@@ -41,6 +41,33 @@ body{
     margin:0px;
 }
 
+.standardBox {
+    background-color: rgb(191, 191, 191);
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    height: 40px;
+
+    display:grid;
+    align-items: center;
+
+    /* Add space between standard boxes vertically */
+    margin-bottom: 10px;
+}
+
+.standardBoxContents{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-left: 10px;
+    justify-content: space-between;
+    padding-right: 10px;
+}
+
+/* Add space between buttons horizontally */
+.standardBoxContents .standardButton {
+    margin-right: 10px; /* Adjust the value as needed */
+}
+
 .expandableBox{
     background-color: rgb(191, 191, 191);
     border-style: solid;
@@ -52,6 +79,9 @@ body{
     display:grid;
     align-items: center;
 }
+
+
+
 .expandableBoxContents{
     display: grid;
     grid-template-columns: 1fr 1fr;

@@ -7,7 +7,7 @@ let student = {
 };
 
 function changeSignIn() {
-	document.getElementById('headerText').innerHTML = "Signed in as: " + student.firstName;
+	document.getElementById('headerText').innerHTML = "Signed in as: " + student.firstName + " " + student.lastName;
 }
 changeSignIn();
 
