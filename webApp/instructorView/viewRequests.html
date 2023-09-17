@@ -1,155 +1,176 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="../styleSheets/general.css">
-        <link rel="stylesheet" href="../styleSheets/header.css">
-        <link rel="stylesheet" href="../styleSheets/tables.css">
-        <style>
-            /* Add your CSS styles here */
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              border: 1px solid #ccc;
-              margin: 0; /* Remove margin */
-              padding: 0; /* Remove padding */
-              table-layout: auto;
-            }
-        
-            th, td {
-              padding: 12px;
-              text-align: center;
-              border: 1px solid #ccc;
-              margin: 0; /* Remove margin */
-              width: 15%;
-            }
-        
-            th {
-              background-color: #333;
-              color: #fff;
-              width: auto;
-              position: relative; /* Position for pseudo-elements */
-            }
-        
-            th:first-child::before,
-            th:last-child::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                width: 3px; /* Width of the border */
-                background-color: black;
-            }
-        
-            th:first-child::before {
-              left: -2px;
-            }
-        
-            th:last-child::after {
-              right: -2px;
-            }
-        
-            th:last-child {
-              width: 1%; /* Set a fixed width for the last header cell (button column) */
-            }
+<head>
+	<!-- Include Bootstrap CSS and JavaScript -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-            th:not(:last-child) {
-                border-right: 1px solid white; /* Add white lines between columns */
-            }
-        </style>
 
-    </head>
-    <body>
-        <!-- Include the header using JavaScript -->
-        <div id="headerContainer"></div>
+	<link rel="stylesheet" href="../styleSheets/general.css">
+	<link rel="stylesheet" href="../styleSheets/header.css">
+	<link rel="stylesheet" href="../styleSheets/tables.css">
+	<style>
+		/* Add your CSS styles here */
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			border: 1px solid #ccc;
+			margin: 0; /* Remove margin */
+			padding: 0; /* Remove padding */
+			table-layout: auto;
+		}
+		
+		th, td {
+			padding: 12px;
+			text-align: center;
+			border: 1px solid #ccc;
+			margin: 0; /* Remove margin */
+			width: 15%;
+		}
+		
+		th {
+			background-color: #333;
+			color: #fff;
+			width: auto;
+			position: relative; /* Position for pseudo-elements */
+		}
+		
+		th:first-child::before,
+		th:last-child::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 3px; /* Width of the border */
+			background-color: black;
+		}
+		
+		th:first-child::before {
+			left: -2px;
+		}
+		
+		th:last-child::after {
+			right: -2px;
+		}
+		
+		th:last-child {
+			width: 1%; /* Set a fixed width for the last header cell (button column) */
+		}
+		
+		th:not(:last-child) {
+			border-right: 1px solid white; /* Add white lines between columns */
+		}
 
-        <div class="mainBody">
-            <p class="title" id="title"> Requests & Queries</p>
-            
-            <p></p>
-            
-            <div class="expandableBox" id="expandableBox1">
-                <div class="expandableBoxContents">
-                    Awaiting action
-                    <span class="expandButton" style="font-size:20px;">
-                        -
-                    </span>
-                </div>
-            </div>
-            
-            <div id="tableContainerAwaiting" >
-                <table>
-                    <!-- Table data will be dynamically generated here -->
-                </table>
-              </div>
+    /* Style for the plus/minus symbol */
+    .expandButton::before {
+			content: " +";
+			font-size: 20;
+			width: 20px; /* Fixed width for alignment */
+			text-align: center; /* Center the content horizontally */
+			display: inline-block;
+			margin-right: 5px; /* Spacing between symbol and text */
+		}
 
-            <br><br>
-            <div class="expandableBox" id="expandableBox1">
-                <div class="expandableBoxContents">
-                    Resolved
-                    <span class="expandButton" style="font-size:20px;">
-                        -
-                    </span>
-                </div>
-            </div>
+			/* Style for the expanded state */
+			.expandButton:not(.collapsed)::before {
+				content: "-";
+			}
+	</style>
+	
+</head>
+<body>
+	<!-- Include the header using JavaScript -->
+	<div id="headerContainer"></div>
+	
+	<div class="mainBody">
+		<p class="title" id="title"> Requests & Queries</p>
+		
+		<p></p>
+		
+		<div class="expandableBox" id="expandableBox1">
+			<div class="expandableBoxContents" data-toggle="collapse" data-target="#tableContainerAwaiting" style="font-size:20px;">
+				Awaiting action
+				<span class="expandButton" data-toggle="collapse" data-target="#tableContainerAwaiting" style="font-size:20px;">
+				</span>
+			</div>
+		</div>
+		
+		<div id="tableContainerAwaiting" class="collapse show">
+			<table>
+				<!-- Table data will be dynamically generated here -->
+			</table>
+		</div>
+		
+		<br><br>
+		<div class="expandableBox" id="expandableBox1">
+			<div class="expandableBoxContents" data-toggle="collapse" data-target="#tableContainerResolved" style="font-size:20px;">
+				Resolved
+				<span class="expandButton" data-toggle="collapse" data-target="#tableContainerResolved" style="font-size:20px;">
+				</span>
+			</div>
+		</div>
+		
+		<div id="tableContainerResolved" class="collapse show">
+			<table>
+				<!-- Table data will be dynamically generated here -->
+			</table>
+		</div>
+		
+	</div>
+	<script src="../header.js"></script>
+	
+	<script src="../tables.js">
+		// This code doesn't work at the moment, only the calls in the JS file. 
+		// Need to get it to work here so can regenerate table on each refresh / load
+		tableDataAwaiting = [
+		{
+			reserved: 'Reserved',
+			date: '29/08/2023',
+			studentName: 'Joe Bloggs',
+			requestType: 'Extension',
+			status: 'Pending',
+		},
+		{
+			reserved: 'Reserved',
+			date: '20/08/2023',
+			studentName: 'Joe Bloggs',
+			requestType: 'Extension',
+			status: 'Resolved',
+		},
+		];
+		
+		tableDataResolved = [
+		{
+			reserved: 'Reserved',
+			date: '12/08/2023',
+			studentName: 'Joe Bloggs',
+			requestType: 'General Query',
+			status: 'Resolved',
+		}
+		];
+		window.addEventListener('load', generateRequestTable(tableDataAwaiting, 'Awaiting'));
+		window.addEventListener('load', generateRequestTable(tableDataResolved, 'Resolved'));
+	</script>
+	
+	<script>
+		// Put subject code at start of title
+		subjectCode = "COMP30022";
+		
+		// Get the title by its ID
+		const myElement = document.getElementById("title");
+		
+		// Retrieve the existing content
+		const existingContent = myElement.innerHTML;
+		
+		// Concatenate the new string with the existing content
+		const updatedContent = subjectCode + existingContent;
+		
+		// Set the updated content as the new innerHTML
+		myElement.innerHTML = updatedContent;
 
-            <div id="tableContainerResolved" >
-                <table>
-                    <!-- Table data will be dynamically generated here -->
-                </table>
-              </div>
-
-        </div>
-        <script src="../header.js"></script>
-
-        <script src="../tables.js">
-            // This code doesn't work at the moment, only the calls in the JS file. 
-            // Need to get it to work here so can regenerate table on each refresh / load
-            tableDataAwaiting = [
-            {
-              reserved: 'Reserved',
-              date: '29/08/2023',
-              studentName: 'Joe Bloggs',
-              requestType: 'Extension',
-              status: 'Pending',
-            },
-            {
-              reserved: 'Reserved',
-              date: '20/08/2023',
-              studentName: 'Joe Bloggs',
-              requestType: 'Extension',
-              status: 'Resolved',
-            },
-            ];
-
-            tableDataResolved = [
-            {
-                reserved: 'Reserved',
-                date: '12/08/2023',
-                studentName: 'Joe Bloggs',
-                requestType: 'General Query',
-                status: 'Resolved',
-            }
-            ];
-            window.addEventListener('load', generateRequestTable(tableDataAwaiting, 'Awaiting'));
-            window.addEventListener('load', generateRequestTable(tableDataResolved, 'Resolved'));
-        </script>
-
-        <script>
-            subjectCode = "COMP30022";
-
-            // Put subject code at start of title
-            // Get the title by its ID
-            const myElement = document.getElementById("title");
-
-            // Retrieve the existing content
-            const existingContent = myElement.innerHTML;
-
-            // Concatenate the new string with the existing content
-            const updatedContent = subjectCode + existingContent;
-
-            // Set the updated content as the new innerHTML
-            myElement.innerHTML = updatedContent;
-        </script>
-        
-    </body>
+	</script>
+	
+</body>
 </html>

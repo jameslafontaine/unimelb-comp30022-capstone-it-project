@@ -1,3 +1,8 @@
+* {
+    user-select: none; /* Remove highlightability of elements by default */
+}
+
+
 body{
     margin:0;
 }
@@ -78,6 +83,8 @@ body{
 
     display:grid;
     align-items: center;
+    cursor: pointer;
+
 }
 
 
@@ -89,13 +96,15 @@ body{
     justify-content: space-between;
     padding-right: 10px;
     color: white;
+    cursor: pointer;
+    user-select: none
 }
 .expandButton{
     text-align: right;
+    cursor: pointer;
 }
 .expandButton:hover{
     cursor: pointer;
-    text-decoration: underline;
 }
 .expandableBox:hover{
     background-color: rgb(175, 175, 175);
