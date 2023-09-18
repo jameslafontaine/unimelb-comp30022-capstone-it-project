@@ -51,7 +51,7 @@ def retrieveAssignments(course_id, headers):
     return all_assignments
 
 def get_user_details(user_id, headers):
-    base_url = f"https://canvas.instructure.com/api/v1/users/{user_id}"
+    base_url = f"https://canvas.instructure.com/api/v1/users/{user_id}/profile"
     response = rq.get(base_url, headers=headers)
     
     try: 
@@ -176,7 +176,7 @@ if __name__ == "__main__":
             if user_details:
                 first_name = user_details.get('first_name', '')
                 last_name = user_details.get('last_name', '')
-                email = user_details.get('email', '')
+                email = user_details.get('primary_email', '')
             tuple1 = (user_id, name, first_name, last_name, email, role)
             cursor.execute(query, tuple1)   
 
