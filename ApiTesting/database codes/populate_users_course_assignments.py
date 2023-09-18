@@ -5,7 +5,7 @@ from datetime import datetime
 # Replace these values with your MySQL server details
 host = "localhost"
 user = "root"
-password = "-" #INSERT password here
+password = "Apitesting30022" #INSERT password here
 database = "mydb"
 
 # Create a connection
@@ -15,7 +15,6 @@ connection = mysql.connector.connect(
     password=password,
     database=database
 )
-
 
 def convert_to_mysql_datetime(input_string):
     try:
@@ -29,7 +28,7 @@ def convert_to_mysql_datetime(input_string):
     except ValueError:
         return None
     
-def retrieveAssignments(course_id, headers):
+def retrieve_assignments(course_id, headers):
     base_url = f"https://canvas.instructure.com/api/v1/courses/{course_id}/assignments"
     all_assignments = []
 
@@ -51,7 +50,7 @@ def retrieveAssignments(course_id, headers):
     return all_assignments
 
 def get_user_details(user_id, headers):
-    base_url = f"https://canvas.instructure.com/api/v1/users/{user_id}"
+    base_url = f"https://canvas.instructure.com/api/v1/users/{user_id}/profile"
     response = rq.get(base_url, headers=headers)
     
     try: 
@@ -78,14 +77,14 @@ def get_enrolled_users_with_roles(course_id, headers):
 
         # Loop through each enrollment in the response
         for enrollment in data:
-            enrollmentName = enrollment['role']
-            if (enrollmentName == "StudentEnrollment"):
-                enrollmentName = "Student"
-            if (enrollmentName == "TeacherEnrollment"):
-                enrollmentName = "Subject Coordinator"
-            if (enrollmentName == "TAEnrollment"):
-                enrollmentName = "Tutor"
-            all_enrollments.append((enrollment['user_id'], enrollmentName, enrollment['user']['name']))
+            enrollmentname = enrollment['role']
+            if (enrollmentname == "StudentEnrollment"):
+                enrollmentname = "Student"
+            if (enrollmentname == "TeacherEnrollment"):
+                enrollmentname = "Subject Coordinator"
+            if (enrollmentname == "TAEnrollment"):
+                enrollmentname = "Tutor"
+            all_enrollments.append((enrollment['user_id'], enrollmentname, enrollment['user']['name']))
         # Add the fetched URL to the set
         fetched_urls.add(base_url)
 
@@ -125,8 +124,7 @@ if __name__ == "__main__":
 
 # My own canvas token 14227~g6rgxGuwlxxgjmMXiJMFZuit1veba6GebZsNpyzzV0ND9YJc06xyUctR9GlIe82x
     params = {
-        "per_page": 100,
-        "id": 1250945
+        "per_page": 100
     }
 
     all_courses = fetch_courses(base_url_courses, headers, params)
@@ -152,31 +150,31 @@ if __name__ == "__main__":
         all_users = get_enrolled_users_with_roles(course_id, headers)
 
         #add assignments to course
-        all_assignments = retrieveAssignments(course_id,headers)
-        for assignmentsID, name, type, weightage, start_date, end_date in all_assignments:
+        all_assignments = retrieve_assignments(course_id,headers)
+        for assignment_id, name, type, weightage, start_date, end_date in all_assignments:
             if start_date is not None:
                 start_date = convert_to_mysql_datetime(start_date)
             if end_date is not None:
                 end_date = convert_to_mysql_datetime(end_date)
             type = ''.join([str(item) for item in type])
             query = f"INSERT INTO `mydb`.`assignments` VALUES (%s, %s, %s, %s, %s, %s)"
-            tuple1 = (type, weightage, end_date, start_date, assignmentsID, course_id)
+            tuple1 = (type, weightage, end_date, start_date, assignment_id, course_id)
             cursor.execute(query, tuple1)   
         
         
         # Loop through each user and print their details
         for user_id, role, name in all_users:
-            #print(f"Course ID: {course_id}, Course Name: {course_name}, User ID: {user_id}, Role: {role}, Name: {name}")
+            #print(f"Course ID: {course_id}, Course name: {course_name}, User ID: {user_id}, Role: {role}, name: {name}")
             #insert into users table
             query = f"INSERT IGNORE INTO `mydb`.`users` VALUES (%s, %s, %s, %s, %s, %s)"
 
             # To retrieve user details using the user_id
             user_details = get_user_details(user_id, headers)
-            print(user_details)
+            # print(user_details)
             if user_details:
                 first_name = user_details.get('first_name', '')
                 last_name = user_details.get('last_name', '')
-                email = user_details.get('email', '')
+                email = user_details.get('primary_email', '')
             tuple1 = (user_id, name, first_name, last_name, email, role)
             cursor.execute(query, tuple1)   
 

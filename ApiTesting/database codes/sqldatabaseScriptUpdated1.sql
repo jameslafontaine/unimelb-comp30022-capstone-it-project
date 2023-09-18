@@ -18,13 +18,13 @@ USE `mydb` ;
 -- Table `mydb`.`users`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`users` (
-  `idusers` INT NOT NULL,
-  `Name` VARCHAR(45) NOT NULL,
-  `First_name` VARCHAR(45) NULL DEFAULT NULL,
-  `Last_name` VARCHAR(45) NULL DEFAULT NULL,
-  `Email` VARCHAR(45) NOT NULL,
-  `User_type` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`idusers`))
+  `user_id` INT NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
+  `first_name` VARCHAR(45) NULL DEFAULT NULL,
+  `last_name` VARCHAR(45) NULL DEFAULT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `user_type` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`user_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -35,12 +35,12 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE TABLE IF NOT EXISTS `mydb`.`aap` (
   `Supporting documentation` BLOB NOT NULL,
   `aapID` INT NOT NULL AUTO_INCREMENT,
-  `idusers` INT NOT NULL,
+  `user_id` INT NOT NULL,
   PRIMARY KEY (`aapID`),
-  INDEX `fk_aap_users1_idx` (`idusers` ASC) VISIBLE,
+  INDEX `fk_aap_users1_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `fk_aap_users1`
-    FOREIGN KEY (`idusers`)
-    REFERENCES `mydb`.`users` (`idusers`)
+    FOREIGN KEY (`user_id`)
+    REFERENCES `mydb`.`users` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -51,9 +51,9 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- Table `mydb`.`course (subject)`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`course (subject)` (
-  `idCourse(subject)` INT NOT NULL,
+  `course_id(subject)` INT NOT NULL,
   `Subject_name` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`idCourse(subject)`))
+  PRIMARY KEY (`course_id(subject)`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -62,17 +62,17 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- Table `mydb`.`assignments`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`assignments` (
-  `Assignment_type` VARCHAR(45) NOT NULL,
-  `Assignment_weightage` INT NULL DEFAULT NULL,
-  `Due_date` DATETIME NULL DEFAULT NULL,
-  `Start_date` DATETIME NULL DEFAULT NULL,
-  `AssignmentID` INT NOT NULL,
-  `idCourse(subject)` INT NOT NULL,
-  PRIMARY KEY (`AssignmentID`),
-  INDEX `fk_assignments_course (subject)1_idx` (`idCourse(subject)` ASC) VISIBLE,
+  `assignment_type` VARCHAR(45) NOT NULL,
+  `assignment_weightage` INT NULL DEFAULT NULL,
+  `due_date` DATETIME NULL DEFAULT NULL,
+  `start_date` DATETIME NULL DEFAULT NULL,
+  `assignment_id` INT NOT NULL,
+  `course_id(subject)` INT NOT NULL,
+  PRIMARY KEY (`assignment_id`),
+  INDEX `fk_assignments_course (subject)1_idx` (`course_id(subject)` ASC) VISIBLE,
   CONSTRAINT `fk_assignments_course (subject)1`
-    FOREIGN KEY (`idCourse(subject)`)
-    REFERENCES `mydb`.`course (subject)` (`idCourse(subject)`)
+    FOREIGN KEY (`course_id(subject)`)
+    REFERENCES `mydb`.`course (subject)` (`course_id(subject)`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -86,12 +86,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`case` (
   `Date_updated` DATE NOT NULL,
   `Date_created` DATE NOT NULL,
   `caseID` INT NOT NULL AUTO_INCREMENT,
-  `users_idusers` INT NOT NULL,
-  PRIMARY KEY (`caseID`, `users_idusers`),
-  INDEX `fk_case_users1_idx` (`users_idusers` ASC) VISIBLE,
+  `users_user_id` INT NOT NULL,
+  PRIMARY KEY (`caseID`, `users_user_id`),
+  INDEX `fk_case_users1_idx` (`users_user_id` ASC) VISIBLE,
   CONSTRAINT `fk_case_users1`
-    FOREIGN KEY (`users_idusers`)
-    REFERENCES `mydb`.`users` (`idusers`)
+    FOREIGN KEY (`users_user_id`)
+    REFERENCES `mydb`.`users` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -102,17 +102,17 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- Table `mydb`.`course (subject)_has_users`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`course (subject)_has_users` (
-  `Course (subject)_idCourse (subject)` INT NOT NULL,
-  `users_idusers` INT NOT NULL,
-  PRIMARY KEY (`Course (subject)_idCourse (subject)`, `users_idusers`),
-  INDEX `fk_Course (subject)_has_users_users1_idx` (`users_idusers` ASC) VISIBLE,
-  INDEX `fk_Course (subject)_has_users_Course (subject)1_idx` (`Course (subject)_idCourse (subject)` ASC) VISIBLE,
+  `Course (subject)_course_id (subject)` INT NOT NULL,
+  `users_user_id` INT NOT NULL,
+  PRIMARY KEY (`Course (subject)_course_id (subject)`, `users_user_id`),
+  INDEX `fk_Course (subject)_has_users_users1_idx` (`users_user_id` ASC) VISIBLE,
+  INDEX `fk_Course (subject)_has_users_Course (subject)1_idx` (`Course (subject)_course_id (subject)` ASC) VISIBLE,
   CONSTRAINT `fk_Course (subject)_has_users_Course (subject)1`
-    FOREIGN KEY (`Course (subject)_idCourse (subject)`)
-    REFERENCES `mydb`.`course (subject)` (`idCourse(subject)`),
+    FOREIGN KEY (`Course (subject)_course_id (subject)`)
+    REFERENCES `mydb`.`course (subject)` (`course_id(subject)`),
   CONSTRAINT `fk_Course (subject)_has_users_users1`
-    FOREIGN KEY (`users_idusers`)
-    REFERENCES `mydb`.`users` (`idusers`))
+    FOREIGN KEY (`users_user_id`)
+    REFERENCES `mydb`.`users` (`user_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
