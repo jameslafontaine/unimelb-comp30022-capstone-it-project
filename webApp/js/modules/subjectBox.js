@@ -23,7 +23,7 @@ function createAndPopulateSubjectBox(subject) {
 	const standardBox  = document.createElement('div');
 	standardBox.classList.add('standardBox');
   
-	// Create the standardBox Contents element
+	// Create the standardBoxContents element
 	const standardBoxContents = document.createElement('div');
 	standardBoxContents.classList.add('standardBoxContents');
 	standardBoxContents.style.fontSize = '13px';
@@ -45,7 +45,7 @@ function createAndPopulateSubjectBox(subject) {
 		window.location.href = 'viewRequests.html'; 
 	};
   
-	// Create the "Settings" button,
+	// Create the "Settings" button
     // Will have to hide or grey out and have popup on hover if instructor is not subject coordinator
 	const settingsButton = document.createElement('button');
 	settingsButton.classList.add('standardButton');
@@ -63,7 +63,7 @@ function createAndPopulateSubjectBox(subject) {
   
 	// Append the standard box to the container
 	document.getElementById('subjectBoxContainer').appendChild(standardBox );
-  }
+  };
   
   // Iterate through the JSON data and create/populate expandable boxes
   subjects.forEach(subject => {

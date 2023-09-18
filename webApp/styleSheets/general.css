@@ -2,6 +2,22 @@
     user-select: none; /* Remove highlightability of elements by default */
 }
 
+/* Style for the plus/minus symbol, show + when box is collapsed */
+.expandButton::before {
+    content: " +";
+    font-size: 20;
+    width: 20px; /* Fixed width for alignment */
+    text-align: center; /* Center the content horizontally */
+    display: inline-block;
+    margin-right: 5px; /* Spacing between symbol and text */
+}
+
+/* Show - for expanded state */
+.expandButton:not(.collapsed)::before {
+    content: "-";
+}
+
+
 
 body{
     margin:0;
@@ -70,7 +86,7 @@ body{
 
 /* Add space between buttons horizontally */
 .standardBoxContents .standardButton {
-    margin-right: 10px; /* Adjust the value as needed */
+    margin-right: 10px; 
 }
 
 .expandableBox{
@@ -86,7 +102,6 @@ body{
     cursor: pointer;
 
 }
-
 
 
 .expandableBoxContents{

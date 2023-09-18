@@ -32,27 +32,30 @@ let tutor = {
 function populateSignIn(user) {
 	let headerText = document.querySelector('.headerText');
 	if (user.role == 'SC') {
-		headerText.innerHTML = "Signed in as: " + user.title + " " + user.firstName + " " + user.lastName + " [Subject Coordinator]";
+		headerText.innerHTML = "Signed in as: " + " " + user.firstName + " " + user.lastName + " [Subject Coordinator]";
 	} else if (user.role == 'student') {
-		headerText.innerHTML = "Signed in as: " + user.title + " " + user.firstName + " " + user.lastName + " [Student]";
+		headerText.innerHTML = "Signed in as: " + " " + user.firstName + " " + user.lastName + " [Student]";
 	} else if (user.role == 'tutor') {
-		headerText.innerHTML = "Signed in as: " + user.title + " " + user.firstName + " " + user.lastName + " [Tutor]";
+		headerText.innerHTML = "Signed in as: " + " " + user.firstName + " " + user.lastName + " [Tutor]";
 	}
 };
 
-// Use Fetch API to load the header.html file
-function createHeader(user) {
-	fetch('header.html')
-        .then(response => response.text())
-        .then(data => {
-            // Insert the loaded header into the headerContainer
-            document.getElementById('headerContainer').innerHTML = data;
 
-            // Call populateSignIn function to populate header text
-            populateSignIn(user);
-        })
-        .catch(error => console.error(error));
+
+// Use Fetch API to load the webHeader.html file
+function createHeader(user) {
+	fetch('webHeader.html')
+	.then(response => response.text())
+	.then(data => {
+		// Insert the loaded header into the headerContainer
+		document.getElementById('webHeaderContainer').innerHTML = data;
+		
+		// Call populateSignIn function to populate header text
+		populateSignIn(user);
+	})
+	.catch(error => console.error(error));
 }
 
-createHeader(subjectCoordinator);
+createHeader(subjectCoordinator)
+
 

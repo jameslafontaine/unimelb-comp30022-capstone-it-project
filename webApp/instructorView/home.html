@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <link rel="stylesheet" href="../styleSheets/general.css">
-        <link rel="stylesheet" href="../styleSheets/header.css">
-        <link rel="stylesheet" href="../styleSheets/tables.css">
-    </head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Home Page</title>
+    
+    <link rel="stylesheet" href="../styleSheets/general.css">
+    <link rel="stylesheet" href="../styleSheets/header.css">
+    <link rel="stylesheet" href="../styleSheets/tables.css">
+</head>
     <body>
 
         <!-- Include the header using JavaScript -->
-        <div id="headerContainer"></div>
+        <div id="webHeaderContainer"></div>
 
         <div class="mainBody">
             <p class="title">Your Subjects</p>
@@ -23,8 +27,8 @@
             <div id="subjectBoxContainer">
                 <!-- Subject boxes will be added here dynamically -->
             </div>
-
-        <script src="../header.js"></script>
-        <script src="../subjectBox.js"></script>
+        </div>
+        <script src="../js/modules/webHeader.js"></script>
+        <script src="../js/modules/subjectBox.js"></script>
     </body>
 </html>
