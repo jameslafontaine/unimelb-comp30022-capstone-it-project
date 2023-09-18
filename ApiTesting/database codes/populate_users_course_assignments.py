@@ -5,7 +5,7 @@ from datetime import datetime
 # Replace these values with your MySQL server details
 host = "localhost"
 user = "root"
-password = "Apitesting30022" #INSERT password here
+password = "-" #INSERT password here
 database = "mydb"
 
 # Create a connection
@@ -139,6 +139,7 @@ if __name__ == "__main__":
     cursor.execute(f"TRUNCATE TABLE `mydb`.`course (subject)_has_users`")
     cursor.execute(f"TRUNCATE TABLE `mydb`.`users`")
     cursor.execute(f"TRUNCATE TABLE `mydb`.`assignments`")
+    cursor.execute(f"TRUNCATE TABLE `mydb`.`settings`")
     cursor.execute(f"SET FOREIGN_KEY_CHECKS = 1")
 
     #upload all courses
@@ -146,6 +147,11 @@ if __name__ == "__main__":
     
     #loop through each course to get users
     for course_id, course_name in all_courses:
+        # populate settings page
+        query = f"INSERT INTO `mydb`.`settings` (extionsion_tutor, extionsion_scoord, general_tutor, other_scoord, general_scoord, remark_tutor, remark_scoord, quiz_code_tutor, quiz_code_scoord, other_tutor, extionsion_template, general_template, remark_template, quiz_template, other_template, course_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        tuple1 = (0,0,0,0,0,0,0,0,0,0,"","","","","", course_id)
+        cursor.execute(query, tuple1)  
+
         # Fetch enrolled users with roles for the current course
         all_users = get_enrolled_users_with_roles(course_id, headers)
 
@@ -166,7 +172,7 @@ if __name__ == "__main__":
         for user_id, role, name in all_users:
             #print(f"Course ID: {course_id}, Course name: {course_name}, User ID: {user_id}, Role: {role}, name: {name}")
             #insert into users table
-            query = f"INSERT IGNORE INTO `mydb`.`users` VALUES (%s, %s, %s, %s, %s, %s)"
+            query = f"INSERT IGNORE INTO `mydb`.`users` VALUES (%s, %s, %s, %s, %s, %s, %s)"
 
             # To retrieve user details using the user_id
             user_details = get_user_details(user_id, headers)
@@ -175,7 +181,7 @@ if __name__ == "__main__":
                 first_name = user_details.get('first_name', '')
                 last_name = user_details.get('last_name', '')
                 email = user_details.get('primary_email', '')
-            tuple1 = (user_id, name, first_name, last_name, email, role)
+            tuple1 = (user_id, name, first_name, last_name, email, role, 1)
             cursor.execute(query, tuple1)   
 
             #insert into junction table

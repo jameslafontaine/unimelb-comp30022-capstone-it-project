@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`users` (
   `last_name` VARCHAR(45) NULL DEFAULT NULL,
   `email` VARCHAR(45) NOT NULL,
   `user_type` VARCHAR(45) NOT NULL,
+  `email_preference` TINYINT NOT NULL DEFAULT 1,
   PRIMARY KEY (`user_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
@@ -40,9 +41,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`aap` (
   INDEX `fk_aap_users1_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `fk_aap_users1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `mydb`.`users` (`user_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    REFERENCES `mydb`.`users` (`user_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -72,9 +71,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`assignments` (
   INDEX `fk_assignments_course (subject)1_idx` (`course_id(subject)` ASC) VISIBLE,
   CONSTRAINT `fk_assignments_course (subject)1`
     FOREIGN KEY (`course_id(subject)`)
-    REFERENCES `mydb`.`course (subject)` (`course_id(subject)`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    REFERENCES `mydb`.`course (subject)` (`course_id(subject)`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -91,9 +88,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`case` (
   INDEX `fk_case_users1_idx` (`users_user_id` ASC) VISIBLE,
   CONSTRAINT `fk_case_users1`
     FOREIGN KEY (`users_user_id`)
-    REFERENCES `mydb`.`users` (`user_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    REFERENCES `mydb`.`users` (`user_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -128,9 +123,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`thread` (
   INDEX `fk_thread_case1_idx` (`caseID` ASC) VISIBLE,
   CONSTRAINT `fk_thread_case1`
     FOREIGN KEY (`caseID`)
-    REFERENCES `mydb`.`case` (`caseID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    REFERENCES `mydb`.`case` (`caseID`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -149,13 +142,47 @@ CREATE TABLE IF NOT EXISTS `mydb`.`extention request` (
   INDEX `fk_extention request_thread1_idx` (`threadID` ASC) VISIBLE,
   CONSTRAINT `fk_extention request_thread1`
     FOREIGN KEY (`threadID`)
-    REFERENCES `mydb`.`thread` (`threadID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    REFERENCES `mydb`.`thread` (`threadID`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`settings`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`settings` (
+  `settings_id` INT NOT NULL AUTO_INCREMENT,
+  `extionsion_tutor` TINYINT NOT NULL DEFAULT 0,
+  `extionsion_scoord` TINYINT NOT NULL DEFAULT 0,
+  `general_tutor` TINYINT NOT NULL DEFAULT 0,
+  `other_scoord` VARCHAR(45) NOT NULL DEFAULT 0,
+  `general_scoord` TINYINT NOT NULL DEFAULT 0,
+  `remark_tutor` TINYINT NOT NULL DEFAULT 0,
+  `remark_scoord` TINYINT NOT NULL DEFAULT 0,
+  `quiz_code_tutor` TINYINT NOT NULL DEFAULT 0,
+  `quiz_code_scoord` TINYINT NOT NULL DEFAULT 0,
+  `other_tutor` TINYINT NOT NULL DEFAULT 0,
+  `extionsion_template` VARCHAR(1000) NULL,
+  `general_template` VARCHAR(1000) NULL,
+  `remark_template` VARCHAR(1000) NULL,
+  `quiz_template` VARCHAR(1000) NULL,
+  `other_template` VARCHAR(1000) NULL,
+  `course_id` INT NOT NULL,
+  PRIMARY KEY (`settings_id`, `course_id`),
+  INDEX `fk_settings_course (subject)1_idx` (`course_id` ASC) VISIBLE,
+  CONSTRAINT `fk_settings_course (subject)1`
+    FOREIGN KEY (`course_id`)
+    REFERENCES `mydb`.`course (subject)` (`course_id(subject)`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+SELECT * FROM assignments;
+SELECT * FROM users;
+SELECT * FROM settings;
+SELECT * FROM `course (subject)`;
