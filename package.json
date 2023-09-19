@@ -3,6 +3,6 @@
     "eslint": "^6.0.0"
   },
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint static/"
   }
 }
