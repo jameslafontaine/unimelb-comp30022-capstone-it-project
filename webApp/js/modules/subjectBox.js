@@ -63,7 +63,7 @@ function createAndPopulateSubjectBox(subject) {
   
 	// Append the standard box to the container
 	document.getElementById('subjectBoxContainer').appendChild(standardBox );
-  };
+};
   
   // Iterate through the JSON data and create/populate expandable boxes
   subjects.forEach(subject => {
