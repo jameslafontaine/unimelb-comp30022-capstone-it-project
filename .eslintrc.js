@@ -15,4 +15,5 @@ module.exports = {
     
     // Add more rules or customize as needed
   },
+  ignorePatterns: ['static/admin'],
 };
