@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="{% static 'general.css' %}">
-    <link rel="stylesheet" href="{% static 'header.css' %}">
-    <link rel="stylesheet" href="{% static 'tables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/general.css' %}">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tables.css' %}">
 
     <style>
         .pageAsATable {
@@ -22,23 +22,23 @@
                 <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
             </div>
             <div class="dropDownMenu">
-                <div class="dDSection" onclick="window.location.href='/home'">
+                <div class="dDSection" onclick="window.location.href='/instructor'">
                     <p class="dDSectionText">Home</p>
                 </div>
-                <div class="dDSection" onclick="window.location.href='/view_reqs'">
+                <div class="dDSection" onclick="window.location.href='/instructor/view-reqs'">
                     <p class="dDSectionText">View all requests</p>
                 </div>
             </div>
         </div>
 
 
-        <img src="{% static 'uomLogo.JPG' %}" style="height: 38px;">
+        <img src="{% static 'img/uomLogo.JPG' %}" style="height: 38px;">
         <div class="headerText">Signed in as:_____</div>
 
         <!-- settings -->
         <div class="dropDown settings">
             <div class="dropDownBtn" style="display: flex;">
-                <img class="settingsBtn" src="{% static 'settingsIcon.png' %}" style="align-self: center;">
+                <img class="settingsBtn" src="{% static 'img/settingsIcon.png' %}" style="align-self: center;">
             </div>
             <div class="dropDownMenu inwards">
                 <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
