@@ -42,9 +42,9 @@ function populateSignIn(user) {
 
 
 
-// Use Fetch API to load the webHeader.html file
+// Use Fetch API to load the sWebHeader.html file
 function createHeader(user) {
-	fetch('iWebHeader.html')
+	fetch('sWebHeader.html')
 	.then(response => response.text())
 	.then(data => {
 		// Insert the loaded header into the headerContainer
@@ -56,6 +56,6 @@ function createHeader(user) {
 	.catch(error => console.error(error));
 }
 
-createHeader(subjectCoordinator)
+createHeader(student)
 
 

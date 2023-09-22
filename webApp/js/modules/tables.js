@@ -65,7 +65,7 @@ function generateRequestTable(data, type) {
 			reviewButton.className = 'standardButton';
 			reviewButton.innerText = 'Review';
 			reviewButton.onclick = function () {
-				window.location.href = 'reviewRequest.html'; 
+				window.location.href = 'iReviewRequest.html'; 
 			};
 			reviewCell.appendChild(reviewButton);
 		
@@ -77,7 +77,7 @@ function generateRequestTable(data, type) {
 			reviewButton.className = 'standardButton';
 			reviewButton.innerText = 'View details';
 			reviewButton.onclick = function () {
-				window.location.href = 'viewResolved.html'; 
+				window.location.href = 'iViewResolved.html'; 
 			};
 			reviewCell.appendChild(reviewButton);
 		}

@@ -42,7 +42,7 @@ function createAndPopulateSubjectBox(subject) {
 	viewRequestsButton.classList.add('standardButton');
 	viewRequestsButton.textContent = 'View Requests & Queries';
 	viewRequestsButton.onclick = function() {
-		window.location.href = 'viewRequests.html'; 
+		window.location.href = 'iViewRequests.html'; 
 	};
   
 	// Create the "Settings" button
@@ -51,7 +51,7 @@ function createAndPopulateSubjectBox(subject) {
 	settingsButton.classList.add('standardButton');
 	settingsButton.textContent = 'Settings';
 	settingsButton.onclick = function() {
-		window.location.href = 'subjectSettings.html'; 
+		window.location.href = 'iSubjectSettings.html'; 
 	};
   
 	// Append the elements to their respective parent elements
