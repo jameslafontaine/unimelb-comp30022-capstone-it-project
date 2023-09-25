@@ -1,0 +1,121 @@
+Header
+        read:    
+            - user identifiers
+            - user type
+        write:
+            -
+
+StudentView
+    Home
+        - read:
+            - active cases
+            - date last updated
+            - requests within cases
+            - request identifiers
+            - request status
+        - write:
+
+    Submit request
+        - read:
+        - write:
+            - course
+            - request type
+            - request title
+            - message
+            - files (pdf and so on)
+
+    View all cases
+        - read:
+            - cases
+            - date last updated
+            - requests within cases
+            - request identifiers
+            - request status
+        - write:
+
+    AAPs
+        - read:
+        - write:
+
+    View request
+        - read:
+            - old request versions
+            - current request version
+            - request identifiers
+            - date created
+            - course
+            - request type
+            - request title
+            - message
+            - status
+            - files (pdf and so on)
+            - file size
+        - write:
+
+InstructorView
+    Home
+        - read:
+            - Subjects being "taught"
+            - Status of requests in the subjects (reserved or unresolved)
+        - write:
+
+    View requests
+        - read:
+            - request
+            - status
+            - date
+            - student name
+            - request type
+        - write:
+
+    Review requests
+        - read:
+            - old request versions
+            - request identifiers
+            - course
+            - assessment
+            - request type
+            - request title
+            - message
+            - status
+            - supporting documents
+            - supporting document sizes
+            - student identifiers
+        - write:
+            - request as complex
+            - approve
+            - reject
+
+    Subject settings
+        - read/write:
+            - default extension length
+            - maximum extension length
+            - <look at permission and response templates>
+    
+    View student profile
+        - read:
+            - AAP documents
+            - AAP name, size, data updated
+            - request/query history
+            - request date, student name, request type, status
+            - student identifiers
+        - write:
+            - remove AAP
+
+    View resolved cases
+        - read:
+            - read:
+            - old request versions
+            - request identifiers
+            - course
+            - assessment
+            - request type
+            - request title
+            - message
+            - status
+            - supporting documents
+            - supporting document sizes
+            - student identifiers
+        - write:
+            - 
+    
