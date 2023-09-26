@@ -42,7 +42,7 @@ function populateSignIn(user) {
 
 
 
-// Use Fetch API to load the webHeader.html file
+// Use Fetch API to load the iWebHeader.html file
 function createHeader(user) {
 	fetch('iWebHeader.html')
 	.then(response => response.text())

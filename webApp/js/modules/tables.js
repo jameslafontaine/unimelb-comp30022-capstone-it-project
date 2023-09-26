@@ -8,7 +8,7 @@
 
 const jsonDataAwaiting = [
 	{
-		reserved: '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>',
+		reserved: true,
 		date: '29/08/2023',
 		studentName: 'Joe Bloggs',
 		requestType: 'Extension',
@@ -18,7 +18,7 @@ const jsonDataAwaiting = [
 
 const jsonDataResolved = [
 	{
-		reserved: '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>',
+		reserved: false,
 		date: '29/08/2023',
 		studentName: 'Joe Bloggs',
 		requestType: 'Extension',
@@ -43,7 +43,7 @@ function generateRequestTable(data, type) {
 	
 	// Add an empty header for the button column
 	const emptyHeader = document.createElement('th');
-	emptyHeader.textContent = ''; // Empty text
+	emptyHeader.textContent = '';
 	headerRow.appendChild(emptyHeader);
 	
 	// Create table data rows
@@ -53,11 +53,25 @@ function generateRequestTable(data, type) {
 			if (item.hasOwnProperty(key)) {
 				const cell = row.insertCell();
 				cell.className = 'tableEntry'; // Apply the CSS class to the cell
-				cell.innerHTML = item[key];
+				 // Check if the key is 'reserved'
+				 if (key === 'reserved') {
+                    // Check if 'reserved' is true, and display a yellow star for such requests
+                    if (item[key] === true) {
+                        const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
+                        cell.innerHTML = yellowStar;
+                    } else {
+                        // Display a hollow star for non-reserved requests
+                        const hollowStar = '<span style="font-size: 300%; ">☆</span>';
+                        cell.innerHTML = hollowStar;
+                    }
+                } else {
+                    // For other keys, just display the value as is
+                    cell.innerHTML = item[key];
+                }
 			}
 		}
 		
-		// Add the "Review" button to the last cell if this is the awaitng action table
+		// Add the "Review" button to the last cell if this is the awaiting action table
 		if (type === 'Awaiting') {
 			const reviewCell = row.insertCell();
 			reviewCell.className = 'tableEntry';
