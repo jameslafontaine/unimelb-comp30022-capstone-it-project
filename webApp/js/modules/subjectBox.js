@@ -17,8 +17,8 @@ let subjects = [
 	},
   ];
 
-// Function to create and populate an expandable box
-function createAndPopulateSubjectBox(subject) {
+// Function to create and populate an expandable subject box
+function generateSubjectBox(subject) {
 	// Create a new expandable box element
 	const standardBox  = document.createElement('div');
 	standardBox.classList.add('standardBox');
@@ -61,11 +61,11 @@ function createAndPopulateSubjectBox(subject) {
 	standardBoxContents.appendChild(rightItems);
 	standardBox.appendChild(standardBoxContents);
   
-	// Append the standard box to the container
+	// Append the subject box to the container
 	document.getElementById('subjectBoxContainer').appendChild(standardBox );
 };
   
   // Iterate through the JSON data and create/populate expandable boxes
   subjects.forEach(subject => {
-	createAndPopulateSubjectBox(subject);
+	generateSubjectBox(subject);
   });

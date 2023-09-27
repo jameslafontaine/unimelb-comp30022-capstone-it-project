@@ -70,32 +70,25 @@ function generateRequestTable(data, type) {
                 }
 			}
 		}
-		
+
+		const reviewCell = row.insertCell();
+		reviewCell.className = 'tableEntry';
+		const requestButton = document.createElement('button');
+		requestButton.className = 'standardButton';
 		// Add the "Review" button to the last cell if this is the awaiting action table
 		if (type === 'Awaiting') {
-			const reviewCell = row.insertCell();
-			reviewCell.className = 'tableEntry';
-			const reviewButton = document.createElement('button');
-			reviewButton.className = 'standardButton';
-			reviewButton.innerText = 'Review';
-			reviewButton.onclick = function () {
+			requestButton.innerText = 'Review';
+			requestButton.onclick = function () {
 				window.location.href = 'iReviewRequest.html'; 
 			};
-			reviewCell.appendChild(reviewButton);
-		
+		// Otherwise add the "View details" button to the last cell of a row if this is the resolved table
 		} else if (type === 'Resolved') {
-			// Otherwise add the "View details" button to the last cell of a row if this is the resolved table
-			const reviewCell = row.insertCell();
-			reviewCell.className = 'tableEntry';
-			const reviewButton = document.createElement('button');
-			reviewButton.className = 'standardButton';
-			reviewButton.innerText = 'View details';
-			reviewButton.onclick = function () {
+			requestButton.innerText = 'View details';
+			requestButton.onclick = function () {
 				window.location.href = 'iViewResolved.html'; 
 			};
-			reviewCell.appendChild(reviewButton);
 		}
-		
+		reviewCell.appendChild(requestButton);
 	});
 	
 	// Append the table to the container

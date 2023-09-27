@@ -84,5 +84,5 @@ th:last-child::after {
 }
 
 th:not(:last-child) {
-    border-right: 1px solid white; /* Add white lines between columns */
+    border-right: 2px solid white; /* Add white lines between columns */
 }
