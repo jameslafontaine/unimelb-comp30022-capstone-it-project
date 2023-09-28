@@ -8,7 +8,7 @@
 
 	<!--
     Author: James La Fontaine
-    Date Last Modified: September 19, 2023
+    Date Last Modified: September 26, 2023
     Description: This is the page on which instructors can view requests for their chosen subject.
     -->
 
@@ -52,7 +52,7 @@
 		<p></p>
 		
 		<!-- expandableBox component -->
-		<div class="expandableBox" id="expandableBox1">
+		<div class="expandableBox" id="expandableBox1" data-bs-toggle="collapse" data-bs-target="#tableContainerAwaiting">
 			<div class="expandableBoxContents" data-bs-toggle="collapse" data-bs-target="#tableContainerAwaiting" style="font-size:20px;">
 				Awaiting action
 				<span class="expandButton" data-bs-toggle="collapse" data-bs-target="#tableContainerAwaiting" style="font-size:20px;">
@@ -68,7 +68,7 @@
 		
 		<!-- expandableBox component -->
 		<br><br>
-		<div class="expandableBox" id="expandableBox1">
+		<div class="expandableBox" id="expandableBox1" data-bs-toggle="collapse" data-bs-target="#tableContainerResolved">
 			<div class="expandableBoxContents" data-bs-toggle="collapse" data-bs-target="#tableContainerResolved" style="font-size:20px;">
 				Resolved
 				<span class="expandButton" data-bs-toggle="collapse" data-bs-target="#tableContainerResolved" style="font-size:20px;">
@@ -83,26 +83,17 @@
 		</div>
 		
 	</div>
-	<script src="../js/modules/webHeader.js"></script>
+	<script src="../js/modules/iWebHeader.js"></script>
 	<script src="../js/modules/tables.js"></script>
 	
 	<script>
 		// Put subject code at start of title
-
-		
 		subjectCode = "COMP30022";
 		
 		// Get the title by its ID
-		const myElement = document.getElementById("title");
+		const myElement = document.getElementById("title").innerHTML = 
+		subjectCode + document.getElementById("title").innerHTML;
 		
-		// Retrieve the existing content of the title
-		const existingContent = myElement.innerHTML;
-		
-		// Concatenate the subject code onto the existing title
-		const updatedContent = subjectCode + existingContent;
-		
-		// Set the updated content as the new innerHTML for the title
-		myElement.innerHTML = updatedContent;
 	</script>
 	
 </body>

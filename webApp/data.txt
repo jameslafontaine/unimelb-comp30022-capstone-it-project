@@ -3,7 +3,8 @@ Header
             - user identifiers
             - user type
         write:
-            -
+            - dark mode toggle
+            - email notification toggle
 
 StudentView
     Home
@@ -58,6 +59,8 @@ InstructorView
             - Subjects being "taught"
             - Status of requests in the subjects (reserved or unresolved)
         - write:
+            - dark mode toggle
+            - email notification toggle
 
     View requests
         - read:
@@ -66,10 +69,13 @@ InstructorView
             - date
             - student name
             - request type
+            - whether each request is complex or not complex
         - write:
+            - complex toggle for each request
 
     Review requests
         - read:
+            - date created
             - old request versions
             - request identifiers
             - course
@@ -81,10 +87,12 @@ InstructorView
             - supporting documents
             - supporting document sizes
             - student identifiers
+            - whether this request is complex or not
         - write:
-            - request as complex
+            - mark as complex (if not already)
             - approve
             - reject
+            - assessment
 
     Subject settings
         - read/write:
@@ -100,11 +108,13 @@ InstructorView
             - request date, student name, request type, status
             - student identifiers
         - write:
+            - upload AAP
             - remove AAP
 
     View resolved cases
         - read:
-            - read:
+            - date resolved
+            - date created
             - old request versions
             - request identifiers
             - course
