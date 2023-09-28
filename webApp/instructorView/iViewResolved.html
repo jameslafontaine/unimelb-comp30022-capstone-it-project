@@ -8,7 +8,7 @@
 
 	<!--
     Author: James La Fontaine
-    Date Last Modified: September 27, 2023
+    Date Last Modified: September 28, 2023
     Description: This is the page on which instructors can view an old request which is no longer active
     -->
 
@@ -57,7 +57,8 @@
     <div class="mainBody" style="width: 90%;">
         <div class="pageAsATable">
             <div class="leftSide">
-                <p class="title" id="title"></p>
+                <p class="title" id="requestNum"></p>
+                <p class="title" id="versionNum" style="font-size:25px"></p>
                 <p class="text" id="dates"></p>
                 <br>
                 <p class="text">Course</p>
@@ -79,6 +80,9 @@
                 <p class="text">Status</p>
                 <textarea class="textBox" id="status" style="height:30px; resize:none" readonly></textarea>
                 
+                <p class="text">Instructor Notes</p>
+                <textarea class="textBox" id="notes" style="height:120px; resize:none" readonly></textarea>
+
                 <p></p>
 
                 <p class="text">Supporting Documents</p>
@@ -113,7 +117,7 @@
                         </span>
                     </p>
                 </div>
-                <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                <br><br><br><br><br><br>
                 <div style="text-align: center; width: fit-content; margin: 0 auto;">
                     <div>
                         <p class="bigButton" onclick="window.location.href='iViewRequests.html'">
@@ -131,12 +135,14 @@
             requestId: 987654,
             creationDate: '10/10/2012',
             resolveDate: '15/10/2012',
+            reserved: false,
             course: 'COMP30022 - IT Project',
             assessment: 'Project 1',
             requestType: 'Extension',
             requestTitle: 'Project 1 Extension Request',
             message: 'I am sick ;\'( why must misfortune happen to me',
-            status: 'Waiting for action'
+            status: 'Rejected',
+            instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
         };
 
         const suppDocs = [
@@ -154,7 +160,7 @@
             }
         ]
 
-        const versions = [
+        const prevVersions = [
             {
                 date: "2011/09/24",
                 message: "The power has died!! :(",
@@ -174,14 +180,14 @@
         
 
         // Fill information relating to the current request from the database
-        fillCurrentRequestInformation(req2);
+        fillCurrentRequestInformation(req2, prevVersions.length + 1);
 
         // Generate the supporting documentation for the current version of request
         generateSuppDocTable(suppDocs, '');
 
-        // Generate version boxes for all request versions in the data
-        for (let i = 0; i < versions.length; i++) {
-            generateVersionBox(versions[i], versions.length - i)
+        // Generate version boxes for all request prevVersions in the data
+        for (let i = 0; i < prevVersions.length; i++) {
+            generateVersionBox(prevVersions[i], prevVersions.length - i)
         }
 
     </script>

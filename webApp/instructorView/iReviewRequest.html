@@ -8,8 +8,8 @@
 
 	<!--
     Author: James La Fontaine
-    Date Last Modified: September 27, 2023
-    Description: This is the page on which instructors can review a particular active request
+    Date Last Modified: September 28, 2023
+    Description: This is the page on which instructors can review a selected active request
     -->
 
 	<!-- CSS stylesheets -->
@@ -18,10 +18,11 @@
             display: grid;
             grid-template-columns: 70% 1fr;
         }
-        .expandableBox {
-            margin-bottom: auto;
+
+        /* CSS to hide the button */
+        #myButton.hidden {
+            display: none;
         }
-        
     </style>
 
 	<link rel="stylesheet" href="../css/general.css">
@@ -61,8 +62,9 @@
     <div class="mainBody" style="width: 90%;">
         <div class="pageAsATable">
             <div class="leftSide">
-                <p class="title" id="title">Request #123456</p>
-                <p class="text" id="dates">Created 2012/10/10</p>
+                <p class="title" id="requestNum"></p>
+                <p class="title" id="versionNum" style="font-size:25px"></p>
+                <p class="text" id="dates"></p>
                 <br>
                 <p class="text">Course</p>
                 <textarea class="textBox" id="course" style="height:30px; resize:none" readonly></textarea>
@@ -121,13 +123,13 @@
                 <br><br><br><br>
                 <div style="text-align: center; width: fit-content; margin: 0 auto;">
                     <div>
-                        <p class="bigButton">
+                        <p class="bigButton" id="reserveButton">
                             Mark as complex
                         </p>
-                        <p class="bigButton">
+                        <p class="bigButton" id="approveButton">
                             Approve Request
                         </p>
-                        <p class="bigButton">
+                        <p class="bigButton" id="rejectButton">
                             Reject Request
                         </p>
                         <p class="bigButton" onclick="window.location.href='iViewRequests.html'">
@@ -141,11 +143,13 @@
     </div>
     <script src="../js/modules/iWebHeader.js"></script>
     <script src="../js/modules/requests.js"></script>
+    <script src="../js/modules/buttons.js"></script>
     <script>
-        const req1 = {
+        var req1 = {
             requestId: 123456,
             creationDate: '10/10/2012',
             resolveDate: '',
+            reserved: false,
             course: 'COMP30022 - IT Project',
             assessment: 'Project 1',
             requestType: 'Extension',
@@ -169,7 +173,7 @@
             }
         ]
 
-        const versions = [
+        const prevVersions = [
             {
                 date: "2011/09/24",
                 message: "The power has died!! :(",
@@ -189,16 +193,35 @@
         
 
         // Fill information relating to the current request from the database
-        fillCurrentRequestInformation(req1);
+        fillCurrentRequestInformation(req1, prevVersions.length + 1);
 
         // Generate the supporting documentation for the current version of request
         generateSuppDocTable(suppDocs, '');
 
-        // Generate version boxes for all request versions in the data
-        for (let i = 0; i < versions.length; i++) {
-            generateVersionBox(versions[i], versions.length - i)
+        // Generate version boxes for all previous request versions in the database
+        for (let i = 0; i < prevVersions.length; i++) {
+            generateVersionBox(prevVersions[i], prevVersions.length - i)
         }
 
+
+        // If a case has already been reserved then we hide the mark as complex button
+        if (req1.reserved == true) {
+            hideButton("reserveButton");
+        } else {
+            // Otherwise modify the reserved status when mark as complex is clicked and hide the button
+            // Also update the star to yellow in the request number at the top of the page
+
+            // Get a reference to the reserveButton
+            const reserveButton = document.getElementById('reserveButton');
+            
+            // Perform the aforementioned steps on button click
+            reserveButton.addEventListener('click', function() {
+                req1.reserved = true;
+                document.getElementById("requestNum").innerHTML = 'Request #' + req1.requestId + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+                console.log(`Reserved status changed: ${req1.reserved}`); // Prints to console when inspecting page
+                hideButton("reserveButton");
+            });
+        }
     </script>
 </body>
 </html>

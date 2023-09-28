@@ -84,8 +84,7 @@
 		
 	</div>
 	<script src="../js/modules/iWebHeader.js"></script>
-	<script src="../js/modules/tables.js"></script>
-	
+	<script src="../js/modules/requests.js"></script>
 	<script>
 		// Put subject code at start of title
 		subjectCode = "COMP30022";
@@ -93,6 +92,32 @@
 		// Get the title by its ID
 		const myElement = document.getElementById("title").innerHTML = 
 		subjectCode + document.getElementById("title").innerHTML;
+
+
+	const jsonDataAwaiting = [
+		{
+			reserved: true,
+			date: '29/08/2023',
+			studentName: 'Joe Bloggs',
+			requestType: 'Extension',
+			status: 'Pending'
+		},
+	];
+
+	const jsonDataResolved = [
+		{
+			reserved: false,
+			date: '29/08/2023',
+			studentName: 'Joe Bloggs',
+			requestType: 'Extension',
+			status: 'Rejected'
+		},
+	];
+
+	// Call the function with the JSON data
+	generateRequestTable(jsonDataAwaiting, 'Awaiting');
+	generateRequestTable(jsonDataResolved, 'Resolved');
+
 		
 	</script>
 	

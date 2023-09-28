@@ -65,7 +65,3 @@ function generateSubjectBox(subject) {
 	document.getElementById('subjectBoxContainer').appendChild(standardBox );
 };
   
-  // Iterate through the JSON data and create/populate expandable boxes
-  subjects.forEach(subject => {
-	generateSubjectBox(subject);
-  });
