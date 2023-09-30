@@ -204,9 +204,9 @@
                 <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
                 <div style="display: inline-block; text-align: center;">
                     <p class="standardBox" style="width: 300px; height: 200px;">
-                        <span class="text">Callum Sharman</span>
-                        <span class="text">1178429</span>
-                        <span class="text" style="font-size: 14px;">csharman@student.unimelb.edu.au</span>
+                        <span class="text" id="studentName"></span>
+                        <span class="text" id="studentId"></span>
+                        <span class="text" id="studentEmail" style="font-size: 14px;"></span>
                         <span>
                             <button class="standardButton" onclick="window.location.href='iViewProfile.html'">
                                 View Profile
@@ -301,8 +301,8 @@
             generateVersionBox(prevVersions[i], prevVersions.length - i)
         }
 
-        handleComplexRequest(req1);
-        
+        handleComplexRequestFunctionality(req1);
+
     </script>
     <script src="../js/modules/popups.js"></script>
 
@@ -341,6 +341,18 @@
             
             handleApprovalAndRejection(req1);
         });
+    </script>
+    <!-- Student Details Box Population -->
+    <script src="../js/modules/studentDetails.js"></script>
+    <script>
+        student = {
+            firstName: 'Callum',
+            lastName: 'Sharman',
+            id: 1178429,
+            email: 'csharman@student.unimelb.edu.au'
+        }
+
+        fillStudentDetailsBox(student);
     </script>
 </body>
 </html>

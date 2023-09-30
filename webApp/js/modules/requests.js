@@ -225,7 +225,7 @@ function generateVersionBox(version, number) {
  * the mark as complex button
  */
 
-function handleComplexRequest(requestData) {
+function handleComplexRequestFunctionality(requestData) {
     // If a case has already been reserved then we hide the mark as complex button
     if (requestData.reserved == true) {
         hideButton("reserveButton");
