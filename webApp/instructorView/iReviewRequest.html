@@ -8,7 +8,7 @@
 
 	<!--
     Author: James La Fontaine
-    Date Last Modified: September 28, 2023
+    Date Last Modified: September 30, 2023
     Description: This is the page on which instructors can review a selected active request
     -->
 
@@ -28,6 +28,7 @@
 	<link rel="stylesheet" href="../css/general.css">
 	<link rel="stylesheet" href="../css/header.css">
 	<link rel="stylesheet" href="../css/tables.css">
+    <link rel="stylesheet" href="../css/popups.css">
 
 
 
@@ -55,12 +56,105 @@
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
 	integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
 	crossorigin="anonymous"></script>
+
+    <!-- <script> 
+    $(function(){
+      $("#includedContent").load("popup.html"); 
+    });
+    </script>  -->
+  </head> 
 </head>
 <body>
+    
     <div id="webHeaderContainer"></div>
     
+    <!----------------------------- Popup HTML starts here ----------------------------->
+
+    <div id="approvePopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Approve Request
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesA" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <span class="text" style="margin:10px">Current Deadline</span>
+                    <span class="text" style="margin:10px">Default Extension</span>
+                    <br>
+                    <textarea class="textBox" id="currentDeadline" style="margin-right: 30px; margin-top: 10px; width:20%; height:30px; resize:none; text-align:center" readonly></textarea>
+                    <textarea class="textBox" id="defaultExtension" style="margin-left: 30px; margin-top: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <div style="text-align:center">
+                    <br><br>
+                    <label for="extensionOverride">Override Extension:</label>
+                    <select id="extensionOverrideA">
+                    </select>
+                    <span class="text" style="font-weight:normal">day(s)</span>
+                </div>
+                </div>
+                <br><br>
+                <div style="text-align:center">
+                    <p class="text">Student Selected Assessment</p>
+                    <textarea class="textBox" id="selectedAssessmentA" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <label for="assessmentOverride">Override Assessment:</label>
+                    <select class="assessmentOverride" id="assessmentOverrideA">
+                    </select>
+                </div>
+                <br><br>
+                <div class="popupButton" id="popupApproveButton">Approve Request</div>
+                <br>
+            </div>
+        </div>
+    </div>
+    
+    <div id="rejectPopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Reject Request
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesR" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <br>
+                
+                <div style="text-align:center">
+                    <p class="text">Student Selected Assessment</p>
+                    <textarea class="textBox" id="selectedAssessmentR" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <label for="assessmentOverride">Override Assessment:</label>
+                    <select class="assessmentOverride" id="assessmentOverrideR">
+                    </select>
+                </div>
+                <br><br>
+                <div class="popupButton" id="popupRejectButton">Reject Request</div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <!----------------------------- Popup HTML ends here ----------------------------->
+
     <div class="mainBody" style="width: 90%;">
+
         <div class="pageAsATable">
+            
             <div class="leftSide">
                 <p class="title" id="requestNum"></p>
                 <p class="title" id="versionNum" style="font-size:25px"></p>
@@ -126,12 +220,16 @@
                         <p class="bigButton" id="reserveButton">
                             Mark as complex
                         </p>
-                        <p class="bigButton" id="approveButton">
-                            Approve Request
-                        </p>
-                        <p class="bigButton" id="rejectButton">
-                            Reject Request
-                        </p>
+                        <div>
+                            <p class="bigButton" id="approveButton" data-target="approvePopup">
+                                Approve Request
+                            </p>
+                        </div>
+                        <div>
+                            <p class="bigButton" id="rejectButton" data-target="rejectPopup">
+                                Reject Request
+                            </p>
+                        </div>
                         <p class="bigButton" onclick="window.location.href='iViewRequests.html'">
                             Back
                         </p>
@@ -203,25 +301,46 @@
             generateVersionBox(prevVersions[i], prevVersions.length - i)
         }
 
+        handleComplexRequest(req1);
+        
+    </script>
+    <script src="../js/modules/popups.js"></script>
 
-        // If a case has already been reserved then we hide the mark as complex button
-        if (req1.reserved == true) {
-            hideButton("reserveButton");
-        } else {
-            // Otherwise modify the reserved status when mark as complex is clicked and hide the button
-            // Also update the star to yellow in the request number at the top of the page
+    <!-- Popup related JS -->
+    <script>
+        
+        
+        
+        document.addEventListener('DOMContentLoaded', function () {
 
-            // Get a reference to the reserveButton
-            const reserveButton = document.getElementById('reserveButton');
+            // Handle all popup JS
+            setupOpenClosePopupButtons();
+        
+            var req1 = {
+                requestId: 123456,
+                creationDate: '10/10/2012',
+                resolveDate: '',
+                reserved: false,
+                course: 'COMP30022 - IT Project',
+                assessment: 'Project 1',
+                requestType: 'Extension',
+                requestTitle: 'Project 1 Extension Request',
+                message: 'I am sick ;\'( why must misfortune happen to me',
+                status: 'Waiting for action',
+                instructorNotes: '',
+                dueDate: '2012/10/15',
+                defaultExtension: 3,
+                maxExtension: 10,
+                approvedExtension: 0
+            };
             
-            // Perform the aforementioned steps on button click
-            reserveButton.addEventListener('click', function() {
-                req1.reserved = true;
-                document.getElementById("requestNum").innerHTML = 'Request #' + req1.requestId + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
-                console.log(`Reserved status changed: ${req1.reserved}`); // Prints to console when inspecting page
-                hideButton("reserveButton");
-            });
-        }
+            // List of assessments
+            const assessments = ['Project 1', 'Project 2', 'Mid Semester Test'];
+
+            populatePopups(req1, assessments);
+            
+            handleApprovalAndRejection(req1);
+        });
     </script>
 </body>
 </html>

@@ -220,3 +220,28 @@ function generateVersionBox(version, number) {
     //container.appendChild(document.createElement("br"));
 }
 
+/** 
+ * Deals with the visual elements associated with complex requsts and provides functionality to 
+ * the mark as complex button
+ */
+
+function handleComplexRequest(requestData) {
+    // If a case has already been reserved then we hide the mark as complex button
+    if (requestData.reserved == true) {
+        hideButton("reserveButton");
+    } else {
+        // Otherwise modify the reserved status when mark as complex is clicked and hide the button
+        // Also update the star to yellow in the request number at the top of the page
+
+        // Get a reference to the reserveButton
+        const reserveButton = document.getElementById('reserveButton');
+        
+        // Perform the aforementioned steps on button click
+        reserveButton.addEventListener('click', function() {
+            requestData.reserved = true;
+            document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+            console.log(`Reserved status changed: ${requestData.reserved}`); // Prints to console when inspecting page
+            hideButton("reserveButton");
+        });
+    }
+}

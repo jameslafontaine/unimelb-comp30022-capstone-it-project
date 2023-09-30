@@ -1,74 +1,83 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible"
-          content="IE=edge">
-    <meta name="viewport"
-          content="width=device-width,
-                   initial-scale=1.0">
-    <style>
-        .popup {
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-            display: none;
-        }
-        .popup-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888888;
-            width: 30%;
-            font-weight: bolder;
-        }
-        .popup-content button {
-            display: block;
-            margin: 0 auto;
-        }
-        .show {
-            display: block;
-        }
-        h1 {
-            color: green;
-        }
-    </style>
-</head>
- 
 <body>
-    <button id="myButton">
-          Click me
-      </button>
-    <div id="myPopup" class="popup">
-        <div class="popup-content">
-            <h1 style="color:green;">
-                  GeekforGeeks !
-              </h1>
-            <p>This is a popup box!</p>
-            <button id="closePopup">
-                  Close
-              </button>
+    <div id="approvePopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Approve Request
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesA" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <span class="text" style="margin:10px">Current Deadline</span>
+                    <span class="text" style="margin:10px">Default Extension</span>
+                    <br>
+                    <textarea class="textBox" id="currentDeadline" style="margin-right: 30px; margin-top: 10px; width:20%; height:20px; resize:none; text-align:center" readonly></textarea>
+                    <textarea class="textBox" id="defaultExtension" style="margin-left: 30px; margin-top: 10px; width:20%; height:20px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <div style="text-align:center">
+                    <br><br>
+                    <label for="extensionOverride">Override Extension:</label>
+                    <select id="extensionOverrideA">
+                    </select>
+                    <span class="text" style="font-weight:normal">day(s)</span>
+                </div>
+                </div>
+                <br><br>
+                <div style="text-align:center">
+                    <p class="text">Student Selected Assessment</p>
+                    <textarea class="textBox" id="selectedAssessmentA" style="margin: 10px; width:20%; height:20px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <label for="assessmentOverride">Override Assessment:</label>
+                    <select class="assessmentOverride" id="assessmentOverrideA">
+                    </select>
+                </div>
+                <br><br>
+                <div class="popupButton" id="popupApproveButton">Approve Request</div>
+                <br>
+            </div>
         </div>
     </div>
- 
-    <script>
-        myButton.addEventListener("click", function () {
-            myPopup.classList.add("show");
-        });
-        closePopup.addEventListener("click", function () {
-            myPopup.classList.remove("show");
-        });
-        window.addEventListener("click", function (event) {
-            if (event.target == myPopup) {
-                myPopup.classList.remove("show");
-            }
-        });
-    </script>
+    
+    <div id="rejectPopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Reject Request
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesR" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <br>
+                
+                <div style="text-align:center">
+                    <p class="text">Student Selected Assessment</p>
+                    <textarea class="textBox" id="selectedAssessmentR" style="margin: 10px; width:20%; height:20px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <label for="assessmentOverride">Override Assessment:</label>
+                    <select class="assessmentOverride" id="assessmentOverrideR">
+                    </select>
+                </div>
+                <br><br>
+                <div class="popupButton" id="popupRejectButton">Reject Request</div>
+                <br>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
