@@ -55,8 +55,65 @@ def view_profile_view(request, id):
 
 # GET CALLS
 # test/example purposes only, obviously not useable, must be filled in by backend
+'''
+def get_(request, _id):
+    if(_id == 1):
+        return JsonResponse()
+    else: # id not found
+        return not_found_view(request)
+'''
+def get_courses(request, user_id):
+    if(user_id == 1):
+        return JsonResponse({
+            'courses': json.dumps([course1, course1])
+        })
+    else: # id not found
+        return not_found_view(request)
 
+def get_request_status(request, request_id):
+    if(request_id == 1):
+        return JsonResponse({'status': 'balls'})
+    else: # id not found
+        return not_found_view(request)
 
+def get_request(request, request_id):
+    if(request_id == 1):
+        return JsonResponse(req1)
+    else: # id not found
+        return not_found_view(request)
+
+def get_old_versions(request, request_id):
+    if(request_id == 1):
+        return JsonResponse({'request_ids':json.dumps([1,2,3])})
+    else: # id not found
+        return not_found_view(request)
+
+def get_student(request, student_id):
+    if(student_id == 1):
+        return JsonResponse(usr1)
+    else: # id not found
+        return not_found_view(request)
+
+def get_subject_settings(request, subject_id):
+    if(subject_id == 1):
+        return JsonResponse(subjSettings)
+    else: # id not found
+        return not_found_view(request)
+
+def get_AAP(request, aap_id):
+    if(aap_id == 1):
+        return JsonResponse({'this is an aap': 'aap go beep boop'})
+    else: # id not found
+        return not_found_view(request)
+
+def get_request_history(request, student_id):
+    if(student_id == 1):
+        return JsonResponse({
+            'requests':json.dumps([req1, req2])
+        })
+    else: # id not found
+        return not_found_view(request)
+    
 case12 = {
     'Date_Updated': 28112001,
     'Date_Created': 11092001,
@@ -102,4 +159,11 @@ subj1 = {
 }
 subj2 = {
     'id': 2,
+}
+subjSettings = {
+    'this is so boring': 'beep boop',
+}
+course1 = {
+    'course_id': 1,
+    'subject_name': 'sugma',
 }
