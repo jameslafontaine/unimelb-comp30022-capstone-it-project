@@ -16,7 +16,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-# add the login view here===============================
 from login.views import login_view
 
 urlpatterns = [

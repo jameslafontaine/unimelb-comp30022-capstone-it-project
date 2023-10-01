@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'css/general.css' %}">
+        <link rel="stylesheet" href="{% static 'css/header.css' %}">
+        <style>
+            .mainBody {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Ensure the container takes the full viewport height */
+            margin: 0; /* Remove default margin to center accurately */
+            padding:0px;
+            width: 100%;
+            padding-top: 0px;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="header"><img src="{% static 'img/uomLogo.JPG' %}" style="height: 38px;"></div>
+        <div class="mainBody">
+            <p class="title">404: Page not found</p>
+        </div>
+    </body>
+</html>

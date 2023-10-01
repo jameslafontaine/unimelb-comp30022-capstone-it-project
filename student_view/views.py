@@ -8,22 +8,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 
-req1 = {
-    'id': 1,
-    'course': 'COMP30022',
-    'dateCreated': '28/11/2001',
-    'status': 'pending',
-    'message': 'The dog ate my homework',
-
-}
-req2 = {
-    'id': 2,
-    'course': 'COMP30026',
-    'dateCreated': '1/1/2023',
-    'status': 'approved',
-    'message': 'The cat ate my homework',
-    
-}
+def not_found_view(request):
+    return render(request, 'notFound404.html', {})
 
 def home_view(request):
     return render(request, 'sHome.html', {})
@@ -48,3 +34,92 @@ def view_req_view(request, id):
         return render(request, 'viewRequest.html', {'req':req})
     else:
         return JsonResponse({'error': 'Record not found'}, status=404)
+    
+# GET CALLS
+# test/example purposes only, obviously not useable, must be filled in by backend
+def get_case(request, case_id):
+    if(case_id == 12):
+        return JsonResponse(case12)
+    if(case_id == 13):
+        return JsonResponse(case13)
+    else: # id not found
+        return not_found_view(request)
+    
+def get_active_cases(request, user_id):
+    if(user_id == 1): # id found
+        return JsonResponse({
+            'cases': {
+                'case12': case12,
+                'case13': case13,
+            }
+        })
+    else: # id not found
+        return not_found_view(request)
+
+def get_requests_from_case(request, case_id):
+    if(case_id == 1):
+        return JsonResponse({
+            'requestIds': json.dumps([1,2])
+        })
+    else: # id not found
+        return not_found_view(request)
+
+def get_request(request, request_id):
+    if(request_id == 1):
+        return JsonResponse(req1)
+    else: # id not found
+        return not_found_view(request)
+
+def get_old_versions(request, request_id):
+    if(request_id == 1):
+        return JsonResponse({
+            'oldVersionIds' : json.dumps([1,2])})
+    else: # id not found
+        return not_found_view(request)
+
+case12 = {
+    'Date_Updated': 28112001,
+    'Date_Created': 11092001,
+    'caseID' : 12,
+    'users_user_id' : 1,
+}
+
+case13 = {
+    'Date_Updated': 10102023,
+    'Date_Created': 11092023,
+    'caseID' : 13,
+    'users_user_id' : 1,
+}
+
+usr1 = {
+    'id': 1,
+    'firstName': 'John',
+    'lastName': 'Smith',
+    'email': 'jsmith@student.unimelb.edu.au',
+}
+usr2 = {
+    'id': 2,
+    'firstName': 'Jane',
+    'lastName': 'Doe',
+    'email': 'jdoe@student.unimelb.edu.au',
+}
+req1 = {
+    'id': 1,
+    'course': 'COMP30022',
+    'dateCreated': '28/11/2001',
+    'status': 'waiting for action',
+    'message': 'The dog ate my homework',
+}
+req2 = {
+    'id': 2,
+    'course': 'COMP30026',
+    'dateCreated': '1/1/2023',
+    'status': 'waiting for action',
+    'message': 'The cat ate my homework', 
+}
+subj1 = {
+    'id': 1,
+}
+subj2 = {
+    'id': 2,
+}

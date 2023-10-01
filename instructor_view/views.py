@@ -8,38 +8,8 @@ from django.shortcuts import render
 import json
 from django.http import JsonResponse
 
-usr1 = {
-    'id': 1,
-    'firstName': 'John',
-    'lastName': 'Smith',
-    'email': 'jsmith@student.unimelb.edu.au',
-}
-usr2 = {
-    'id': 2,
-    'firstName': 'Jane',
-    'lastName': 'Doe',
-    'email': 'jdoe@student.unimelb.edu.au',
-}
-req1 = {
-    'id': 1,
-    'course': 'COMP30022',
-    'dateCreated': '28/11/2001',
-    'status': 'waiting for action',
-    'message': 'The dog ate my homework',
-}
-req2 = {
-    'id': 2,
-    'course': 'COMP30026',
-    'dateCreated': '1/1/2023',
-    'status': 'waiting for action',
-    'message': 'The cat ate my homework', 
-}
-subj1 = {
-    'id': 1,
-}
-subj2 = {
-    'id': 2,
-}
+def not_found_view(request):
+    return render(request, 'notFound404.html', {})
 
 def home_view(request):
     return render(request, 'iHome.html', {})
@@ -81,3 +51,55 @@ def view_profile_view(request, id):
         return render(request, 'viewProfile.html', {'usr':usr})
     
     return JsonResponse({'error': 'Record not found'}, status=404)
+
+
+# GET CALLS
+# test/example purposes only, obviously not useable, must be filled in by backend
+
+
+case12 = {
+    'Date_Updated': 28112001,
+    'Date_Created': 11092001,
+    'caseID' : 12,
+    'users_user_id' : 1,
+}
+
+case13 = {
+    'Date_Updated': 10102023,
+    'Date_Created': 11092023,
+    'caseID' : 13,
+    'users_user_id' : 1,
+}
+
+usr1 = {
+    'id': 1,
+    'firstName': 'John',
+    'lastName': 'Smith',
+    'email': 'jsmith@student.unimelb.edu.au',
+}
+usr2 = {
+    'id': 2,
+    'firstName': 'Jane',
+    'lastName': 'Doe',
+    'email': 'jdoe@student.unimelb.edu.au',
+}
+req1 = {
+    'id': 1,
+    'course': 'COMP30022',
+    'dateCreated': '28/11/2001',
+    'status': 'waiting for action',
+    'message': 'The dog ate my homework',
+}
+req2 = {
+    'id': 2,
+    'course': 'COMP30026',
+    'dateCreated': '1/1/2023',
+    'status': 'waiting for action',
+    'message': 'The cat ate my homework', 
+}
+subj1 = {
+    'id': 1,
+}
+subj2 = {
+    'id': 2,
+}

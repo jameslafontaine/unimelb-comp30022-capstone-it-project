@@ -103,7 +103,7 @@ InstructorView
     View student profile
         - read:
             - AAP documents
-            - AAP name, size, data updated
+            - AAP name, size, date updated
             - request/query history
             - request date, student name, request type, status
             - student identifiers
