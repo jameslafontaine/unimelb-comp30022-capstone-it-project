@@ -9,10 +9,13 @@ urlpatterns = [
 
     path('view-req/<int:id>/', view_req_view, name='view-req'),
 
-    # GET CALLS
+    # GET REQUESTS
     path('active-cases/<int:user_id>/', get_active_cases, name='get_active_cases'),
     path('case/<int:case_id>/', get_case, name='get_case'),
     path('requests-from-case/<int:case_id>/', get_requests_from_case, name='get_requests_from_case'),
     path('request/<int:request_id>/', get_request, name='get_request'),
     path('old-versions/<int:request_id>/', get_old_versions, name='get_old_versions'),
+
+    # POST REQUESTS
+    path('new-request/', new_request, name='new_request'),
 ]

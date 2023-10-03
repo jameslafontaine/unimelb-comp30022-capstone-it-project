@@ -53,7 +53,7 @@ def view_profile_view(request, id):
     return JsonResponse({'error': 'Record not found'}, status=404)
 
 
-# GET CALLS
+# GET REQUESTS
 # test/example purposes only, obviously not useable, must be filled in by backend
 '''
 def get_(request, _id):

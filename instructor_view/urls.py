@@ -12,7 +12,7 @@ urlpatterns = [
     path('subject-settings/<int:id>/', subj_settings_view, name='subject-settings'),
     path('view-profile/<int:id>/', view_profile_view, name='view-profile'),
 
-    # GET CALLS
+    # GET REQUESTS
     path('courses/<int:user_id>', get_courses, name='get_courses'),
     path('request-status/<int:request_id>', get_request_status, name='get_request_status'),
     path('request/<int:request_id>', get_request, name='get_request'),

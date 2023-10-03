@@ -54,6 +54,44 @@
         </div>
         
         <div class="mainBody">
+            <button id="createCaseButton">test button lol</button>
+
+            <script>
+                document.getElementById("createCaseButton").addEventListener("click", function () {
+                    // Data to be sent in the POST request
+                    const reqData = {
+                        name: "New Case",
+                        description: "This is a new case.",
+                    };
+
+                    // Send a POST request to your Django server
+                    fetch('/student/new-request/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', // Set the content type to JSON
+                        },
+                        body: JSON.stringify(reqData), // Convert the data to JSON string
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json(); // Parse the response JSON if successful
+                        }
+                        throw new Error('Network response was not ok');
+                    })
+                    .then(data => {
+                        console.log(data); // Process the response data
+                        // You can update the DOM or perform other actions here
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+                });
+            </script>
+
+
+
+
+
             <p class="title">Get Started</p>
             <p class="text">Did anything unexpected happen to you, 
                 or do you have a question not suited for dicussion boards?
