@@ -1,9 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/header.css">
-        <link rel="stylesheet" href="../css/tables.css">
+        <!-- Meta -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Instructor - Subject Settings</title>
+        
+        <!--
+            Author: James La Fontaine
+            Date Last Modified: October 3, 2023
+            Description: This is the page on which instructors can modify settings for a subject such as template responses,
+            default extensions, maximium extensions, and tutor and subject coordinator permissions
+        -->
+        
+        <!-- CSS stylesheets -->
+        
         <style>
             .tableEntry {
                 display: flex; /* Make the span a block-level element */
@@ -13,44 +24,88 @@
                 border: 1px solid #ccc; /* Add a border for visualization */
                 font-size: 13px; /* Decrease font size */
             }
-
+            
             .textBox {
                 background-color: rgb(191, 191, 191);
                 width:400px;
                 height:40px;
             }
-        
+            .subTitle {
+                font-weight: bold;
+            }
         </style>
+        
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/header.css">
+        <link rel="stylesheet" href="../css/tables.css">
+        
+        
+        
+        <!-- Include Bootstrap CSS and JavaScript, and its dependencies such as Popper. Also include jQuery JavaScript -->
+        
+        <!-- Bootstrap CSS and JavaScript provided by Bootstrap. Visit https://getbootstrap.com/ for more information. -->
+        <!-- jQuery and Popper JavaScript provided by jQuery and PopperJS. Visit https://jquery.com/ and https://popperjs.com/ for more information. -->
+        <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+        rel="stylesheet" 
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
+        crossorigin="anonymous">
+        
+        <!-- JS scripts -->
+        <script type="text/javascript"
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+        <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" 
+        integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer"></script>
+        <script type="text/javascript" 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
+        crossorigin="anonymous"></script>
     </head>
     <body>
         <div id="webHeaderContainer"></div>
 
         <div class="mainBody">
-            <p class="title">COMP30022 Subject Settings</p>
+            <p class="title" id="title"> Subject Settings</p>
 
-            <p></p>
-            
-            <p class="subTitle">Extensions</p>
-            <p></p>
+            <br>
+
+            <p class="h4" style="font-weight:bold">Extension Settings</p>
+
+            <br>
+
+            <div>
+                <label for="assessmentDropdown" style="font-size:20px;">Assessment:</label>
+                <select id="assessmentDropdown" style="font-size:20px;">
+                </select>
+                </span>
+            </div>
+
+            <br>
+
             <span>Default extension length: &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" size="2" placeholder="3">
                 days&nbsp;&nbsp;&nbsp;   
-                <span class="standardButton">
+                <button class="standardButton">
                     Save
-                </span>
+                </button>
             </span>
-            <p></p>
+            <br><br>
             <span>Maximum extension length: <input type="text" size="2" placeholder="10">
                 days&nbsp;&nbsp;&nbsp;
-                <span class="standardButton">
+                <button class="standardButton">
                     Save
-                </span>
+                </button>
             </span>
 
             <p></p>
 
             <br><br><br>
 
-            <p class="subTitle">Permissions and Response Templates</p>
+            <p class="h4" style="font-weight:bold">Instructor Permissions & Response Templates</p>
 
             <p></p>
 
@@ -160,5 +215,54 @@
         </div>
 
         <script src="../js/modules/iWebHeader.js"></script>
+        <script>
+            // Put subject code at start of title
+            subjectCode = "COMP30022";
+            
+            const myElement = document.getElementById("title").innerHTML = 
+            subjectCode + document.getElementById("title").innerHTML;
+        </script>
+
+
+        <script src="../js/modules/subjectSettings.js"></script>
+        <script>
+            // Populate assignments dropdown
+            assessmentList = [
+                'Project 1',
+                'Project 2',
+                'Mid Semester Test'
+            ]
+
+            var extensionSettings = [
+                {
+                    assName: 'Project 1',
+                    defaultExtension: 3,
+                    maxExtension: 10
+                },
+                {
+                    assName: 'Project 2',
+                    defaultExtension: 5,
+                    maxExtension: 7
+                },
+                {
+                    assName: 'Mid Semester Test',
+                    defaultExtension: 1,
+                    maxExtension: 3
+                },
+                {
+                    assName: 'Dummy',
+                    defaultExtension: 2,
+                    maxExtension: 1
+                }
+            ]
+
+            var requestPerms = [
+            
+            ]
+            
+            populateAssessmentDropdown(assessmentList);
+
+
+        </script>
     </body>
 </html>

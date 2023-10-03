@@ -70,10 +70,11 @@
     
     <!----------------------------- Popup HTML starts here ----------------------------->
 
-    <div id="approvePopup" class="popupBox">
+    <!-- Approve Extension Popup -->
+    <div id="approveExtPopup" class="popupBox">
         <div class="popupContent">
             <div class="popupHeaderBox">
-                <span class="popupHeaderContents">Approve Request
+                <span class="popupHeaderContents">Approve Extension
                     <button class="closePopup" style="justify-self:end">X</button>
                 </span>
             </div>
@@ -81,7 +82,7 @@
                 <br>
                 <div style="text-align:center">
                     <p class="text">Instructor Notes</p>
-                    <textarea class="textBox" id="instructorNotesA" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                    <textarea class="textBox" id="instructorNotesAExt" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
                 </div>
                 <br>
                 <div style="text-align:center">
@@ -94,7 +95,7 @@
                 <div style="text-align:center">
                     <br><br>
                     <label for="extensionOverride">Override Extension:</label>
-                    <select id="extensionOverrideA">
+                    <select id="extensionOverrideAExt">
                     </select>
                     <span class="text" style="font-weight:normal">day(s)</span>
                 </div>
@@ -102,25 +103,26 @@
                 <br><br>
                 <div style="text-align:center">
                     <p class="text">Student Selected Assessment</p>
-                    <textarea class="textBox" id="selectedAssessmentA" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                    <textarea class="textBox" id="selectedAssessmentAExt" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                 </div>
                 <br>
                 <div style="text-align:center">
                     <label for="assessmentOverride">Override Assessment:</label>
-                    <select class="assessmentOverride" id="assessmentOverrideA">
+                    <select class="assessmentOverride" id="assessmentOverrideAExt">
                     </select>
                 </div>
                 <br><br>
-                <div class="popupButton" id="popupApproveButton">Approve Request</div>
+                <div class="popupButton" id="popupApproveButtonExt">Approve</div>
                 <br>
             </div>
         </div>
     </div>
     
-    <div id="rejectPopup" class="popupBox">
+    <!-- Reject Extension Popup -->
+    <div id="rejectExtPopup" class="popupBox">
         <div class="popupContent">
             <div class="popupHeaderBox">
-                <span class="popupHeaderContents">Reject Request
+                <span class="popupHeaderContents">Reject Extension
                     <button class="closePopup" style="justify-self:end">X</button>
                 </span>
             </div>
@@ -128,22 +130,174 @@
                 <br>
                 <div style="text-align:center">
                     <p class="text">Instructor Notes</p>
-                    <textarea class="textBox" id="instructorNotesR" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                    <textarea class="textBox" id="instructorNotesRExt" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
                 </div>
                 <br>
                 
                 <div style="text-align:center">
                     <p class="text">Student Selected Assessment</p>
-                    <textarea class="textBox" id="selectedAssessmentR" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                    <textarea class="textBox" id="selectedAssessmentRExt" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                 </div>
                 <br>
                 <div style="text-align:center">
                     <label for="assessmentOverride">Override Assessment:</label>
-                    <select class="assessmentOverride" id="assessmentOverrideR">
+                    <select class="assessmentOverride" id="assessmentOverrideRExt">
                     </select>
                 </div>
                 <br><br>
-                <div class="popupButton" id="popupRejectButton">Reject Request</div>
+                <div class="popupButton" id="popupRejectButtonExt">Reject</div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <!-- Query / Other Answer Popup -->
+    <div id="answerPopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Answer Request / Query
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesAns" placeholder="Enter your response here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <div class="popupButton" id="popupAnswerButton">Answer</div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approve Remark Popup -->
+    <div id="approveRemPopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Approve Remark
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesARem" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <br>
+                
+                <div style="text-align:center">
+                    <p class="text">Student Selected Assessment</p>
+                    <textarea class="textBox" id="selectedAssessmentARem" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <label for="assessmentOverride">Override Assessment:</label>
+                    <select class="assessmentOverride" id="assessmentOverrideARem">
+                    </select>
+                </div>
+                <br><br>
+                <div class="popupButton" id="popupApproveButtonRem">Approve</div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Remark Popup -->
+    <div id="rejectRemPopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Reject Remark
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesRRem" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <br>
+                
+                <div style="text-align:center">
+                    <p class="text">Student Selected Assessment</p>
+                    <textarea class="textBox" id="selectedAssessmentRRem" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <label for="assessmentOverride">Override Assessment:</label>
+                    <select class="assessmentOverride" id="assessmentOverrideRRem">
+                    </select>
+                </div>
+                <br><br>
+                <div class="popupButton" id="popupRejectButtonRem">Reject</div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approve Quiz Code Popup -->
+    <div id="approveQuizPopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Approve Quiz Code
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesAQui" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <br>
+                
+                <div style="text-align:center">
+                    <p class="text">Student Selected Assessment</p>
+                    <textarea class="textBox" id="selectedAssessmentAQui" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <label for="assessmentOverride">Override Assessment:</label>
+                    <select class="assessmentOverride" id="assessmentOverrideAQui">
+                    </select>
+                </div>
+                <br><br>
+                <div class="popupButton" id="popupApproveButtonQui">Approve</div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Quiz Code Popup -->
+    <div id="rejectQuizPopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Reject Quiz Code
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesRQui" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <br>
+                
+                <div style="text-align:center">
+                    <p class="text">Student Selected Assessment</p>
+                    <textarea class="textBox" id="selectedAssessmentRQui" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <label for="assessmentOverride">Override Assessment:</label>
+                    <select class="assessmentOverride" id="assessmentOverrideRQui">
+                    </select>
+                </div>
+                <br><br>
+                <div class="popupButton" id="popupRejectButtonQui">Reject</div>
                 <br>
             </div>
         </div>
@@ -220,16 +374,15 @@
                         <p class="bigButton" id="reserveButton">
                             Mark as complex
                         </p>
-                        <div>
-                            <p class="bigButton" id="approveButton" data-target="approvePopup">
-                                Approve Request
-                            </p>
-                        </div>
-                        <div>
-                            <p class="bigButton" id="rejectButton" data-target="rejectPopup">
-                                Reject Request
-                            </p>
-                        </div>
+                        <p class="bigButton" id="answerButton" data-target="answerPopup">
+                            Answer
+                        </p>
+                        <p class="bigButton" id="approveButton">
+                            Approve Request
+                        </p>
+                        <p class="bigButton" id="rejectButton">
+                            Reject Request
+                         </p>
                         <p class="bigButton" onclick="window.location.href='iViewRequests.html'">
                             Back
                         </p>
@@ -309,38 +462,35 @@
     <!-- Popup related JS -->
     <script>
         
-        
-        
-        document.addEventListener('DOMContentLoaded', function () {
+        var req1 = {
+            requestId: 123456,
+            creationDate: '10/10/2012',
+            resolveDate: '',
+            reserved: false,
+            course: 'COMP30022 - IT Project',
+            assessment: 'Project 1',
+            requestType: 'Remark',
+            requestTitle: 'Project 1 Extension Request',
+            message: 'I am sick ;\'( why must misfortune happen to me',
+            status: 'Waiting for action',
+            instructorNotes: '',
+            dueDate: '2012/10/15',
+            defaultExtension: 3,
+            maxExtension: 10,
+            approvedExtension: 0
+        };
 
-            // Handle all popup JS
-            setupOpenClosePopupButtons();
-        
-            var req1 = {
-                requestId: 123456,
-                creationDate: '10/10/2012',
-                resolveDate: '',
-                reserved: false,
-                course: 'COMP30022 - IT Project',
-                assessment: 'Project 1',
-                requestType: 'Extension',
-                requestTitle: 'Project 1 Extension Request',
-                message: 'I am sick ;\'( why must misfortune happen to me',
-                status: 'Waiting for action',
-                instructorNotes: '',
-                dueDate: '2012/10/15',
-                defaultExtension: 3,
-                maxExtension: 10,
-                approvedExtension: 0
-            };
-            
-            // List of assessments
-            const assessments = ['Project 1', 'Project 2', 'Mid Semester Test'];
+        // List of assessments for this subject
+        const assessments = ['Project 1', 'Project 2', 'Mid Semester Test'];
 
-            populatePopups(req1, assessments);
-            
-            handleApprovalAndRejection(req1);
-        });
+        setupOpenClosePopupButtons();
+        populatePopups(req1, assessments);
+        HideAndDisplayButtons(req1.requestType);
+        handleApprovalRejectionAnswer(req1, req1.requestType);
+        
+
+
+
     </script>
     <!-- Student Details Box Population -->
     <script src="../js/modules/studentDetails.js"></script>

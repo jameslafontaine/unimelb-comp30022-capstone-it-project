@@ -94,30 +94,30 @@
 		subjectCode + document.getElementById("title").innerHTML;
 
 
-	// All requests for the current subject the instructor is looking at
-	const jsonDataAwaiting = [
-		{
-			reserved: true,
-			date: '29/08/2023',
-			studentName: 'Joe Bloggs',
-			requestType: 'Extension',
-			status: 'Pending'
-		},
-	];
+		// All requests for the current subject the instructor is looking at
+		const jsonDataAwaiting = [
+			{
+				reserved: true,
+				date: '29/08/2023',
+				studentName: 'Joe Bloggs',
+				requestType: 'Extension',
+				status: 'Pending'
+			},
+		];
 
-	const jsonDataResolved = [
-		{
-			reserved: false,
-			date: '29/08/2023',
-			studentName: 'Joe Bloggs',
-			requestType: 'Extension',
-			status: 'Rejected'
-		},
-	];
+		const jsonDataResolved = [
+			{
+				reserved: false,
+				date: '29/08/2023',
+				studentName: 'Joe Bloggs',
+				requestType: 'Extension',
+				status: 'Rejected'
+			},
+		];
 
-	// Call the function with the JSON data
-	generateRequestTable(jsonDataAwaiting, 'Awaiting');
-	generateRequestTable(jsonDataResolved, 'Resolved');
+		// Call the function with the JSON data
+		generateRequestTable(jsonDataAwaiting, 'Awaiting');
+		generateRequestTable(jsonDataResolved, 'Resolved');
 
 		
 	</script>

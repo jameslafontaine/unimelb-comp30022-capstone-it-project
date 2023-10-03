@@ -7,7 +7,7 @@ function setupOpenClosePopupButtons() {
     
     buttons.forEach(button => {
         button.addEventListener('click', function (event) {
-            event.stopPropagation(); // Prevent the click event from reaching the parent element
+            event.stopPropagation(); // Prevent clicking off the popup box from closing it
             const targetId = this.getAttribute('data-target');
             const popup = document.getElementById(targetId);
             document.body.style.overflow = 'hidden'; // Disable scrolling
@@ -29,94 +29,152 @@ function setupOpenClosePopupButtons() {
 
 
 /** 
- * Populates the assessment override dropdowns, extension override dropdown, and the 
+ * Populates the popup with assessment override dropdowns, extension override dropdown, and the 
  * current deadline, extension and assessment boxes 
  */
 function populatePopups(requestData, assessmentList) {
-    
-    // Populate current deadline (THIS WILL LIKELY HAVE TO BE MODIFIED TO WORK WITH DATE TYPE)
-    document.getElementById('currentDeadline').value = requestData.dueDate
-    
-    // Populate default extension
-    document.getElementById('defaultExtension').value = requestData.defaultExtension + ' days'
-    
-    // Populate override extension dropdown
-    
-    for (let i = 1; i <= requestData.maxExtension; i++) {
-        const option = document.createElement('option');
-        option.textContent = i;
-        document.getElementById('extensionOverrideA').appendChild(option);
-    }
-    
-    // Set extension override to match default extension
-    document.getElementById('extensionOverrideA').value = requestData.defaultExtension
 
-    // Populate student selected assessment
-    document.getElementById('selectedAssessmentA').value = requestData.assessment
-    document.getElementById('selectedAssessmentR').value = requestData.assessment
-    
-    
-    // Get all elements with the class "assessmentOverride"
-    const overrideDropdowns = document.querySelectorAll('.assessmentOverride');
-    
-    // Populate override assessment dropdowns
-    overrideDropdowns.forEach(overrideDropdown => {
-        assessmentList.forEach(assessment => {
+        // Populate current deadline (THIS WILL LIKELY HAVE TO BE MODIFIED TO WORK WITH DATE TYPE)
+        document.getElementById('currentDeadline').value = requestData.dueDate
+        
+        // Populate default extension
+        document.getElementById('defaultExtension').value = requestData.defaultExtension + ' days'
+        
+        // Populate override extension dropdown
+        for (let i = 1; i <= requestData.maxExtension; i++) {
             const option = document.createElement('option');
-            option.textContent = assessment;
-            overrideDropdown.appendChild(option);
+            option.textContent = i;
+            document.getElementById('extensionOverrideAExt').appendChild(option);
+        }
+        
+        // Set extension override to match default extension
+        document.getElementById('extensionOverrideAExt').value = requestData.defaultExtension
+        
+        // Populate student selected assessment
+        document.getElementById('selectedAssessmentAExt').value = requestData.assessment
+        document.getElementById('selectedAssessmentRExt').value = requestData.assessment
+        document.getElementById('selectedAssessmentARem').value = requestData.assessment
+        document.getElementById('selectedAssessmentRRem').value = requestData.assessment
+        document.getElementById('selectedAssessmentAQui').value = requestData.assessment
+        document.getElementById('selectedAssessmentRQui').value = requestData.assessment
+        
+        
+        // Get all elements with the class "assessmentOverride"
+        const overrideDropdowns = document.querySelectorAll('.assessmentOverride');
+        
+        // Populate override assessment dropdowns
+        overrideDropdowns.forEach(overrideDropdown => {
+            assessmentList.forEach(assessment => {
+                const option = document.createElement('option');
+                option.textContent = assessment;
+                overrideDropdown.appendChild(option);
+            });
+            overrideDropdown.value = requestData.assessment;
         });
-        overrideDropdown.value = requestData.assessment;
-    });
 }
 
+
 /** 
- * Updates the appropriate information when a case is approved or rejected and performs any other
+ * Hides and display the required buttons for a request review depending on request type
+ * Only the answer button is displayed for queries and other requests.
+ * The approve and reject buttons are displayed for all other request types
+ * 
+ */
+function HideAndDisplayButtons(requestType) {
+
+    const reqShort = requestType.substring(0,3);
+
+    if (requestType != 'Query' && requestType != 'Other') {
+        document.getElementById('approveButton').setAttribute('data-target', `approve${reqShort}Popup`);
+        document.getElementById('rejectButton').setAttribute('data-target', `reject${reqShort}Popup`);
+        $("#answerButton").hide();
+
+    } else {
+        document.getElementById('answerButton').setAttribute('data-target', 'answerPopup');
+        $("#approveButton").hide();
+        $("#rejectButton").hide();
+    }
+}
+
+
+/** 
+ * Updates the appropriate information when a request is approved, rejected or answered and performs any other
  * steps that are required
  */
-function handleApprovalAndRejection(requestData) {
-    // Get the Approve Request button
-    const popupApproveButton = document.getElementById('popupApproveButton');
-            
-    // Add click event listener to Approve Request button
-    popupApproveButton.addEventListener('click', function() {
-        
-        // Update relevant information
-        requestData.approvedExtension = document.getElementById('extensionOverrideA').value
-        console.log('Approved Extension: ', requestData.approvedExtension);
+function handleApprovalRejectionAnswer(requestData, requestType) {
 
-        requestData.instructorNotes = document.getElementById('instructorNotesA').value
-        console.log('Instructor Notes: ', requestData.instructorNotes);
+    // First 3 letters of request type used for HTML identifiers
+    reqShort = requestType.substring(0,3)
+
+
+
+    // Initialise approve and request buttons for all request types except queries and other
+    if (requestType != "Query" && requestType != "Other") {
+        // Get the Approve Request button
+        const popupApproveButton = document.getElementById(`popupApproveButton${reqShort}`);
         
-        requestData.assessment = document.getElementById('assessmentOverrideA').value
-        console.log('Selected Assessment Override: ', requestData.assessment);
+        // Add click event listener to Approve Request button
+        popupApproveButton.addEventListener('click', function() {
+            
+            // Update relevant information
+            if (requestType == 'Extension') {
+                
+                requestData.approvedExtension = document.getElementById('extensionOverrideAExt').value
+                console.log('Approved Extension: ', requestData.approvedExtension);
+            }
+            
+            requestData.instructorNotes = document.getElementById(`instructorNotesA${reqShort}`).value
+            console.log('Instructor Notes: ', requestData.instructorNotes);
+            
+            requestData.assessment = document.getElementById(`assessmentOverrideA${reqShort}`).value
+            console.log('Selected Assessment Override: ', requestData.assessment);
+            
+            requestData.status = 'Approved'
+            console.log('Updated Request Status: ', requestData.status);
+            
+            // Change the page to iViewRequests.html (could make a confirmation page or just show confirmation message at top)
+            window.location.href = 'iViewRequests.html';
+            
+        });
         
-        requestData.status = 'Approved'
-        console.log('Updated Request Status: ', requestData.status);
+        // Get the Reject Request button
+        const popupRejectButton = document.getElementById(`popupRejectButton${reqShort}`);
         
-        // Change the page to iViewRequests.html (could make a confirmation page or just show confirmation message at top)
-        window.location.href = 'iViewRequests.html';
+        // Add click event listener to Reject Request button
+        popupRejectButton.addEventListener('click', function() {
+            
+            // Update the relevant information
+            requestData.instructorNotes = document.getElementById(`instructorNotesR${reqShort}`).value
+            console.log('Instructor Notes: ', requestData.instructorNotes);
+            
+            requestData.assessment = document.getElementById(`assessmentOverrideR${reqShort}`).value
+            console.log('Selected Assessment Override: ', requestData.assessment);
+            
+            requestData.status = 'Rejected'
+            console.log('Updated Request Status: ', requestData.status);
+            
+            // Change the page to iViewRequests.html (could make a confirmation page or just show confirmation message at top)
+            window.location.href = 'iViewRequests.html';
+            
+        });
+
+    // Initialise Answer button for queries and other requests
+    } else {
+        // Get the Answer button
+        const popupAnswerButton = document.getElementById('popupAnswerButton');
         
-    });
-    
-    // Get the Reject Request button and the dropdown element
-    const popupRejectButton = document.getElementById('popupRejectButton');
-    
-    // Add click event listener to Reject Request button
-    popupRejectButton.addEventListener('click', function() {
-        
-        // Update the relevant information
-        requestData.instructorNotes = document.getElementById('instructorNotesR').value
-        console.log('Instructor Notes: ', requestData.instructorNotes);
-        
-        requestData.assessment = document.getElementById('assessmentOverrideR').value
-        console.log('Selected Assessment Override: ', requestData.assessment);
-        
-        requestData.status = 'Rejected'
-        console.log('Updated Request Status: ', requestData.status);
-        
-        // Change the page to iViewRequests.html (could make a confirmation page or just show confirmation message at top)
-        window.location.href = 'iViewRequests.html';
-        
-    });
+        // Add click event listener to the Answer button
+        popupAnswerButton.addEventListener('click', function() {
+            
+            // Update the relevant information
+            requestData.instructorNotes = document.getElementById('instructorNotesAns').value
+            console.log('Instructor Notes: ', requestData.instructorNotes);
+            
+            requestData.status = 'Answered'
+            console.log('Updated Request Status: ', requestData.status);
+            
+            // Change the page to iViewRequests.html (could make a confirmation page or just show confirmation message at top)
+            window.location.href = 'iViewRequests.html';
+        });
+    }
 }
