@@ -21,4 +21,11 @@ urlpatterns = [
     path('AAP/<int:aap_id>', get_AAP, name='get_AAP'),
     path('request-history/<int:student_id>', get_request_history, name='get_request_history'),
 
+    # POST REQUESTS
+    path('AAP/', add_AAP, name='add_AAP'),
+
+    # PUT REQUESTS
+    path('set-complex/<int:request_id>', make_complex, name='make_complex'),
+    path('request-response/<int:request_id>', request_response, name='request_response'),
+    path('settings/', change_settings, name='change_settings'),
 ]

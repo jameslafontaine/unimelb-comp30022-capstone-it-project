@@ -67,7 +67,7 @@ def get_requests_from_case(request, case_id):
 
 def get_request(request, request_id):
     if(request_id == 1):
-        return JsonResponse(req3)
+        return JsonResponse(req1)
     else: # id not found
         return not_found_view(request)
 
@@ -84,7 +84,9 @@ def new_request(request):
     if request.method == 'POST':
         try:
             # Parse the JSON data from the request body
-            req3 = json.loads(request.body.decode('utf-8'))
+            """
+            e.g. req3 = json.loads(request.body.decode('utf-8'))
+            """
         except json.JSONDecodeError:
             return HttpResponseBadRequest("Invalid JSON data")
         return JsonResponse({"message": "Case created successfully"})
