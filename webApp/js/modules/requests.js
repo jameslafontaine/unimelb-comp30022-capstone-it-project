@@ -75,11 +75,14 @@ function generateRequestTable(data, type) {
 /** 
  * Fills in the appropriate information required for the current version of a request on the review request and view resolved pages
  */
-function fillCurrentRequestInformation(requestData, versionNumber) {
-    if (requestData.reserved == true) {
+function fillCurrentRequestInformation(requestData, versionNumber, view) {
+
+    if (requestData.reserved == true & view == 'Instructor') {
         document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
-    } else {
+    } else if (view == 'Instructor') {
         document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; ">☆</span>'
+    } else {
+        document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId
     }
     
     
