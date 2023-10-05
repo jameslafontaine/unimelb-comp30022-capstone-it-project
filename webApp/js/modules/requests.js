@@ -159,6 +159,7 @@ function generateSuppDocTable(requestList, number) {
 function generateVersionBox(version, number) {
     const container = document.getElementById("requestHistoryContainer");
 
+    // Set up expandable box
     const expandableBox = document.createElement("div");
     expandableBox.className = "expandableBox";
     expandableBox.setAttribute('data-bs-toggle', 'collapse')
@@ -184,6 +185,8 @@ function generateVersionBox(version, number) {
     expandableBoxSection.style.height = "auto";
     expandableBoxSection.setAttribute('class', 'collapse show')
     
+
+    // Place elements in expandable box
     const messageSpan = document.createElement("span");
     messageSpan.className = "text";
     messageSpan.textContent = "Message";
@@ -256,6 +259,8 @@ function generateStudentCases(caseList, numCases) {
 
     // For each active case, create an expandable table containing all requests in that case
     for (let i = 0; i < numCases; i++) {
+
+        // Set up expandable box
 		const expandableBox = document.createElement("div");
         expandableBox.className = "expandableBox";
         expandableBox.setAttribute('data-bs-toggle', 'collapse')
@@ -281,6 +286,7 @@ function generateStudentCases(caseList, numCases) {
         expandableBoxSection.style.height = "auto";
         expandableBoxSection.setAttribute('class', 'collapse show')
 
+        // Create table within expandable
         const table = document.createElement('table');
 
         // Create table header row
@@ -333,3 +339,140 @@ function generateStudentCases(caseList, numCases) {
 
     
 }
+
+
+
+function generateStudentRequest(number, courseList) {
+    const caseContainer = document.getElementById("caseContainer");
+
+    // Set up expandable box
+    const expandableBox = document.createElement("div");
+    expandableBox.className = "expandableBox";
+    expandableBox.setAttribute('data-bs-toggle', 'collapse')
+    expandableBox.setAttribute('data-bs-target', `#expandableBoxSection${number}`)
+
+    const expandableBoxContents = document.createElement("div");
+    expandableBoxContents.className = "expandableBoxContents";
+    expandableBoxContents.innerHTML = `Request #${number}`;
+    expandableBoxContents.setAttribute('data-bs-toggle', 'collapse')
+    expandableBoxContents.setAttribute('data-bs-target', `#expandableBoxSection${number}`)
+
+    const expandButton = document.createElement("span");
+    expandButton.className = "expandButton";
+    expandButton.setAttribute('data-bs-toggle', 'collapse')
+    expandButton.setAttribute('data-bs-target', `#expandableBoxSection${number}`)
+
+    expandableBoxContents.appendChild(expandButton);
+    expandableBox.appendChild(expandableBoxContents);
+
+    const expandableBoxSection = document.createElement("div");
+    expandableBoxSection.className = "expandableBoxSection";
+    expandableBoxSection.id = `expandableBoxSection${number}`;
+    expandableBoxSection.style.height = "auto";
+    expandableBoxSection.setAttribute('class', 'collapse show')
+    
+    // Create the elements that will go inside the expandable
+    const course = document.createElement("label");
+    course.className = "text";
+    course.textContent = "Course";
+    
+    const courseDropdown = document.createElement("select");
+    courseDropdown.style = 'margin-bottom: 5px;'
+    courseDropdown.id = `courseDropdown${number}`
+
+    const requestType = document.createElement("label");
+    requestType.className = "text";
+    requestType.textContent = "Request Type";
+
+    const requestTypeDropdown = document.createElement("select")
+    requestTypeDropdown.style = 'margin-bottom: 5px;'
+    requestTypeDropdown.id = `requestTypeDropdown${number}`
+
+    const requestTypeTextBox = document.createElement("textarea");
+    requestTypeTextBox.className = "textBox";
+
+    const requestTitle = document.createElement("span");
+    requestTitle.className = "text";
+    requestTitle.textContent = "Request Title";
+    
+    
+    const requestTitleTextBox = document.createElement("textarea");
+    requestTitleTextBox.className = "textBox";
+    requestTitleTextBox.style = 'height:30px; resize:none'
+    requestTitleTextBox.id = `requestTitleTextBox${number}`
+
+    const message = document.createElement("span");
+    message.className = "text";
+    message.textContent = "Message";
+    
+    const messageTextBox = document.createElement("textarea");
+    messageTextBox.className = "textBox";
+    messageTextBox.id = `messageTextBox${number}`
+    
+    const suppDoc = document.createElement("p");
+    suppDoc.className = "text";
+    suppDoc.textContent = "Supporting Documents";
+
+    const supDocContainer = document.createElement("div");
+    supDocContainer.id = `suppDocContainer${number}`;
+
+    const uploadButton = document.createElement('button');
+    uploadButton.className = 'standardButton';
+    uploadButton.id = `upload${number}`
+    uploadButton.innerText = 'Upload';
+    uploadButton.onclick = function () {
+        // NEED TO ADD UPLOAD FUNCTIONALITY
+    }
+
+    supDocContainer.appendChild(uploadButton);
+    
+    // Append the new elements into the HTML
+    expandableBoxSection.appendChild(course);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(courseDropdown);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(requestType);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(requestTypeDropdown);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(requestTitle);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(requestTitleTextBox);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(message);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(messageTextBox);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(suppDoc);
+    expandableBoxSection.appendChild(supDocContainer);
+
+    caseContainer.appendChild(expandableBox);
+    caseContainer.appendChild(expandableBoxSection);
+    caseContainer.appendChild(document.createElement("br"));
+
+    // Populate course dropdown
+    courseList.forEach(course => {
+        const option = document.createElement('option');
+        option.textContent = course;
+        document.getElementById(`courseDropdown${number}`).appendChild(option);
+    });
+        
+
+    // Populate request type dropdown
+    const reqTypeList = [
+        'Extension',
+        'General Query',
+        'Remark',
+        'Quiz Code',
+        'Other'    
+    ]
+
+    reqTypeList.forEach(request => {
+        const option = document.createElement('option');
+        option.textContent = request;
+        document.getElementById(`requestTypeDropdown${number}`).appendChild(option);
+    });
+
+    // initialise supporting documentation table with upload button
+} 

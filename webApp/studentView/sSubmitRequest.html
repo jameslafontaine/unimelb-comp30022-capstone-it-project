@@ -8,7 +8,7 @@
         
         <!--
             Author: James La Fontaine
-            Date Last Modified: October 4, 2023
+            Date Last Modified: October 5, 2023
             Description: This is the page on which students can submit a request
         -->
         
@@ -17,6 +17,12 @@
             .pageAsATable{
                 display: grid;
                 grid-template-columns: 70% 1fr;
+            }
+            .textBox{
+                height:20px
+            }
+            .expandableBox{
+                width:90%
             }
         </style>
 
@@ -60,99 +66,15 @@
             <div class="pageAsATable">
                 <div class="leftSide">
 
-                    <div id="caseContainer">
-
-
-                    </div>
-
                     <p class="title">Submit a case</p>
-                    
-                    <p class="text">Course</p>
-                    <textarea class="textBox" style="height:17px;"></textarea>
 
-                    <p class="text">Request Type</p>
-                    <textarea class="textBox" style="height:17px;"></textarea>
+                    <div id="caseContainer">
+                        <!-- Requests dynamically added here -->
 
-                    <p class="text">Request Title</p>
-                    <textarea class="textBox" style="height:17px"></textarea>
-
-                    <p class="text">Message</p>
-                    <textarea class="textBox"></textarea>
-
-                    <p class="text">Relevant Supporting Documents</p>
-                    <div class="tableSubmitting">
-                        <!--row1-->
-                        <span class="tableHeading">Name</span>
-                        <span class="tableHeading">Size</span>
-                        <span class="tableHeading">Status</span>
-                        <span class="emptyTableEntry"></span>
-                        <!--row2-->
-                        <span class="tableEntry">filename.pdf</span>
-                        <span class="tableEntry">29.15MB</span>
-                        <span class="tableEntry">Ready for Upload</span>
-                        <span class="emptyTableEntry">
-                            <button class="standardButton">
-                                Upload
-                            </button>
-                        </span>
-                        <!--row3-->
-                        <span class="tableEntry">dogatemyhomework.jpeg</span>
-                        <span class="tableEntry">420.69TB</span>
-                        <span class="tableEntry">Ready for Upload</span>
-                        <span class="emptyTableEntry">
-                            <button class="standardButton">
-                                Upload
-                            </button>
-                        </span>
                     </div>
-                    <button class="standardButton"> Choose file </button>
-                    
-                    
-                    <p></p>
-                    <p></p>
-                    
 
-                    <p class="text">Course</p>
-                    <textarea class="textBox" style="height:17px;"></textarea>
 
-                    <p class="text">Request Type</p>
-                    <textarea class="textBox" style="height:17px;"></textarea>
-
-                    <p class="text">Request Title</p>
-                    <textarea class="textBox" style="height:17px"></textarea>
-
-                    <p class="text">Message</p>
-                    <textarea class="textBox"></textarea>
-
-                    <p class="text">Relevant Supporting Documents</p>
-                    <div class="tableSubmitting">
-                        <!--row1-->
-                        <span class="tableHeading">Name</span>
-                        <span class="tableHeading">Size</span>
-                        <span class="tableHeading">Status</span>
-                        <span class="emptyTableEntry"></span>
-                        <!--row2-->
-                        <span class="tableEntry">filename.pdf</span>
-                        <span class="tableEntry">29.15MB</span>
-                        <span class="tableEntry">Ready for Upload</span>
-                        <span class="emptyTableEntry">
-                            <button class="standardButton">
-                                Upload
-                            </button>
-                        </span>
-                        <!--row3-->
-                        <span class="tableEntry">dogatemyhomework.jpeg</span>
-                        <span class="tableEntry">420.69TB</span>
-                        <span class="tableEntry">Ready for Upload</span>
-                        <span class="emptyTableEntry">
-                            <button class="standardButton">
-                                Upload
-                            </button>
-                        </span>
-                    </div>
-                    <button class="standardButton"> Choose file </button>
-                    <p></p>
-                    <button class="standardButton"> Add Request + </button>
+                    <button class="standardButton" id="addButton"> Add Request + </button>
 
                 </div>
                 <div class="rightSide">
@@ -173,15 +95,36 @@
         <script src="../js/modules/sWebHeader.js"></script>
 
         <script src="../js/modules/requests.js"></script>
-        <script>
+        <script>    
+            // List of students current courses
+            var courseList = [
+                'COMP30022',
+                'MAST30027',
+                'MAST30034'
+            ]
 
+            var numRequests = 1;
 
-
-
-
-
+            generateStudentRequest(numRequests, courseList)
 
             
+            // Add a new request when the add request button is clicked
+            const addButton = document.getElementById('addButton');
+
+           
+            addButton.addEventListener('click', function() {
+                numRequests += 1;
+                generateStudentRequest(numRequests, courseList)
+            });
+
+            // Handle submit button being clicked
+
+
+            // Handle supporting documentation tables
+            
+
+
+
         </script>
     </body>
 </html>
