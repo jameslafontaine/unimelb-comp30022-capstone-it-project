@@ -15,6 +15,9 @@ def not_found_view(request):
 def home_view(request):
     return render(request, 'iHome.html', {})
 
+def iWeb_header_view(request):
+    return render(request, 'iWebHeader.html', {})
+
 def review_req_view(request, id):
     # check the id exists
 

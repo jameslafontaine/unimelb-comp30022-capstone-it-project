@@ -4,6 +4,7 @@ from .views import *
 urlpatterns = [
     
     path('', home_view, name='home'),
+    path('iWebHeader/', iWeb_header_view, name='iWeb_header'),
 
     path('not-found-404/', not_found_view, name='not_found_view'),
 
