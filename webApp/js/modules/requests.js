@@ -22,16 +22,16 @@ function generateRequestTable(data, type) {
 	headerRow.appendChild(emptyHeader);
 	
 	// Create table data rows
-	data.forEach(item => {
+	data.forEach(request => {
 		const row = table.insertRow();
-		for (const key in item) {
-			if (item.hasOwnProperty(key)) {
+		for (const key in request) {
+			if (request.hasOwnProperty(key)) {
 				const cell = row.insertCell();
 				cell.className = 'tableEntry'; // Apply the CSS class to the cell
 				 // Check if the key is 'reserved'
 				 if (key === 'reserved') {
                     // Check if 'reserved' is true, and display a yellow star for such requests
-                    if (item[key] === true) {
+                    if (request[key] === true) {
                         const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
                         cell.innerHTML = yellowStar;
                     } else {
@@ -41,7 +41,7 @@ function generateRequestTable(data, type) {
                     }
                 } else {
                     // For other keys, just display the value as is
-                    cell.innerHTML = item[key];
+                    cell.innerHTML = request[key];
                 }
 			}
 		}
@@ -105,15 +105,15 @@ function fillCurrentRequestInformation(requestData, versionNumber) {
 /** 
  * Generates a supporting documentation table, number denotes which supporting documentation table this is on the page
  */
-function generateSuppDocTable(data, number) {
+function generateSuppDocTable(requestList, number) {
 	const tableContainer = document.getElementById(`suppDocContainer${number}`);
 	const table = document.createElement('table');
 	
 	// Create table header row
 	const headerRow = table.insertRow();
 	
-	for (const key in data[0]) {
-		if (data[0].hasOwnProperty(key)) {
+	for (const key in requestList[0]) {
+		if (requestList[0].hasOwnProperty(key)) {
 			const th = document.createElement('th');
 			th.innerText = key;
 			headerRow.appendChild(th);
@@ -126,13 +126,13 @@ function generateSuppDocTable(data, number) {
 	headerRow.appendChild(emptyHeader);
 	
 	// Create table data rows
-	data.forEach(item => {
+	requestList.forEach(request => {
 		const row = table.insertRow();
-		for (const key in item) {
-			if (item.hasOwnProperty(key)) {
+		for (const key in request) {
+			if (request.hasOwnProperty(key)) {
 				const cell = row.insertCell();
 				cell.className = 'tableEntry'; // Apply the CSS class to the cell
-                cell.innerHTML = item[key];
+                cell.innerHTML = request[key];
 			}
 		}
 
@@ -244,4 +244,92 @@ function handleComplexRequestFunctionality(requestData) {
             hideButton("reserveButton");
         });
     }
+}
+
+/** 
+ * Generates expandable tables for each of a student's active cases
+ */
+
+function generateStudentCases(caseList, numCases) {
+
+    const container = document.getElementById("caseContainer");
+
+    // For each active case, create an expandable table containing all requests in that case
+    for (let i = 0; i < numCases; i++) {
+		const expandableBox = document.createElement("div");
+        expandableBox.className = "expandableBox";
+        expandableBox.setAttribute('data-bs-toggle', 'collapse')
+        expandableBox.setAttribute('data-bs-target', `#expandableBoxSection${i}`)
+
+        const expandableBoxContents = document.createElement("div");
+        expandableBoxContents.className = "expandableBoxContents";
+        expandableBoxContents.innerHTML = `Case #${i+1}`;
+        expandableBoxContents.setAttribute('data-bs-toggle', 'collapse')
+        expandableBoxContents.setAttribute('data-bs-target', `#expandableBoxSection${i}`)
+
+        const expandButton = document.createElement("span");
+        expandButton.className = "expandButton";
+        expandButton.setAttribute('data-bs-toggle', 'collapse')
+        expandButton.setAttribute('data-bs-target', `#expandableBoxSection${i}`)
+
+        expandableBoxContents.appendChild(expandButton);
+        expandableBox.appendChild(expandableBoxContents);
+
+        const expandableBoxSection = document.createElement("div");
+        expandableBoxSection.className = "expandableBoxSection";
+        expandableBoxSection.id = `expandableBoxSection${i}`;
+        expandableBoxSection.style.height = "auto";
+        expandableBoxSection.setAttribute('class', 'collapse show')
+
+        const table = document.createElement('table');
+
+        // Create table header row
+	    const headerRow = table.insertRow();
+        
+	    for (const key in caseList[i][0]) {
+		    if (caseList[i][0].hasOwnProperty(key)) {
+			    const th = document.createElement('th');
+			    th.innerText = key;
+			    headerRow.appendChild(th);
+		    }
+	    }
+
+        // Add an empty header for the button column
+	    const emptyHeader = document.createElement('th');
+	    emptyHeader.textContent = '';
+	    headerRow.appendChild(emptyHeader);
+	    
+	    // Create table data rows
+	    caseList[i].forEach(request => {
+		    const row = table.insertRow();
+		    for (const key in request) {
+			    if (request.hasOwnProperty(key)) {
+			    	const cell = row.insertCell();
+				    cell.className = 'tableEntry'; // Apply the CSS class to the cell
+                  cell.innerHTML = request[key];
+			    }
+	        }
+
+		    const viewDetailsCell = row.insertCell();
+		    viewDetailsCell.className = 'tableEntry';
+		    const viewDetailsButton = document.createElement('button');
+		    viewDetailsButton.className = 'standardButton';
+		    // Add the "View Details" button to the last cell for each request
+		    viewDetailsButton.innerText = 'View Details';
+		    viewDetailsButton.onclick = function () {
+		    	window.location.href = 'sViewRequest.html';
+            }
+		    viewDetailsCell.appendChild(viewDetailsButton);
+	    });
+	    // Append the table to the expandable box
+	    expandableBoxSection.appendChild(table);
+
+        container.appendChild(expandableBox);
+        container.appendChild(expandableBoxSection);
+        container.appendChild(document.createElement("br"));
+
+
+    };
+
+    
 }
