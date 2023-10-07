@@ -17,7 +17,7 @@ def is_db_ready(host, port, user, password):
             password=password
         )
         return connection.is_connected()
-    except:
+    except mysql.connector.Error:
         return False
 
 if __name__ == "__main__":
