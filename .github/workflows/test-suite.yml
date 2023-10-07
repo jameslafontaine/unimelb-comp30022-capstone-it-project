@@ -1,0 +1,16 @@
+name: Docker Image CI
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker compose up -d
+    - name: Black Box test \#1 - DB and Django run successfully
+      run: |
+        until docker logs it-project-6-people-webapp-1 | grep "Watching for file changes with StatReloader"; do
+          sleep 5
+        done
