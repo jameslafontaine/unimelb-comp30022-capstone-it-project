@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Running Tests
 
 on: [pull_request]
 
@@ -8,8 +8,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker compose up -d
-    - name: Black Box test \#1 - DB and Django run successfully
+      run: docker compose up
+    - name: BB Test 1 - DB and Django can start successfully
       run: |
         until docker logs it-project-6-people-webapp-1 | grep "Watching for file changes with StatReloader"; do
           sleep 5
