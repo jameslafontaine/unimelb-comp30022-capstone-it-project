@@ -7,10 +7,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-COPY wait-for-db.py /wait-for-db.py
-RUN chmod +x /wait-for-db.py
+COPY wait_for_db.py /wait_for_db.py
+RUN chmod +x /wait_for_db.py
 
 EXPOSE 8000
 
-ENTRYPOINT ["python", "wait-for-db.py", "db", "3306", "root", "admin"]
+ENTRYPOINT ["python", "wait_for_db.py", "db", "3306", "root", "admin"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
