@@ -1,9 +1,14 @@
+"""
+Python script that checks for if db has been initialised, then runs the Django application
+"""
+
 import os
 import sys
 import time
 import mysql.connector
 
 def is_db_ready(host, port, user, password):
+    """Pings the db and checks if db is ready"""
     try:
         connection = mysql.connector.connect(
             host=host,
@@ -16,12 +21,12 @@ def is_db_ready(host, port, user, password):
         return False
 
 if __name__ == "__main__":
-    host = sys.argv[1]
-    port = sys.argv[2]
-    user = sys.argv[3]
-    password = sys.argv[4]
+    input_host = sys.argv[1]
+    input_port = sys.argv[2]
+    input_user = sys.argv[3]
+    input_password = sys.argv[4]
 
-    while not is_db_ready(host, port, user, password):
+    while not is_db_ready(input_host, input_port, input_user, input_password):
         time.sleep(1)
 
     print("Database is ready")
