@@ -73,9 +73,11 @@
 
                     </div>
 
+                    <span>
+                        <button class="standardButton" id="addButton"> Add Request + </button>
 
-                    <button class="standardButton" id="addButton"> Add Request + </button>
-
+                        <button class="standardButton" id="removeButton"> Remove Request - </button>
+                    </span>   
                 </div>
                 <div class="rightSide">
                     <p class="text" style="display:inline; position: fixed;">Disclaimer - This portal should be 
@@ -115,6 +117,18 @@
             addButton.addEventListener('click', function() {
                 numRequests += 1;
                 generateStudentRequest(numRequests, courseList)
+            });
+
+            // Remove a request when the remove request button is clicked
+            const removeButton = document.getElementById('removeButton');
+
+           
+            removeButton.addEventListener('click', function() {
+                document.getElementById(`expandableBox${numRequests}`).remove()
+                document.getElementById(`expandableBoxSection${numRequests}`).remove()
+                document.getElementById(`lastLineBreak${numRequests}`).remove()
+                numRequests -= 1;
+                
             });
 
             // Handle submit button being clicked

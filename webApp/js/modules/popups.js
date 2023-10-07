@@ -2,7 +2,7 @@
  * Sets up the buttons for opening and closing the popups
  */
 function setupOpenClosePopupButtons() {
-    const buttons = document.querySelectorAll('.bigButton');
+    const buttons = document.querySelectorAll('#approveButton, #rejectButton, #answerButton');
     const popups = document.querySelectorAll('.popupBox');
     
     buttons.forEach(button => {

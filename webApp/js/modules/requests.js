@@ -232,24 +232,31 @@ function generateVersionBox(version, number) {
  */
 
 function handleComplexRequestFunctionality(requestData) {
-    // If a case has already been reserved then we hide the mark as complex button
+    // If a case has already been reserved then we show the unmark button
     if (requestData.reserved == true) {
-        hideButton("reserveButton");
-    } else {
-        // Otherwise modify the reserved status when mark as complex is clicked and hide the button
-        // Also update the star to yellow in the request number at the top of the page
+        reserveButton.innerHTML = 'Unmark'
+    }
+    // Modify the reserved status when mark as complex is clicked and change the 'Mark as complex' button
+    // to 'Unmark'. Vice versa if the unmark button is clicked
+    // Also update the star appropriately at the top of the page
+    
+    // Get a reference to the reserveButton
+    const reserveButton = document.getElementById('reserveButton');
 
-        // Get a reference to the reserveButton
-        const reserveButton = document.getElementById('reserveButton');
-        
-        // Perform the aforementioned steps on button click
-        reserveButton.addEventListener('click', function() {
+    // Perform the aforementioned steps on button click
+    reserveButton.addEventListener('click', function() {
+        if (requestData.reserved == false) {
+            reserveButton.innerHTML = 'Unmark'
             requestData.reserved = true;
             document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
             console.log(`Reserved status changed: ${requestData.reserved}`); // Prints to console when inspecting page
-            hideButton("reserveButton");
-        });
-    }
+        } else {
+            reserveButton.innerHTML = 'Mark as complex'
+            requestData.reserved = false;
+            document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; ">☆</span>'
+            console.log(`Reserved status changed: ${requestData.reserved}`); // Prints to console when inspecting page
+        }
+    });
 }
 
 /** 
@@ -353,6 +360,7 @@ function generateStudentRequest(number, courseList) {
     expandableBox.className = "expandableBox";
     expandableBox.setAttribute('data-bs-toggle', 'collapse')
     expandableBox.setAttribute('data-bs-target', `#expandableBoxSection${number}`)
+    expandableBox.id = `expandableBox${number}`
 
     const expandableBoxContents = document.createElement("div");
     expandableBoxContents.className = "expandableBoxContents";
@@ -452,7 +460,11 @@ function generateStudentRequest(number, courseList) {
 
     caseContainer.appendChild(expandableBox);
     caseContainer.appendChild(expandableBoxSection);
-    caseContainer.appendChild(document.createElement("br"));
+
+    lastLineBreak = document.createElement("br")
+
+    lastLineBreak.id = `lastLineBreak${number}`
+    caseContainer.appendChild(lastLineBreak);
 
     // Populate course dropdown
     courseList.forEach(course => {
