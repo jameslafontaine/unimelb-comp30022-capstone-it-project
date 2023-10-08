@@ -22,16 +22,16 @@ function generateRequestTable(data, type) {
 	headerRow.appendChild(emptyHeader);
 	
 	// Create table data rows
-	data.forEach(item => {
+	data.forEach(request => {
 		const row = table.insertRow();
-		for (const key in item) {
-			if (item.hasOwnProperty(key)) {
+		for (const key in request) {
+			if (request.hasOwnProperty(key)) {
 				const cell = row.insertCell();
 				cell.className = 'tableEntry'; // Apply the CSS class to the cell
 				 // Check if the key is 'reserved'
 				 if (key === 'reserved') {
                     // Check if 'reserved' is true, and display a yellow star for such requests
-                    if (item[key] === true) {
+                    if (request[key] === true) {
                         const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
                         cell.innerHTML = yellowStar;
                     } else {
@@ -41,7 +41,7 @@ function generateRequestTable(data, type) {
                     }
                 } else {
                     // For other keys, just display the value as is
-                    cell.innerHTML = item[key];
+                    cell.innerHTML = request[key];
                 }
 			}
 		}
@@ -54,13 +54,13 @@ function generateRequestTable(data, type) {
 		if (type === 'Awaiting') {
 			requestButton.innerText = 'Review';
 			requestButton.onclick = function () {
-				window.location.href = 'iReviewRequest.html'; 
+				window.location.href = '/instructor/review-req/1'; // id needs to be fetched and put in here 
 			};
 		// Otherwise add the "View details" button to the last cell of a row if this is the resolved table
 		} else if (type === 'Resolved') {
 			requestButton.innerText = 'View details';
 			requestButton.onclick = function () {
-				window.location.href = 'iViewResolved.html'; 
+				window.location.href = '/instructor/view-resolved/1'; 
 			};
 		}
 		reviewCell.appendChild(requestButton);
@@ -75,11 +75,14 @@ function generateRequestTable(data, type) {
 /** 
  * Fills in the appropriate information required for the current version of a request on the review request and view resolved pages
  */
-function fillCurrentRequestInformation(requestData, versionNumber) {
-    if (requestData.reserved == true) {
+function fillCurrentRequestInformation(requestData, versionNumber, view) {
+
+    if (requestData.reserved == true & view == 'Instructor') {
         document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
-    } else {
+    } else if (view == 'Instructor') {
         document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; ">☆</span>'
+    } else {
+        document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId
     }
     
     
@@ -105,15 +108,15 @@ function fillCurrentRequestInformation(requestData, versionNumber) {
 /** 
  * Generates a supporting documentation table, number denotes which supporting documentation table this is on the page
  */
-function generateSuppDocTable(data, number) {
+function generateSuppDocTable(requestList, number) {
 	const tableContainer = document.getElementById(`suppDocContainer${number}`);
 	const table = document.createElement('table');
 	
 	// Create table header row
 	const headerRow = table.insertRow();
 	
-	for (const key in data[0]) {
-		if (data[0].hasOwnProperty(key)) {
+	for (const key in requestList[0]) {
+		if (requestList[0].hasOwnProperty(key)) {
 			const th = document.createElement('th');
 			th.innerText = key;
 			headerRow.appendChild(th);
@@ -126,13 +129,13 @@ function generateSuppDocTable(data, number) {
 	headerRow.appendChild(emptyHeader);
 	
 	// Create table data rows
-	data.forEach(item => {
+	requestList.forEach(request => {
 		const row = table.insertRow();
-		for (const key in item) {
-			if (item.hasOwnProperty(key)) {
+		for (const key in request) {
+			if (request.hasOwnProperty(key)) {
 				const cell = row.insertCell();
 				cell.className = 'tableEntry'; // Apply the CSS class to the cell
-                cell.innerHTML = item[key];
+                cell.innerHTML = request[key];
 			}
 		}
 
@@ -159,6 +162,7 @@ function generateSuppDocTable(data, number) {
 function generateVersionBox(version, number) {
     const container = document.getElementById("requestHistoryContainer");
 
+    // Set up expandable box
     const expandableBox = document.createElement("div");
     expandableBox.className = "expandableBox";
     expandableBox.setAttribute('data-bs-toggle', 'collapse')
@@ -184,6 +188,8 @@ function generateVersionBox(version, number) {
     expandableBoxSection.style.height = "auto";
     expandableBoxSection.setAttribute('class', 'collapse show')
     
+
+    // Place elements in expandable box
     const messageSpan = document.createElement("span");
     messageSpan.className = "text";
     messageSpan.textContent = "Message";
@@ -226,22 +232,262 @@ function generateVersionBox(version, number) {
  */
 
 function handleComplexRequestFunctionality(requestData) {
-    // If a case has already been reserved then we hide the mark as complex button
+    // If a case has already been reserved then we show the unmark button
     if (requestData.reserved == true) {
-        hideButton("reserveButton");
-    } else {
-        // Otherwise modify the reserved status when mark as complex is clicked and hide the button
-        // Also update the star to yellow in the request number at the top of the page
+        reserveButton.innerHTML = 'Unmark'
+    }
+    // Modify the reserved status when mark as complex is clicked and change the 'Mark as complex' button
+    // to 'Unmark'. Vice versa if the unmark button is clicked
+    // Also update the star appropriately at the top of the page
+    
+    // Get a reference to the reserveButton
+    const reserveButton = document.getElementById('reserveButton');
 
-        // Get a reference to the reserveButton
-        const reserveButton = document.getElementById('reserveButton');
-        
-        // Perform the aforementioned steps on button click
-        reserveButton.addEventListener('click', function() {
+    // Perform the aforementioned steps on button click
+    reserveButton.addEventListener('click', function() {
+        if (requestData.reserved == false) {
+            reserveButton.innerHTML = 'Unmark'
             requestData.reserved = true;
             document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
             console.log(`Reserved status changed: ${requestData.reserved}`); // Prints to console when inspecting page
-            hideButton("reserveButton");
-        });
-    }
+        } else {
+            reserveButton.innerHTML = 'Mark as complex'
+            requestData.reserved = false;
+            document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; ">☆</span>'
+            console.log(`Reserved status changed: ${requestData.reserved}`); // Prints to console when inspecting page
+        }
+    });
 }
+
+/** 
+ * Generates expandable tables for each of a student's active cases
+ */
+
+function generateStudentCases(caseList, numCases) {
+
+    const container = document.getElementById("caseContainer");
+
+    // For each active case, create an expandable table containing all requests in that case
+    for (let i = 0; i < numCases; i++) {
+
+        // Set up expandable box
+		const expandableBox = document.createElement("div");
+        expandableBox.className = "expandableBox";
+        expandableBox.setAttribute('data-bs-toggle', 'collapse')
+        expandableBox.setAttribute('data-bs-target', `#expandableBoxSection${i}`)
+
+        const expandableBoxContents = document.createElement("div");
+        expandableBoxContents.className = "expandableBoxContents";
+        expandableBoxContents.innerHTML = `Case #${i+1}`;
+        expandableBoxContents.setAttribute('data-bs-toggle', 'collapse')
+        expandableBoxContents.setAttribute('data-bs-target', `#expandableBoxSection${i}`)
+
+        const expandButton = document.createElement("span");
+        expandButton.className = "expandButton";
+        expandButton.setAttribute('data-bs-toggle', 'collapse')
+        expandButton.setAttribute('data-bs-target', `#expandableBoxSection${i}`)
+
+        expandableBoxContents.appendChild(expandButton);
+        expandableBox.appendChild(expandableBoxContents);
+
+        const expandableBoxSection = document.createElement("div");
+        expandableBoxSection.className = "expandableBoxSection";
+        expandableBoxSection.id = `expandableBoxSection${i}`;
+        expandableBoxSection.style.height = "auto";
+        expandableBoxSection.setAttribute('class', 'collapse show')
+
+        // Create table within expandable
+        const table = document.createElement('table');
+
+        // Create table header row
+	    const headerRow = table.insertRow();
+        
+	    for (const key in caseList[i][0]) {
+		    if (caseList[i][0].hasOwnProperty(key)) {
+			    const th = document.createElement('th');
+			    th.innerText = key;
+			    headerRow.appendChild(th);
+		    }
+	    }
+
+        // Add an empty header for the button column
+	    const emptyHeader = document.createElement('th');
+	    emptyHeader.textContent = '';
+	    headerRow.appendChild(emptyHeader);
+	    
+	    // Create table data rows
+	    caseList[i].forEach(request => {
+		    const row = table.insertRow();
+		    for (const key in request) {
+			    if (request.hasOwnProperty(key)) {
+			    	const cell = row.insertCell();
+				    cell.className = 'tableEntry'; // Apply the CSS class to the cell
+                  cell.innerHTML = request[key];
+			    }
+	        }
+
+		    const viewDetailsCell = row.insertCell();
+		    viewDetailsCell.className = 'tableEntry';
+		    const viewDetailsButton = document.createElement('button');
+		    viewDetailsButton.className = 'standardButton';
+		    // Add the "View Details" button to the last cell for each request
+		    viewDetailsButton.innerText = 'View Details';
+		    viewDetailsButton.onclick = function () {
+		    	window.location.href = 'sViewRequest.html';
+            }
+		    viewDetailsCell.appendChild(viewDetailsButton);
+	    });
+	    // Append the table to the expandable box
+	    expandableBoxSection.appendChild(table);
+
+        container.appendChild(expandableBox);
+        container.appendChild(expandableBoxSection);
+        container.appendChild(document.createElement("br"));
+
+
+    };
+
+    
+}
+
+
+
+function generateStudentRequest(number, courseList) {
+    const caseContainer = document.getElementById("caseContainer");
+
+    // Set up expandable box
+    const expandableBox = document.createElement("div");
+    expandableBox.className = "expandableBox";
+    expandableBox.setAttribute('data-bs-toggle', 'collapse')
+    expandableBox.setAttribute('data-bs-target', `#expandableBoxSection${number}`)
+    expandableBox.id = `expandableBox${number}`
+
+    const expandableBoxContents = document.createElement("div");
+    expandableBoxContents.className = "expandableBoxContents";
+    expandableBoxContents.innerHTML = `Request #${number}`;
+    expandableBoxContents.setAttribute('data-bs-toggle', 'collapse')
+    expandableBoxContents.setAttribute('data-bs-target', `#expandableBoxSection${number}`)
+
+    const expandButton = document.createElement("span");
+    expandButton.className = "expandButton";
+    expandButton.setAttribute('data-bs-toggle', 'collapse')
+    expandButton.setAttribute('data-bs-target', `#expandableBoxSection${number}`)
+
+    expandableBoxContents.appendChild(expandButton);
+    expandableBox.appendChild(expandableBoxContents);
+
+    const expandableBoxSection = document.createElement("div");
+    expandableBoxSection.className = "expandableBoxSection";
+    expandableBoxSection.id = `expandableBoxSection${number}`;
+    expandableBoxSection.style.height = "auto";
+    expandableBoxSection.setAttribute('class', 'collapse show')
+    
+    // Create the elements that will go inside the expandable
+    const course = document.createElement("label");
+    course.className = "text";
+    course.textContent = "Course";
+    
+    const courseDropdown = document.createElement("select");
+    courseDropdown.style = 'margin-bottom: 5px;'
+    courseDropdown.id = `courseDropdown${number}`
+
+    const requestType = document.createElement("label");
+    requestType.className = "text";
+    requestType.textContent = "Request Type";
+
+    const requestTypeDropdown = document.createElement("select")
+    requestTypeDropdown.style = 'margin-bottom: 5px;'
+    requestTypeDropdown.id = `requestTypeDropdown${number}`
+
+    const requestTypeTextBox = document.createElement("textarea");
+    requestTypeTextBox.className = "textBox";
+
+    const requestTitle = document.createElement("span");
+    requestTitle.className = "text";
+    requestTitle.textContent = "Request Title";
+    
+    
+    const requestTitleTextBox = document.createElement("textarea");
+    requestTitleTextBox.className = "textBox";
+    requestTitleTextBox.style = 'height:30px; resize:none'
+    requestTitleTextBox.id = `requestTitleTextBox${number}`
+
+    const message = document.createElement("span");
+    message.className = "text";
+    message.textContent = "Message";
+    
+    const messageTextBox = document.createElement("textarea");
+    messageTextBox.className = "textBox";
+    messageTextBox.id = `messageTextBox${number}`
+    
+    const suppDoc = document.createElement("p");
+    suppDoc.className = "text";
+    suppDoc.textContent = "Supporting Documents";
+
+    const supDocContainer = document.createElement("div");
+    supDocContainer.id = `suppDocContainer${number}`;
+
+    const uploadButton = document.createElement('button');
+    uploadButton.className = 'standardButton';
+    uploadButton.id = `upload${number}`
+    uploadButton.innerText = 'Upload';
+    uploadButton.onclick = function () {
+        // NEED TO ADD UPLOAD FUNCTIONALITY
+    }
+
+    supDocContainer.appendChild(uploadButton);
+    
+    // Append the new elements into the HTML
+    expandableBoxSection.appendChild(course);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(courseDropdown);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(requestType);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(requestTypeDropdown);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(requestTitle);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(requestTitleTextBox);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(message);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(messageTextBox);
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(suppDoc);
+    expandableBoxSection.appendChild(supDocContainer);
+
+    caseContainer.appendChild(expandableBox);
+    caseContainer.appendChild(expandableBoxSection);
+
+    lastLineBreak = document.createElement("br")
+
+    lastLineBreak.id = `lastLineBreak${number}`
+    caseContainer.appendChild(lastLineBreak);
+
+    // Populate course dropdown
+    courseList.forEach(course => {
+        const option = document.createElement('option');
+        option.textContent = course;
+        document.getElementById(`courseDropdown${number}`).appendChild(option);
+    });
+        
+
+    // Populate request type dropdown
+    const reqTypeList = [
+        'Extension',
+        'General Query',
+        'Remark',
+        'Quiz Code',
+        'Other'    
+    ]
+
+    reqTypeList.forEach(request => {
+        const option = document.createElement('option');
+        option.textContent = request;
+        document.getElementById(`requestTypeDropdown${number}`).appendChild(option);
+    });
+
+    // initialise supporting documentation table with upload button
+} 

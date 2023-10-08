@@ -33,6 +33,9 @@ def review_req_view(request, id):
 def view_reqs_view(request):
     return render(request, 'viewRequests.html', {})
 
+def view_resolved_view(request, id):
+    return render(request, 'viewResolved.html', {})
+
 def subj_settings_view(request, id):
     # check the id exists
 

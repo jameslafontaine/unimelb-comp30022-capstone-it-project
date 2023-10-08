@@ -1,168 +1,191 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="{% static 'css/general.css' %}">
-    <link rel="stylesheet" href="{% static 'css/header.css' %}">
-    <link rel="stylesheet" href="{% static 'css/tables.css' %}">
+<html lang="en">
+    <head>
+            <!-- Meta -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Instructor - View Student Profile</title>
 
-    <style>
-        .pageAsATable {
-            display: grid;
-            grid-template-columns: 70% 1fr;
-        }
-    </style>
-</head>
-<body>
-    <!-- div to hold data passed from the view -->
-    <div id="load-data" data-usr="{{ usr }}"></div>
+        <!--
+        Author: James La Fontaine, Callum Sharman
+        Date Last Modified: October 8, 2023
+        Description: This is the page on which instructors can view a student's AAPs and request / query history
+        -->
 
-    <div class="header">
-        <!-- menu -->
-        <div class="dropDown">
-            <div class="dropDownBtn">
-                <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
-            </div>
-            <div class="dropDownMenu">
-                <div class="dDSection" onclick="window.location.href='/instructor'">
-                    <p class="dDSectionText">Home</p>
-                </div>
-                <div class="dDSection" onclick="window.location.href='/instructor/view-reqs'">
-                    <p class="dDSectionText">View all requests</p>
-                </div>
-            </div>
-        </div>
+        <!-- CSS stylesheets -->
+        <style>
+            .pageAsATable {
+                display: grid;
+                grid-template-columns: 70% 1fr;
+            }
+        </style>
 
+        <link rel="stylesheet" href="{% static 'css/general.css' %}">
+        <link rel="stylesheet" href="{% static 'css/header.css' %}">
+        <link rel="stylesheet" href="{% static 'css/tables.css' %}">
 
-        <img src="{% static 'img/uomLogo.JPG' %}" style="height: 38px;">
-        <div class="headerText">Signed in as:_____</div>
+        <!-- Include Bootstrap CSS and JavaScript, and its dependencies such as Popper. Also include jQuery JavaScript -->
 
-        <!-- settings -->
-        <div class="dropDown settings">
-            <div class="dropDownBtn" style="display: flex;">
-                <img class="settingsBtn" src="{% static 'img/settingsIcon.png' %}" style="align-self: center;">
-            </div>
-            <div class="dropDownMenu inwards">
-                <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
-                    <p class="dDSectionText">Email notifications</p>
-                    <input type="checkbox" style="width: 17px;height: 17px;">
-                </div>
-                <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
-                    <p class="dDSectionText">Dark mode</p>
-                    <input type="checkbox" style="width: 17px;height: 17px;">
-                </div>
+        <!-- Bootstrap CSS and JavaScript provided by Bootstrap. Visit https://getbootstrap.com/ for more information. -->
+        <!-- jQuery and Popper JavaScript provided by jQuery and PopperJS. Visit https://jquery.com/ and https://popperjs.com/ for more information. -->
+        <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+        rel="stylesheet" 
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
+        crossorigin="anonymous">
 
-            </div>
-        </div>
-    </div>
-    <div class="mainBody" style="width: 90%;">
-        <div class="pageAsATable">
-            <div class="leftSide">
-                <p class="title">Student Profile</p>
-                <br>
-                <p class="title" style="font-size: 24px;">Academic Adjustment Plans</p>
-                <br>
-                <div class="expandableBox">
-                    <div class="expandableBoxContents">
-                        View AAPs
-                        <span class="expandButton" style="font-size:20px;">
-                            -
-                        </span>
-                    </div>
-                </div>
-                <div class="expandableBoxSection" style="height:auto;display: block;">
-                    <div class="expandableBoxContents" style="height:auto;display: block;">
-                        <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(5, 1fr);">
-                            <!--row1-->
-                            <span class="tableHeading" style="border-bottom: solid; border-left: solid; border-right: solid; border-top: solid;">Name</span>
-                            <span class="tableHeading" style="border-bottom: solid; border-left: solid; border-right: solid; border-top: solid;">Size</span>
-                            <span class="tableHeading" style="text-align:center;border-bottom: solid; border-left: solid; border-right: solid; border-top: solid;">Date Updated</span>
-                            <span class="emptyTableEntry"></span>
-                            <span class="emptyTableEntry"></span>
-                            <!--row2-->
-                            <span class="tableEntry">aap1.pdf</span>
-                            <span class="tableEntry">20 TB</span>
-                            <span class="tableEntry">2001/10/10</span>
-                            <span class="emptyTableEntry">&nbsp;
-                                <button class="standardButton">
-                                    Download
-                                </button>
-                            </span>
-                            <span class="emptyTableEntry">&nbsp;
-                                <button class="standardButton">
-                                    Remove
-                                </button>
-                            </span>
-                            <!--row3-->
-                            <span class="tableEntry">aap2.pdf</span>
-                            <span class="tableEntry">40 MB</span>
-                            <span class="tableEntry">2001/10/10</span>
-                            <span class="emptyTableEntry">&nbsp;
-                                <button class="standardButton">
-                                    Download
-                                </button>
-                            </span>
-                            <span class="emptyTableEntry">&nbsp;
-                                <button class="standardButton">
-                                    Remove
-                                </button>
-                            </span>
-                            <!--row3-->
-                            <span class="emptyTableEntry">&nbsp;
-                                <button class="standardButton">
-                                    Upload
-                                </button>
-                            </span>
+        <!-- JS scripts -->
+        <script type="text/javascript"
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+        <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" 
+        integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer"></script>
+        <script type="text/javascript" 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
+        crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div id="webHeaderContainer"></div>
+
+        <div class="mainBody" style="width: 90%;">
+            <div class="pageAsATable">
+                <div class="leftSide">
+                    <p class="title">Student Profile</p>
+                    <br>
+                    <p class="title" style="font-size: 24px;">Academic Adjustment Plans</p>
+                    <br>
+                    <div class="expandableBox" data-bs-toggle="collapse" data-bs-target="#aapTableContainer">
+                        <div class="expandableBoxContents" data-bs-toggle="collapse" data-bs-target="#aapTableContainer">
+                            View AAPs
+                            <span class="expandButton" data-bs-toggle="collapse" data-bs-target="#aapTableContainer" style="font-size:20px;"></span>
                         </div>
                     </div>
-                </div>
-                <br><br>
-                <p class="title" style="font-size: 24px;">Request and Query History</p>
-                <br>
-                <div class="expandableBox">
-                    <div class="expandableBoxContents">
-                        View History
-                        <span class="expandButton" style="font-size:20px;">
-                            -
-                        </span>
-                    </div>
-                </div>
-                <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(6, 1fr);">
-                    <!--row1-->
-                    <span class="tableHeading">Reserved</span>
-                    <span class="tableHeading">Date</span>
-                    <span class="tableHeading">Student Name</span>
-                    <span class="tableHeading">Request Type</span>
-                    <span class="tableHeading">Status</span>
-                    <span class="tableHeading"></span>
-                    <!--row2-->
-                    <span class="tableEntry"><span style="font-size:300%;">&star;</span></span>
-                    <span class="tableEntry">20/08/2023</span>
-                    <span class="tableEntry">Jun<br>  Youn</span>
-                    <span class="tableEntry">Extension</span>
-                    <span class="tableEntry">Resolved</span>
-                    <span class="tableEntry">
-                        <button class="standardButton" onclick="window.location.href='viewResolved.html'">
-                            View details
-                        </button>
-                    </span>
-                </div>
-            </div>
 
-            <div class="rightSide" style="text-align: center;">
-                <br><br><br>
-                <p class="title" style="font-size: 24px;">Student Details</p>
-                <div style="display: inline-block; text-align: centre;">
-                    <p class="expandableBox" style="width: 300px; height: 150px;">
-                        <span class="text" id="name">Jun Youn</span>
-                        <span class="text" id="id">1171924</span>
-                        <span class="text" style="font-size: 14px;" id="email">younj@student.unimelb.edu.au</span>
-                    </p>
+                    <div id="aapTableContainer" class="collapse show">
+                        <!-- The table will be generated here -->
+                    </div>
+
+                    <br><br>
+                    <p class="title" style="font-size: 24px;">Student's Request and Queries</p>
+                    <br>
+                    <div class="expandableBox" data-bs-toggle="collapse" data-bs-target="#tableContainerAwaiting">
+                        <div class="expandableBoxContents" data-bs-toggle="collapse" data-bs-target="#tableContainerAwaiting">
+                            View Active Requests & Queries
+                            <span class="expandButton" data-bs-toggle="collapse" data-bs-target="#tableContainerAwaiting" style="font-size:20px;"></span>
+                        </div>
+                    </div>
+                    
+                    <div id="tableContainerAwaiting" class="collapse show">
+                        <!-- The table will be generated here -->
+                    </div>
+                    
+                    <br><br>
+                
+                    <div class="expandableBox" data-bs-toggle="collapse" data-bs-target="#tableContainerResolved">
+                        <div class="expandableBoxContents" data-bs-toggle="collapse" data-bs-target="#tableContainerResolved">
+                            View Request & Query History
+                            <span class="expandButton" data-bs-toggle="collapse" data-bs-target="#tableContainerResolved" style="font-size:20px;"></span>
+                        </div>
+                    </div>
+
+
+                    <div id="tableContainerResolved" class="collapse show">
+                        <!-- The table will be generated here -->
+                    </div>
+
+                </div>
+
+                <div class="rightSide" style="text-align: center;">
+                    <br><br><br>
+                    <p class="title" style="font-size: 24px;">Student Details</p>
+                    <div style="display: inline-block; text-align: centre;">
+                        <p class="standardBox" style="width: 300px; height: 150px;">
+                            <span class="text" id="studentName"></span>
+                            <span class="text" id="studentId"></span>
+                            <span class="text" id="studentEmail" style="font-size: 14px;"></span>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script src="{% static 'instructor/viewProfile.js' %}"></script>
-</body>
+        <script src="{% static 'js/modules/iWebHeader.js' %}"></script>
+        <script src="{% static 'js/modules/requests.js' %}"></script>
+        <script>
+            // Need all active requests/queries linked to this particular student here
+            requestDataActive = [
+                {
+                    reserved: true,
+                    date: '29/08/2023',
+                    studentName: 'Callum Sharman',
+                    requestType: 'Extension',
+                    status: 'Pending'
+                },		
+                {
+                    reserved: false,
+                    date: '29/08/2023',
+                    studentName: 'Callum Sharman',
+                    requestType: 'Extension',
+                    status: 'Pending'
+                }
+            ]
+
+
+            // Need all resolved request/queries linked to this particular student here
+            requestDataResolved = [
+            {
+                reserved: true,
+                date: '29/08/2023',
+                studentName: 'Callum Sharman',
+                requestType: 'Extension',
+                status: 'Rejected'
+            },		
+            {
+                reserved: false,
+                date: '29/08/2023',
+                studentName: 'Callum Sharman',
+                requestType: 'Extension',
+                status: 'Accepted'
+            }
+        ]
+
+        generateRequestTable(requestDataActive, 'Awaiting')
+        generateRequestTable(requestDataResolved, 'Resolved')
+
+        </script>
+        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
+        <script>
+            student = {
+                firstName: 'Callum',
+                lastName: 'Sharman',
+                id: 1178429,
+                email: 'csharman@student.unimelb.edu.au'
+            }
+
+            // Need AAP data for this student here
+            aapData = [
+                {
+                    name: 'aap1.pdf',
+                    size: '20 TB',
+                    dateUpdated: '2001/10/10'
+                },
+                {
+                    name: 'aap2.pdf',
+                    size: '40 MB',
+                    dateUpdated: '2001/10/10'
+                },
+            ]
+                
+            
+        
+            fillStudentDetailsBox(student);
+            generateAAPTable(aapData)
+        </script>
+    </body>
 </html>

@@ -51,7 +51,7 @@ function generateSubjectBox(subject) {
 	settingsButton.classList.add('standardButton');
 	settingsButton.textContent = 'Settings';
 	settingsButton.onclick = function() {
-		window.location.href = 'iSubjectSettings.html'; 
+		window.location.href = '/instructor/subject-settings/1'; 
 	};
   
 	// Append the elements to their respective parent elements
