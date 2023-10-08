@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="{% static 'css/header.css' %}">
         <link rel="stylesheet" href="{% static 'css/tables.css' %}">
 
-        <title>Request {{ id }}</title>
+        <title>Request {{ req.id }}</title>
     </head>
     <body>
         <!-- div to hold data passed from the view -->
@@ -59,7 +59,6 @@
         </div>
         
         <div class="mainBody">
-
             <p class="title" id="title">Request #</p>
 
             <p class="text" id="versionAndDateCreated">Version 3 Created 08/09/25</p><p></p>

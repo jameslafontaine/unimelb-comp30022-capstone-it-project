@@ -9,6 +9,8 @@ import json
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 
+usrId = -1 # set to -1 default to detect issues
+
 def not_found_view(request):
     return render(request, 'notFound404.html', {})
 
@@ -16,7 +18,14 @@ def home_view(request):
     return render(request, 'iHome.html', {})
 
 def iWeb_header_view(request):
-    return render(request, 'iWebHeader.html', {})
+    # take the id and edit header with initial data
+    if(usrId == 3):
+        usr = json.dumps(usr3)
+        return render(request, 'iWebHeader.html', {'usr':usr})
+    if(usrId == 4):
+        usr = json.dumps(usr4)
+        return render(request, 'iWebHeader.html', {'usr':usr})
+    # whoops maybe id doesnt exist
 
 def review_req_view(request, id):
     # check the id exists
@@ -114,6 +123,10 @@ def get_request_history(request, student_id):
     else: # id not found
         return not_found_view(request)
 
+def get_id(request):
+    return JsonResponse({'id': usrId})
+
+
 # POST REQUESTS
 @csrf_exempt
 def add_AAP(request):
@@ -138,6 +151,13 @@ def make_complex(request, request_id):
     return JsonResponse({"message": "Case created successfully"})
 
 @csrf_exempt
+def set_user_id(request, id):
+    if request.method == 'PUT':
+        global usrId
+        usrId = id
+        return JsonResponse({"message": "id successfully set"})
+
+@csrf_exempt
 def request_response(request, request_id):
     # check the id exists and all that jazz
     if request.method == 'PUT':
@@ -153,31 +173,38 @@ def change_settings(request):
             ""
     return JsonResponse({"message": "Case created successfully"})
 
+
+# fake data to play with before DB connected
+usr3 = {
+    'id': 3,
+    'firstName': 'Ryan',
+    'lastName': 'Goh',
+    'email': 'insertEmailHereLol@student.unimelb.edu.au',
+    'emailNotifications': 1,
+    'darkMode': 1,
+}
+usr4 = {
+    'id': 4,
+    'firstName': 'Yan Zong',
+    'lastName': 'Goh',
+    'email': 'thisIsAnEmail@student.unimelb.edu.au',
+    'emailNotifications': 1,
+    'darkMode': 1,
+}
+
+
+
 case12 = {
     'Date_Updated': 28112001,
     'Date_Created': 11092001,
     'caseID' : 12,
     'users_user_id' : 1,
 }
-
 case13 = {
     'Date_Updated': 10102023,
     'Date_Created': 11092023,
     'caseID' : 13,
     'users_user_id' : 1,
-}
-
-usr1 = {
-    'id': 1,
-    'firstName': 'John',
-    'lastName': 'Smith',
-    'email': 'jsmith@student.unimelb.edu.au',
-}
-usr2 = {
-    'id': 2,
-    'firstName': 'Jane',
-    'lastName': 'Doe',
-    'email': 'jdoe@student.unimelb.edu.au',
 }
 req1 = {
     'id': 1,

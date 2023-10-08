@@ -91,6 +91,23 @@ def new_request(request):
             return HttpResponseBadRequest("Invalid JSON data")
         return JsonResponse({"message": "Case created successfully"})
 
+# fake data to play with before DB connected
+usr1 = {
+    'id': 1,
+    'firstName': 'Jun',
+    'lastName': 'Youn',
+    'email': 'blahblah@student.unimelb.edu.au',
+    'emailNotifications': 1,
+    'darkMode': 1,
+}
+usr2 = {
+    'id': 2,
+    'firstName': 'James',
+    'lastName': 'La Fontaine',
+    'email': 'bingbong@student.unimelb.edu.au',
+    'emailNotifications': 1,
+    'darkMode': 1,
+}
 
 case12 = {
     'Date_Updated': 28112001,
@@ -98,25 +115,11 @@ case12 = {
     'caseID' : 12,
     'users_user_id' : 1,
 }
-
 case13 = {
     'Date_Updated': 10102023,
     'Date_Created': 11092023,
     'caseID' : 13,
     'users_user_id' : 1,
-}
-
-usr1 = {
-    'id': 1,
-    'firstName': 'John',
-    'lastName': 'Smith',
-    'email': 'jsmith@student.unimelb.edu.au',
-}
-usr2 = {
-    'id': 2,
-    'firstName': 'Jane',
-    'lastName': 'Doe',
-    'email': 'jdoe@student.unimelb.edu.au',
 }
 req1 = {
     'id': 1,

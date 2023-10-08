@@ -9,6 +9,9 @@
         <link rel="stylesheet" href="{% static 'css/tables.css' %}">
     </head>
     <body>
+        <!-- div to hold data passed from the view -->
+        <div id="load-data" data-usr="{{ usr }}"></div>
+
         <div class="header">
             <!-- menu -->
             <div class="dropDown">
@@ -26,7 +29,7 @@
             </div>
         
             <img src="{% static 'img/uomLogo.JPG' %}" style="height: 38px;">
-            <div class="headerText" id="headerText">Signed in as: __________
+            <div class="headerText" id="headerText">Signed in as: ________
             </div>
         
             <!-- settings -->
@@ -48,5 +51,3 @@
         </div>
     </body>
 </html>
-
-

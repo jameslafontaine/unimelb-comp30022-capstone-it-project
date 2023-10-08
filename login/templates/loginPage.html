@@ -4,12 +4,64 @@
 
     </head>
     <body>
-        <button onclick="window.location.href='/student/'">
-            Student
-        </button>
-        <button onclick="window.location.href='/instructor/'">
-            Instructor
-        </button>
+        <p>ids 1,2 are example students, ids 3,4 are example instructors</p>
+        <label>select id:</label>
+        <select id="idSelection">
+        </select>
+
+        <button onclick="setId()">set id</button>
+        <button onclick="login()">login</button>
+        <p id="testSetUsr"></p>
+
     </body>
+    <script>
+        for (let i = 1; i <= 4; i++) {
+            const option = document.createElement('option');
+            option.textContent = i;
+            document.getElementById('idSelection').appendChild(option);
+        }
+    </script>
+
+    <script>
+        function setId(){
+            var selectedElem = document.getElementById("idSelection");
+            var selectedIndex = selectedElem.selectedIndex;
+            var selectedOption = selectedElem.options[selectedIndex];
+            var selectedValue = selectedOption.value;
+            // set the id
+            url = '/instructor/set-user-id/' + selectedValue;
+            fetch(url,{method: 'PUT'}); 
+            
+            // print the id to the DOM
+            fetch('/instructor/get-id/')
+                .then(response => response.json())
+                .then(data => {
+                    // Update the page with the retrieved data
+                    document.getElementById('testSetUsr').innerHTML = "id set as: " + data.id;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
+        }
+        function login(){
+            var selectedElem = document.getElementById("idSelection");
+            var selectedIndex = selectedElem.selectedIndex;
+            var selectedOption = selectedElem.options[selectedIndex];
+            var selectedValue = selectedOption.value;
+
+            // if instructor id
+            if(selectedValue > 2){
+                window.location.href = '/instructor/';
+            }
+
+
+            // if student id
+            if(selectedValue <= 2) {
+
+            }
+
+        }
+    </script>
 
 </html>
