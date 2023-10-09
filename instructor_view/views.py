@@ -227,7 +227,24 @@ subj2 = {
     'id': 2,
 }
 subjSettings = {
-    'this is so boring': 'beep boop',
+    'globalExtentionLength': 1,
+    'generalTutor': 1,
+    'extensionTutor': 1,
+    'quizTutor': 1,
+    'remarkTutor': 1,
+    'otherTutor': 1,    
+    'generalScoord': 1,
+    'extensionScoord': 1,
+    'quizScoord': 1,
+    'remarkScoord': 1,
+    'otherScoord': 1,
+    'generalReject': 'Message',
+    'extensionApprove': 'Message',
+    'extensionReject': 'Message',
+    'quizApprove': 'Message',
+    'quizReject': 'Message',
+    'remarkApprove': 'Message',
+    'remarkReject': 'Message',
 }
 course1 = {
     'course_id': 1,
