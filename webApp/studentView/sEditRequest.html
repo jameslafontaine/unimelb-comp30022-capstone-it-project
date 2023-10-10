@@ -8,7 +8,7 @@
         
         <!--
             Author: James La Fontaine
-            Date Last Modified: October 5, 2023
+            Date Last Modified: October 10, 2023
             Description: This is the page on which students can edit an active request
         -->
         
@@ -67,27 +67,26 @@
                 <div class="leftSide">
 
                     <p class="title">Edit your request</p>
-
-                    <div id="caseContainer">
-                        <!-- Requests dynamically added here -->
-
+                    <br>
+                    <div class="expandableBox" data-bs-toggle="collapse" data-bs-target="#expandableBoxSection">
+                        <div class="expandableBoxContents" data-bs-toggle="collapse" data-bs-target="#expandableBoxSection">Selected Request
+                            <span class="expandButton" data-bs-toggle="collapse" data-bs-target="#expandableBoxSection"></span>
+                        </div>
                     </div>
 
-                    <span>
-                        <button class="standardButton" id="addButton"> Add Request + </button>
+                    <div class="collapse show" id="expandableBoxSection" style="height:auto">
+                        <span class="text">Message</span>
+                        <br>
+                        <textarea class="textBox" id="messageTextBox"></textarea>
+                        <br><br>
+                        <p class="text">Supporting Documents</p>
+                        <div id="suppDocContainer"></div>
+                    </div>
 
-                        <button class="standardButton" id="removeButton"> Remove Request - </button>
-                    </span>   
+                    
                 </div>
                 <div class="rightSide">
-                    <p class="text" style="display:inline; position: fixed;">Disclaimer - This portal should be 
-                        used for any questions or requests that may be 
-                        personal or less suited towards existing 
-                        discussion boards. Otherwise, please refer to 
-                        those
-                    </p>
-
-                    <button class="bigButton" onclick="window.location.href='sHome.html'" style="position: fixed; margin-top: 60px;">
+                    <button class="bigButton" id='editButton' style="position: fixed; margin-top: 60px;">
                         Submit edit
                     </button>
                 </div>
@@ -96,7 +95,7 @@
 
         <script src="../js/modules/sWebHeader.js"></script>
 
-        <script src="../js/modules/requests.js"></script>
+        <script src="../js/modules/editRequest.js"></script>
         <script>    
             // List of students current courses
             var courseList = [
@@ -105,38 +104,68 @@
                 'MAST30034'
             ]
 
-            var numRequests = 1;
+            var req1 = {
+                requestId: 987654,
+                creationDate: '10/10/2012',
+                resolveDate: '15/10/2012',
+                reserved: false,
+                course: 'COMP30022 - IT Project',
+                assessment: 'Project 1',
+                requestType: 'Extension',
+                requestTitle: 'Project 1 Extension Request',
+                message: 'I am sick ;\'( why must misfortune happen to me',
+                status: 'Active',
+                instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
+            };
+    
+            const suppDocs = [
+                {
+                    name: 'iamsick.pdf',
+                    size: '20 TB'
+                },
+                {
+                    name: 'bible.pdf',
+                    size: '40 MB'
+                },
+                {
+                    name: 'medcert.pdf',
+                    size: '3 MB'
+                }
+            ]
 
-            generateStudentRequest(numRequests, courseList)
+            var prevVersions = [
+            {
+                date: "2011/09/24",
+                message: "The power has died!! :(",
+                documents: [
+                    { name: "iamsick.pdf", size: "20 TB" },
+                    { name: "bible.pdf", size: "40 MB" }
+                ]
+            },
+            {
+                date: "2011/09/23",
+                message: "Haven't thought of an excuse yet.",
+                documents: [
+                    { name: "bible.pdf", size: "40 MB" }
+                ]
+            }
+            ];
 
-            
-            // Add a new request when the add request button is clicked
-            const addButton = document.getElementById('addButton');
 
-           
-            addButton.addEventListener('click', function() {
-                numRequests += 1;
-                generateStudentRequest(numRequests, courseList)
+
+            // Handle edit button being clicked
+            var editButton = document.getElementById('editButton');
+
+            editButton.addEventListener('click', function() {
+                saveEdits(req1, prevVersions);
+
+                console.log(req1.creationDate)
+                console.log(req1.message)
+                window.location.href = 'sHome.html';
             });
-
-            // Remove a request when the remove request button is clicked
-            const removeButton = document.getElementById('removeButton');
-
-           
-            removeButton.addEventListener('click', function() {
-                document.getElementById(`expandableBox${numRequests}`).remove()
-                document.getElementById(`expandableBoxSection${numRequests}`).remove()
-                document.getElementById(`lastLineBreak${numRequests}`).remove()
-                numRequests -= 1;
-                
-            });
-
-            // Handle submit button being clicked
 
 
             // Handle supporting documentation tables
-            
-
 
 
         </script>

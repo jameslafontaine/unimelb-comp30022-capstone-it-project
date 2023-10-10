@@ -87,7 +87,7 @@
                         those
                     </p>
 
-                    <button class="bigButton" onclick="window.location.href='sHome.html'" style="position: fixed; margin-top: 60px;">
+                    <button class="bigButton" id='submitButton' style="position: fixed; margin-top: 60px;">
                         Submit
                     </button>
                 </div>
@@ -98,6 +98,8 @@
 
         <script src="../js/modules/requests.js"></script>
         <script>    
+            const MAX_REQUESTS = 16;
+
             // List of students current courses
             var courseList = [
                 'COMP30022',
@@ -109,30 +111,47 @@
 
             generateStudentRequest(numRequests, courseList)
 
-            
-            // Add a new request when the add request button is clicked
-            const addButton = document.getElementById('addButton');
+            const addButton = document.getElementById('addButton');            
+            const removeButton = document.getElementById('removeButton');
 
-           
+            // Add a new request when the add request button is clicked
             addButton.addEventListener('click', function() {
                 numRequests += 1;
                 generateStudentRequest(numRequests, courseList)
+                if (numRequests == MAX_REQUESTS) {
+                    addButton.style.display = 'none';   ; 
+                } else if (numRequests == 0) {
+                    removeButton.style.display = 'none'; 
+                } else if (numRequests > 0 & numRequests < MAX_REQUESTS) {
+                    removeButton.style.display = 'inline';
+                    addButton.style.display = 'inline';  
+                }
             });
-
+            
             // Remove a request when the remove request button is clicked
-            const removeButton = document.getElementById('removeButton');
-
-           
             removeButton.addEventListener('click', function() {
                 document.getElementById(`expandableBox${numRequests}`).remove()
                 document.getElementById(`expandableBoxSection${numRequests}`).remove()
                 document.getElementById(`lastLineBreak${numRequests}`).remove()
                 numRequests -= 1;
-                
+                if (numRequests == MAX_REQUESTS) {
+                    addButton.style.display = 'none';   ; 
+                } else if (numRequests == 0) {
+                    removeButton.style.display = 'none'; 
+                } else if (numRequests > 0 & numRequests < MAX_REQUESTS) {
+                    removeButton.style.display = 'inline';
+                    addButton.style.display = 'inline';  
+                }
             });
 
             // Handle submit button being clicked
+            var submitButton = document.getElementById('submitButton');
 
+            submitButton.addEventListener('click', function() {
+                handleCaseSubmission(numRequests);
+
+                window.location.href = 'sHome.html';
+            });
 
             // Handle supporting documentation tables
             

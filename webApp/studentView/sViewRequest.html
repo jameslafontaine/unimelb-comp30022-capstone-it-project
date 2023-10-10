@@ -8,7 +8,7 @@
 
 	<!--
     Author: James La Fontaine
-    Date Last Modified: October 5, 2023
+    Date Last Modified: October 10, 2023
     Description: This is the page on which students can view the details of their case
     -->
 
@@ -106,6 +106,9 @@
                 <br><br>
                 <div style="text-align: center; width: fit-content; margin: 0 auto;">
                     <div>
+                        <p class="bigButton" id="editButton" onclick="window.location.href='sEditRequest.html'">
+                            Edit
+                        </p>
                         <p class="bigButton" onclick="window.location.href='sViewCases.html'">
                             Back
                         </p>
@@ -117,7 +120,7 @@
     <script src = "../js/modules/sWebHeader.js"></script>
     <script src="../js/modules/requests.js"></script>
     <script>
-        const req2 = {
+        const req1 = {
             requestId: 987654,
             creationDate: '10/10/2012',
             resolveDate: '15/10/2012',
@@ -127,7 +130,7 @@
             requestType: 'Extension',
             requestTitle: 'Project 1 Extension Request',
             message: 'I am sick ;\'( why must misfortune happen to me',
-            status: 'Rejected',
+            status: 'Active',
             instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
         };
 
@@ -166,7 +169,7 @@
         
 
         // Fill information relating to the current request from the database
-        fillCurrentRequestInformation(req2, prevVersions.length + 1, 'Student');
+        fillCurrentRequestInformation(req1, prevVersions.length + 1, 'Student');
 
         // Generate the supporting documentation for the current version of request
         generateSuppDocTable(suppDocs, '');
@@ -175,6 +178,7 @@
         for (let i = 0; i < prevVersions.length; i++) {
             generateVersionBox(prevVersions[i], prevVersions.length - i)
         }
+
 
     </script>
     <!-- Student Details Box Population -->
@@ -185,6 +189,14 @@
             lastName: 'Sharman',
             id: 1178429,
             email: 'csharman@student.unimelb.edu.au'
+        }
+    </script>
+    <script src="../js/modules/editRequest.js"></script>
+    <!-- Editing related functionality -->
+    <script>
+        // Only show edit button for active cases
+        if (req1.status != 'Active') {
+            hideEditButton();
         }
     </script>
 </body>
