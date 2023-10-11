@@ -14,10 +14,13 @@ from .views import get_requests_from_case
 from .views import get_request
 from .views import get_old_versions
 from .views import new_request
+from .views import student_web_header_view
+from .views import get_user_id
+from .views import set_user_id
 
 urlpatterns = [
     path('', home_view, name='home'),
-    path('sWebHeader/', sWeb_header_view, name='sWeb_header'),
+    path('sWebHeader/', student_web_header_view, name='sWeb_header'),
 
     path('submit-req/', submit_req_view, name='subimt-req'),
     path('cases/', cases_view, name='cases'),

@@ -162,11 +162,11 @@ def subj_settings_view(request, input_id):
 def view_profile_view(request, input_id):
     '''View for student profile'''
     # check the id exists
-    if input_id == usr1['id']:
-        usr = json.dumps(usr1)
+    if input_id == usr3['id']:
+        usr = json.dumps(usr3)
         return render(request, 'viewProfile.html', {'usr':usr})
-    if input_id == usr2['id']:
-        usr = json.dumps(usr2)
+    if input_id == usr4['id']:
+        usr = json.dumps(usr4)
         return render(request, 'viewProfile.html', {'usr':usr})
     return JsonResponse({'error': 'Record not found'}, status=404)
 
@@ -205,8 +205,8 @@ def get_old_versions(request, request_id):
 
 def get_student(request, student_id):
     '''GET a student by id'''
-    if student_id == 1:
-        return JsonResponse(usr1)
+    if student_id == 3:
+        return JsonResponse(usr3)
     # id not found
     return not_found_view(request)
 
@@ -260,6 +260,7 @@ def make_complex(request, request_id):
     if request.method == 'PUT':
         # if complex, set to non-complex
         # else make complex
+        print("") # Pylint happy
     return JsonResponse({"message": "Case created successfully"})
 
 @csrf_exempt

@@ -74,6 +74,8 @@ subj2 = {
     'id': 2,
 }
 
+USER_ID = -1
+
 def not_found_view(request):
     '''Not found view'''
     return render(request, 'notFound404.html', {})
@@ -81,6 +83,18 @@ def not_found_view(request):
 def home_view(request):
     '''Home view'''
     return render(request, 'sHome.html', {})
+
+def student_web_header_view(request):
+    '''Student web header view'''
+    # take the id and edit header with initial data
+    if(USER_ID == 1):
+        usr = json.dumps(usr1)
+        return render(request, 'sWebHeader.html', {'usr':usr})
+    if(USER_ID == 2):
+        usr = json.dumps(usr2)
+        return render(request, 'sWebHeader.html', {'usr':usr})
+    # whoops maybe id doesnt exist
+
 
 def submit_req_view(request):
     '''Submit request view'''
@@ -148,6 +162,11 @@ def get_old_versions(request, request_id):
             'oldVersionIds' : json.dumps([1,2])})
     return not_found_view(request)
 
+def get_user_id(request):
+    '''Get user ID'''
+    print(request) # Make PyLint happy
+    return JsonResponse({'id': USER_ID})
+
 # POST REQUESTS
 @csrf_exempt
 def new_request(request):
@@ -162,3 +181,12 @@ def new_request(request):
             return HttpResponseBadRequest("Invalid JSON data")
         return JsonResponse({"message": "Case created successfully"})
     return HttpResponseBadRequest("Not a POST request, invalid")
+
+# PUT REQUESTS
+@csrf_exempt
+def set_user_id(request, input_id):
+    '''Set user ID'''
+    if request.method == 'PUT':
+        global USER_ID
+        USER_ID = input_id
+        return JsonResponse({"message": "id successfully set"})

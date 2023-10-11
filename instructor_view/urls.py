@@ -2,6 +2,7 @@
 Django endpoints defined for isntructor view
 """
 
+from django.urls import path
 from .views import home_view
 from .views import instructor_web_header_view
 from .views import not_found_view
@@ -23,7 +24,6 @@ from .views import make_complex
 from .views import request_response
 from .views import change_settings
 from .views import set_user_id
-from django.urls import path
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -47,7 +47,7 @@ urlpatterns = [
     path('AAP/<int:aap_id>', get_AAP, name='get_AAP'),
     path('request-history/<int:student_id>', get_request_history, name='get_request_history'),
 
-    path('get-user-id/', get_user_id, name='get_id'),
+    path('get-user-id/', get_id, name='get_id'),
 
     # POST REQUESTS
     path('AAP/', add_AAP, name='add_AAP'),
