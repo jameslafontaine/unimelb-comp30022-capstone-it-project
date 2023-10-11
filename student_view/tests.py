@@ -33,9 +33,9 @@ student_case_1_2 = {
 student_request_1 = {
     'id': 1,
     'course': 'COMP30022',
-    'dateCreated': '28/11/2001',
+    'dateCreated': '22/11/2000',
     'status': 'waiting for action',
-    'message': 'The dog ate my homework',
+    'message': 'Callum ate my homework',
 }
 
 student_request_2 = {

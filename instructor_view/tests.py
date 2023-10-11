@@ -26,39 +26,6 @@ usr4 = {
     'darkmode_preference': 1,
 }
 
-case12 = {
-    'Date_Updated': 28112001,
-    'Date_Created': 11092001,
-    'caseID' : 12,
-    'users_user_id' : 1,
-}
-case13 = {
-    'Date_Updated': 10102023,
-    'Date_Created': 11092023,
-    'caseID' : 13,
-    'users_user_id' : 1,
-}
-
-# fake user 3s courses
-course31 = {
-    'course_id': 'COMP30022',
-    'subject_name': 'IT Project',
-}
-course32 = {
-    'course_id': 'COMP30023',
-    'subject_name': 'Computer Systems',
-}
-
-#fake user 4s courses
-course41 = {
-    'course_id': 'COMP30019',
-    'subject_name': 'Graphics and Interaction',
-}
-course42 = {
-    'course_id': 'COMP30026',
-    'subject_name': 'Models of Computation',
-}
-
 # how are we getting the reserved and unresolved cases??
 req1 = {
     'id': 1,
@@ -70,9 +37,9 @@ req1 = {
 req2 = {
     'id': 2,
     'course': 'COMP30026',
-    'dateCreated': '1/1/2023',
+    'dateCreated': '11/11/2023',
     'status': 'waiting for action',
-    'message': 'The cat ate my homework', 
+    'message': 'Jun ate my homework', 
 }
 
 subj1 = {

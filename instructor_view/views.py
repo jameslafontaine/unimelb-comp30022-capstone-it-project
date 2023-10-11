@@ -8,16 +8,16 @@ import json
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
-from tests import usr3
-from tests import usr4
-from tests import req1
-from tests import req2
-from tests import subj1
-from tests import subj2
-from tests import course1
-from tests import subj_settings
+from .tests import usr3
+from .tests import usr4
+from .tests import req1
+from .tests import req2
+from .tests import subj1
+from .tests import subj2
+from .tests import course1
+from .tests import subj_settings
 
-user_id_global = -1 # set to -1 default to detect issues
+USER_ID = -1 # set to -1 default to detect issues
 
 def not_found_view(request):
     '''View not found'''
@@ -29,12 +29,12 @@ def home_view(request):
 
 def instructor_web_header_view(request):
     ''' take the id and edit header with initial data '''
-    if user_id_global == 3:
+    if USER_ID == 3:
         usr = json.dumps(usr3)
-        return render(request, 'iWebHeader.html', {'usr':user_id_global})
-    elif user_id_global == 4:
+        return render(request, 'iWebHeader.html', {'usr':USER_ID})
+    elif USER_ID == 4:
         usr = json.dumps(usr4)
-        return render(request, 'iWebHeader.html', {'usr':user_id_global})
+        return render(request, 'iWebHeader.html', {'usr':USER_ID})
     # whoops maybe id doesnt exist
     return HttpResponseBadRequest("Invalid Request Type")
 
@@ -144,12 +144,12 @@ def get_request_history(request, student_id):
 
 def get_id(request):
     '''Get the ID of a request ?'''
-    print(request) # To make Pylint happy
-    return JsonResponse({'id': user_id_global})
+    print(request) # pylint
+    return JsonResponse({'id': USER_ID})
 
 # POST REQUESTS
 @csrf_exempt
-def add_aap(request):
+def instructor_add_aap(request):
     '''POST an aap'''
     if request.method == 'POST':
         try:
@@ -176,7 +176,7 @@ def make_complex(request, request_id):
 def set_user_id(request, input_id):
     '''Set a user id'''
     if request.method == 'PUT':
-        # user_id_global = input_id This is commented out because of scope issues
+        # USER_ID = input_id This is commented out because of scope issues
         print(input_id) # Make pylint happy
         return JsonResponse({"message": "id successfully set"})
     return HttpResponseBadRequest("Invalid Request Type")

@@ -19,7 +19,7 @@ from .views import get_subject_settings
 from .views import get_aap
 from .views import get_request_history
 from .views import get_id
-from .views import add_aap
+from .views import instructor_add_aap
 from .views import make_complex
 from .views import request_response
 from .views import change_settings
@@ -50,7 +50,7 @@ urlpatterns = [
     path('get-user-id/', get_id, name='get_id'),
 
     # POST REQUESTS
-    path('AAP/', add_aap, name='add_AAP'),
+    path('AAP/', instructor_add_aap, name='add_AAP'),
 
     # PUT REQUESTS
     path('set-complex/<int:request_id>', make_complex, name='make_complex'),
