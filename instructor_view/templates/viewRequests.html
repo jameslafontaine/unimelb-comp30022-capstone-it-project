@@ -46,6 +46,11 @@
 
     </head>
     <body>
+
+
+        <!-- div to hold data passed from the view -->
+        <div id="load-data" data-course="{{ course }}"></div>
+
         <!-- Include the header using JavaScript -->
 	    <div id="webHeaderContainer"></div>
 
@@ -92,7 +97,8 @@
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>
             // Put subject code at start of title
-            subjectCode = "COMP30022";
+            var course = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
+            subjectCode = course.subject_name;
             
             // Get the title by its ID
             const myElement = document.getElementById("title").innerHTML = 

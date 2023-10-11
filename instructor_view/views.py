@@ -39,8 +39,16 @@ def review_req_view(request, id):
     else:
         return JsonResponse({'error': 'Record not found'}, status=404)
 
-def view_reqs_view(request):
-    return render(request, 'viewRequests.html', {})
+def view_reqs_view(request, id):
+    courseId = id
+    if(courseId == 31):
+        return render(request, 'viewRequests.html', {'course': json.dumps(course31)})
+    if(courseId == 32):
+        return render(request, 'viewRequests.html', {'course': json.dumps(course32)})
+    if(courseId == 41):
+        return render(request, 'viewRequests.html', {'course': json.dumps(course41)})
+    if(courseId == 42):
+        return render(request, 'viewRequests.html', {'course': json.dumps(course42)})
 
 def view_resolved_view(request, id):
     return render(request, 'viewResolved.html', {})
@@ -200,22 +208,22 @@ usr4 = {
 
 # fake user 3s courses
 course31 = {
-    'course_id': 'COMP30022',
-    'subject_name': 'IT Project',
+    'course_id': '31',
+    'subject_name': 'COMP30022',
 }
 course32 = {
-    'course_id': 'COMP30023',
-    'subject_name': 'Computer Systems',
+    'course_id': '32',
+    'subject_name': 'COMP30023',
 }
 
 #fake user 4s courses
 course41 = {
-    'course_id': 'COMP30019',
-    'subject_name': 'Graphics and Interaction',
+    'course_id': '41',
+    'subject_name': 'COMP30019',
 }
 course42 = {
-    'course_id': 'COMP30026',
-    'subject_name': 'Models of Computation',
+    'course_id': '42',
+    'subject_name': 'COMP30026',
 }
 
 # how are we getting the reserved and unresolved cases??
@@ -266,8 +274,4 @@ subjSettings = {
     'quizReject': 'Message',
     'remarkApprove': 'Message',
     'remarkReject': 'Message',
-}
-course1 = {
-    'course_id': 1,
-    'subject_name': 'sugma',
 }

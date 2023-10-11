@@ -60,7 +60,7 @@ function generateSubjectBox(subject) {
   
 	// Create the subjectCode element
 	const subjectCodeElement = document.createElement('span');
-	subjectCodeElement.textContent = `${subject.course_id}`;
+	subjectCodeElement.textContent = `${subject.subject_name}`;
 	
 	// change to this when you can get the numreserved and unresolved
 	//subjectCodeElement.textContent = `${subject.course_id} (${subject.numReserved} reserved, ${subject.numUnresolved} unresolved)`;
@@ -75,7 +75,7 @@ function generateSubjectBox(subject) {
 	viewRequestsButton.classList.add('standardButton');
 	viewRequestsButton.textContent = 'View Requests & Queries';
 	viewRequestsButton.onclick = function() {
-		window.location.href = '/instructor/view-reqs'; 
+		window.location.href = '/instructor/view-reqs/' + subject.course_id; 
 	};
   
 	// Create the "Settings" button
@@ -84,7 +84,7 @@ function generateSubjectBox(subject) {
 	settingsButton.classList.add('standardButton');
 	settingsButton.textContent = 'Settings';
 	settingsButton.onclick = function() {
-		window.location.href = '/instructor/subject-settings/1'; 
+		window.location.href = '/instructor/subject-settings/' + subject.course_id; 
 	};
   
 	// Append the elements to their respective parent elements
