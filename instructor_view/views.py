@@ -8,14 +8,9 @@ import json
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
-from .tests import usr3
-from .tests import usr4
-from .tests import req1
-from .tests import req2
-from .tests import subj1
-from .tests import subj2
-from .tests import course1
-from .tests import subj_settings
+
+# as this will be deleted when fully attached, i wont bother doing the imports the long way
+from .tests import * 
 
 INSTRUCTOR_VIEW_USER_ID = -1 # set to -1 default to detect issues
 
@@ -219,97 +214,3 @@ def change_settings(request):
         print("") # make pylint happy
         return JsonResponse({"message": "Case created successfully"})
     return HttpResponseBadRequest("Invalid Request Type")
-
-
-# fake data to play with before DB connected
-usr3 = {
-    'user_id': 3,
-    'name' : 'Ryan Goh',
-    'first_name': 'Ryan',
-    'last_name': 'Goh',
-    'email': 'insertEmailHereLol@student.unimelb.edu.au',
-    'email_preference': 1,
-    'darkmode_preference': 1,
-}
-usr4 = {
-    'user_id': 4,
-    'name' : 'Yan Zong Goh',
-    'first_name': 'Yan Zong',
-    'last_name': 'Goh',
-    'email': 'thisIsAnEmail@student.unimelb.edu.au',
-    'email_preference': 1,
-    'darkmode_preference': 1,
-}
-# fake user 3s courses
-course31 = {
-    'course_id': '31',
-    'subject_name': 'COMP30022',
-}
-course32 = {
-    'course_id': '32',
-    'subject_name': 'COMP30023',
-}
-#fake user 4s courses
-course41 = {
-    'course_id': '41',
-    'subject_name': 'COMP30019',
-}
-course42 = {
-    'course_id': '42',
-    'subject_name': 'COMP30026',
-}
-# fake course 31 and 41 requests
-req311 = {
-    'request_ID': 311,
-    'proposed_due_date': "11-09-2023 03:50:09",
-    'documentation_ID': 876234587967986,
-    'content': 'The dog ate my homework. L',
-    'application_status': 'Pending',
-    'threadID': 4356,
-}
-req312 = {
-    'request_ID': 313,
-    'proposed_due_date': "17-12-2023 02:55:19",
-    'documentation_ID': 67456745674567,
-    'content': 'The cat ate my homework. L',
-    'application_status': 'Approved',
-    'threadID': 5678, 
-}
-# fake course 32 and 42 requests
-req321 = {
-    'request_ID': 321,
-    'proposed_due_date': "01-19-2023 03:50:09",
-    'documentation_ID': 8794325092384,
-    'content': 'Im very sick *sad face*',
-    'application_status': 'Pending',
-    'threadID': 9009,
-}
-req322 = {
-    'request_ID': 322,
-    'proposed_due_date': "01-19-2023 03:50:09",
-    'documentation_ID': 8790798709,
-    'content': 'Please just give me an extension, im begging',
-    'application_status': 'Rejected',
-    'threadID': 8109,
-}
-
-subjSettings = {
-    'globalExtentionLength': 1,
-    'generalTutor': 1,
-    'extensionTutor': 1,
-    'quizTutor': 1,
-    'remarkTutor': 1,
-    'otherTutor': 1,    
-    'generalScoord': 1,
-    'extensionScoord': 1,
-    'quizScoord': 1,
-    'remarkScoord': 1,
-    'otherScoord': 1,
-    'generalReject': 'Message',
-    'extensionApprove': 'Message',
-    'extensionReject': 'Message',
-    'quizApprove': 'Message',
-    'quizReject': 'Message',
-    'remarkApprove': 'Message',
-    'remarkReject': 'Message',
-}

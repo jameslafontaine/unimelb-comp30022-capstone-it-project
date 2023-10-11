@@ -18,7 +18,8 @@ from .views import get_old_versions
 from .views import get_subject_settings
 from .views import get_aap
 from .views import get_request_history
-from .views import get_id
+from .views import get_user_id
+from .views import get_requests
 from .views import instructor_add_aap
 from .views import make_complex
 from .views import request_response
@@ -31,11 +32,11 @@ urlpatterns = [
 
     path('not-found-404/', not_found_view, name='not_found_view'),
 
-    path('review-req/<int:id>/', review_req_view, name='review-req'),
+    path('review-req/<int:input_id>/', review_req_view, name='review-req'),
     path('view-reqs/<int:id>', view_reqs_view, name='view-reqs'),
-    path('view-resolved/<int:id>/', view_resolved_view, name='view-resolved'),
-    path('subject-settings/<int:id>/', subj_settings_view, name='subject-settings'),
-    path('view-profile/<int:id>/', view_profile_view, name='view-profile'),
+    path('view-resolved/<int:input_id>/', view_resolved_view, name='view-resolved'),
+    path('subject-settings/<int:input_id>/', subj_settings_view, name='subject-settings'),
+    path('view-profile/<int:input_id>/', view_profile_view, name='view-profile'),
 
     # GET REQUESTS
     path('courses/<int:user_id>', get_courses, name='get_courses'),
@@ -58,5 +59,5 @@ urlpatterns = [
     path('set-complex/<int:request_id>', make_complex, name='make_complex'),
     path('request-response/<int:request_id>', request_response, name='request_response'),
     path('settings/', change_settings, name='change_settings'),
-    path('set-user-id/<int:id>', set_user_id, name='set_user_id'),
+    path('set-user-id/<int:input_id>', set_user_id, name='set_user_id'),
 ]
