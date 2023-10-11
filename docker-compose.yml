@@ -6,7 +6,6 @@ services:
             dockerfile: Dockerfile.db 
         ports:
             - "33061:3306"
-        command: --init-file /etc/mysql/conf.d/init.sql
         volumes:
             - ./init.sql:/etc/mysql/conf.d/init.sql
             - ./my.cnf:/etc/mysq/conf.d/my.cnf
