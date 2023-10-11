@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        
         <!-- Meta -->
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,7 +50,6 @@
             // load all page data first
             loadSubjectBoxData()
                 .then(() => {
-                    console.log('subjects:', subjects);
                     // Iterate through the JSON data and create/populate expandable boxes
                     if (Array.isArray(subjects)) {
                         subjects.forEach(subject => {
