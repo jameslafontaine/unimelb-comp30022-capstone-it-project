@@ -101,12 +101,12 @@ def get_old_versions(request, request_id):
 
 def get_user_id(request):
     '''Get user ID'''
-    print(request) # Make PyLint happy
+    print(request + "Yay!") # Make PyLint happy
     return JsonResponse({'id': USER_ID})
 
 # POST REQUESTS
 @csrf_exempt
-def new_request(request):
+def student_new_request(request):
     '''POST new request'''
     if request.method == 'POST':
         try:

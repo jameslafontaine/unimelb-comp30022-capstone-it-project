@@ -13,7 +13,7 @@ from .views import get_case
 from .views import get_requests_from_case
 from .views import get_request
 from .views import get_old_versions
-from .views import new_request
+from .views import student_new_request
 from .views import student_web_header_view
 from .views import get_user_id
 from .views import set_user_id
@@ -39,7 +39,7 @@ urlpatterns = [
     path('get-user-id/', get_user_id, name='get_id'),
 
     # POST REQUESTS
-    path('new-request/', new_request, name='new_request'),
+    path('new-request/', student_new_request, name='new_request'),
 
     # PUT REQUESTS
     path('set-user-id/<int:id>', set_user_id, name='set_user_id'),

@@ -1,0 +1,48 @@
+name: CI checks
+
+on: [pull_request]
+
+jobs: 
+  ESLint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install dependencies
+        run: npm install
+      - name: Lint JavaScript files
+        run: npm run lint
+
+  PyLint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pylint
+    - name: Analysing the code with pylint
+      run: |
+        pylint --ignore=manage.py $(git ls-files '*.py')
+
+  Tests:
+    needs: pylint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker compose up -d
+    - name: The images have been built
+      run: docker inspect --format "{{.State.Status}}" $(docker ps -q -f name=it-project-6-people-webapp-1)

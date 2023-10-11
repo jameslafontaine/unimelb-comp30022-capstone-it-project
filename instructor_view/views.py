@@ -31,10 +31,10 @@ def instructor_web_header_view(request):
     ''' take the id and edit header with initial data '''
     if USER_ID == 3:
         usr = json.dumps(usr3)
-        return render(request, 'iWebHeader.html', {'usr':USER_ID})
-    elif USER_ID == 4:
+        return render(request, 'iWebHeader.html', {'usr': usr})
+    if USER_ID == 4:
         usr = json.dumps(usr4)
-        return render(request, 'iWebHeader.html', {'usr':USER_ID})
+        return render(request, 'iWebHeader.html', {'usr': usr})
     # whoops maybe id doesnt exist
     return HttpResponseBadRequest("Invalid Request Type")
 
