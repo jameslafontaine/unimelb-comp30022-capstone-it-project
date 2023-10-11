@@ -1,5 +1,19 @@
+"""
+URLs for student view
+"""
+
 from django.urls import path
-from .views import *
+from .views import home_view
+from .views import submit_req_view
+from .views import cases_view
+from .views import aaps_view
+from .views import view_req_view
+from .views import get_active_cases
+from .views import get_case
+from .views import get_requests_from_case
+from .views import get_request
+from .views import get_old_versions
+from .views import new_request
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -12,7 +26,8 @@ urlpatterns = [
     # GET REQUESTS
     path('active-cases/<int:user_id>/', get_active_cases, name='get_active_cases'),
     path('case/<int:case_id>/', get_case, name='get_case'),
-    path('requests-from-case/<int:case_id>/', get_requests_from_case, name='get_requests_from_case'),
+    path('requests-from-case/<int:case_id>/', get_requests_from_case, 
+         name='get_requests_from_case'),
     path('request/<int:request_id>/', get_request, name='get_request'),
     path('old-versions/<int:request_id>/', get_old_versions, name='get_old_versions'),
 
