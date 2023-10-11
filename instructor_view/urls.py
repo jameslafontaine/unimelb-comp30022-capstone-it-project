@@ -24,6 +24,7 @@ urlpatterns = [
     path('request-history/<int:student_id>', get_request_history, name='get_request_history'),
 
     path('get-user-id/', get_user_id, name='get_id'),
+    path('requests/<int:course_id>', get_requests, name='get_requests'),
 
     # POST REQUESTS
     path('AAP/', add_AAP, name='add_AAP'),

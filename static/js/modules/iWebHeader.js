@@ -9,8 +9,6 @@ function populateSignIn() {
 	let headerText = document.querySelector('.headerText');
 	var usr = JSON.parse(document.getElementById('load-header-data').getAttribute('data-usr'));
 
-	console.log(usr);
-
 	headerText.innerHTML = "Signed in as: " + usr.first_name + " " + usr.last_name;
 
 };

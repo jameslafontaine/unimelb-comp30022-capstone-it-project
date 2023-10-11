@@ -4,6 +4,22 @@
  * Description: Handles all functionality surrounding requests
  */
 
+
+/**
+ * Loads in requests, given a course from the DB, returns an array full of request JSONs
+ */
+function loadRequestData(courseId){
+
+    return fetch('/instructor/requests/' + courseId)
+        .then(response => response.json())
+        .then(data => {
+            return JSON.parse(data.requests);
+        })
+        .catch(error => {
+			console.error('Error:', error);
+		});
+}
+
 /** 
  * Generates an interactive table of all active and resolved requests for the currently selected course
  */

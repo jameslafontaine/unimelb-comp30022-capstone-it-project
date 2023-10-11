@@ -96,6 +96,17 @@
         <script src="{% static 'js/modules/iWebHeader.js' %}"></script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>
+
+            // THIS WORKS CALLUM!! COME BACK HERE BUDDY
+            // You have been able to load the data, now you just need to put it into the request 
+            // boxes withing the 'requets.js' file
+            loadRequestData(31)
+            .then(requests =>{
+                console.log('requests: ', requests);
+            })
+
+
+
             // Put subject code at start of title
             var course = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
             subjectCode = course.subject_name;

@@ -138,6 +138,15 @@ def get_request_history(request, student_id):
 def get_user_id(request):
     return JsonResponse({'id': usrId})
 
+def get_requests(requets, course_id):
+    if((course_id == 31) or (course_id == 41)):
+        return JsonResponse({
+            'requests': json.dumps([req311, req312])
+        })
+    if((course_id == 32) or (course_id == 42)):
+        return JsonResponse({
+            'requests': json.dumps([req321, req322])
+        })
 
 # POST REQUESTS
 @csrf_exempt
@@ -205,7 +214,6 @@ usr4 = {
     'email_preference': 1,
     'darkmode_preference': 1,
 }
-
 # fake user 3s courses
 course31 = {
     'course_id': '31',
@@ -215,7 +223,6 @@ course32 = {
     'course_id': '32',
     'subject_name': 'COMP30023',
 }
-
 #fake user 4s courses
 course41 = {
     'course_id': '41',
@@ -225,36 +232,41 @@ course42 = {
     'course_id': '42',
     'subject_name': 'COMP30026',
 }
-
-# how are we getting the reserved and unresolved cases??
-
-
-
-
-req1 = {
-    'id': 1,
-    'course': 'COMP30022',
-    'dateCreated': '28/11/2001',
-    'status': 'waiting for action',
-    'message': 'The dog ate my homework',
+# fake course 31 and 41 requests
+req311 = {
+    'request_ID': 311,
+    'proposed_due_date': "11-09-2023 03:50:09",
+    'documentation_ID': 876234587967986,
+    'content': 'The dog ate my homework. L',
+    'application_status': 'Pending',
+    'threadID': 4356,
 }
-req2 = {
-    'id': 2,
-    'course': 'COMP30026',
-    'dateCreated': '1/1/2023',
-    'status': 'waiting for action',
-    'message': 'The cat ate my homework', 
+req312 = {
+    'request_ID': 313,
+    'proposed_due_date': "17-12-2023 02:55:19",
+    'documentation_ID': 67456745674567,
+    'content': 'The cat ate my homework. L',
+    'application_status': 'Approved',
+    'threadID': 5678, 
+}
+# fake course 32 and 42 requests
+req321 = {
+    'request_ID': 321,
+    'proposed_due_date': "01-19-2023 03:50:09",
+    'documentation_ID': 8794325092384,
+    'content': 'Im very sick *sad face*',
+    'application_status': 'Pending',
+    'threadID': 9009,
+}
+req322 = {
+    'request_ID': 322,
+    'proposed_due_date': "01-19-2023 03:50:09",
+    'documentation_ID': 8790798709,
+    'content': 'Please just give me an extension, im begging',
+    'application_status': 'Rejected',
+    'threadID': 8109,
 }
 
-
-
-
-subj1 = {
-    'id': 1,
-}
-subj2 = {
-    'id': 2,
-}
 subjSettings = {
     'globalExtentionLength': 1,
     'generalTutor': 1,
