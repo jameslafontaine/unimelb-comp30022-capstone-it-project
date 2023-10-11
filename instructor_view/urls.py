@@ -16,10 +16,10 @@ from .views import get_request_status
 from .views import get_request
 from .views import get_old_versions
 from .views import get_subject_settings
-from .views import get_AAP
+from .views import get_aap
 from .views import get_request_history
 from .views import get_id
-from .views import add_AAP
+from .views import add_aap
 from .views import make_complex
 from .views import request_response
 from .views import change_settings
@@ -44,13 +44,13 @@ urlpatterns = [
     path('old-versions/<int:request_id>', get_old_versions, name='get_old_versions'),
     path('get-subject-settings/<int:subject_id>', get_subject_settings, 
          name='get_subject_settings'),
-    path('AAP/<int:aap_id>', get_AAP, name='get_AAP'),
+    path('AAP/<int:aap_id>', get_aap, name='get_AAP'),
     path('request-history/<int:student_id>', get_request_history, name='get_request_history'),
 
     path('get-user-id/', get_id, name='get_id'),
 
     # POST REQUESTS
-    path('AAP/', add_AAP, name='add_AAP'),
+    path('AAP/', add_aap, name='add_AAP'),
 
     # PUT REQUESTS
     path('set-complex/<int:request_id>', make_complex, name='make_complex'),
