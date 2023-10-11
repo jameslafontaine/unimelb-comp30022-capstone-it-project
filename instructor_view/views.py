@@ -8,109 +8,16 @@ import json
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from tests import usr3
+from tests import usr4
+from tests import req1
+from tests import req2
+from tests import subj1
+from tests import subj2
+from tests import course1
+from tests import subj_settings
 
-USER_ID = -1 # set to -1 default to detect issues
-
-# fake data to play with before DB connected
-usr3 = {
-    'user_id': 3,
-    'name' : 'Ryan Goh',
-    'first_name': 'Ryan',
-    'last_name': 'Goh',
-    'email': 'insertEmailHereLol@student.unimelb.edu.au',
-    'email_preference': 1,
-    'darkmode_preference': 1,
-}
-usr4 = {
-    'user_id': 4,
-    'name' : 'Yan Zong Goh',
-    'first_name': 'Yan Zong',
-    'last_name': 'Goh',
-    'email': 'thisIsAnEmail@student.unimelb.edu.au',
-    'email_preference': 1,
-    'darkmode_preference': 1,
-}
-
-case12 = {
-    'Date_Updated': 28112001,
-    'Date_Created': 11092001,
-    'caseID' : 12,
-    'users_user_id' : 1,
-}
-case13 = {
-    'Date_Updated': 10102023,
-    'Date_Created': 11092023,
-    'caseID' : 13,
-    'users_user_id' : 1,
-}
-
-# fake user 3s courses
-course31 = {
-    'course_id': 'COMP30022',
-    'subject_name': 'IT Project',
-}
-course32 = {
-    'course_id': 'COMP30023',
-    'subject_name': 'Computer Systems',
-}
-
-#fake user 4s courses
-course41 = {
-    'course_id': 'COMP30019',
-    'subject_name': 'Graphics and Interaction',
-}
-course42 = {
-    'course_id': 'COMP30026',
-    'subject_name': 'Models of Computation',
-}
-
-# how are we getting the reserved and unresolved cases??
-
-req1 = {
-    'id': 1,
-    'course': 'COMP30022',
-    'dateCreated': '28/11/2001',
-    'status': 'waiting for action',
-    'message': 'The dog ate my homework',
-}
-req2 = {
-    'id': 2,
-    'course': 'COMP30026',
-    'dateCreated': '1/1/2023',
-    'status': 'waiting for action',
-    'message': 'The cat ate my homework', 
-}
-
-subj1 = {
-    'id': 1,
-}
-subj2 = {
-    'id': 2,
-}
-subjSettings = {
-    'globalExtentionLength': 1,
-    'generalTutor': 1,
-    'extensionTutor': 1,
-    'quizTutor': 1,
-    'remarkTutor': 1,
-    'otherTutor': 1,    
-    'generalScoord': 1,
-    'extensionScoord': 1,
-    'quizScoord': 1,
-    'remarkScoord': 1,
-    'otherScoord': 1,
-    'generalReject': 'Message',
-    'extensionApprove': 'Message',
-    'extensionReject': 'Message',
-    'quizApprove': 'Message',
-    'quizReject': 'Message',
-    'remarkApprove': 'Message',
-    'remarkReject': 'Message',
-}
-course1 = {
-    'course_id': 1,
-    'subject_name': 'sugma',
-}
+user_id_global = -1 # set to -1 default to detect issues
 
 def not_found_view(request):
     '''View not found'''
@@ -122,12 +29,14 @@ def home_view(request):
 
 def instructor_web_header_view(request):
     ''' take the id and edit header with initial data '''
-    if USER_ID == 3:
+    if user_id_global == 3:
         usr = json.dumps(usr3)
-    elif USER_ID == 4:
+        return render(request, 'iWebHeader.html', {'usr':user_id_global})
+    elif user_id_global == 4:
         usr = json.dumps(usr4)
+        return render(request, 'iWebHeader.html', {'usr':user_id_global})
     # whoops maybe id doesnt exist
-    return render(request, 'iWebHeader.html', {'usr':usr})
+    return HttpResponseBadRequest("Invalid Request Type")
 
 def review_req_view(request, input_id):
     ''' check the id exists '''
@@ -213,7 +122,7 @@ def get_student(request, student_id):
 def get_subject_settings(request, subject_id):
     '''GET all settings for a subject'''
     if subject_id == 1:
-        return JsonResponse(subjSettings)
+        return JsonResponse(subj_settings)
     # id not found
     return not_found_view(request)
 
@@ -236,7 +145,7 @@ def get_request_history(request, student_id):
 def get_id(request):
     '''Get the ID of a request ?'''
     print(request) # To make Pylint happy
-    return JsonResponse({'id': USER_ID})
+    return JsonResponse({'id': user_id_global})
 
 # POST REQUESTS
 @csrf_exempt
@@ -267,7 +176,8 @@ def make_complex(request, request_id):
 def set_user_id(request, input_id):
     '''Set a user id'''
     if request.method == 'PUT':
-        USER_ID = input_id
+        # user_id_global = input_id This is commented out because of scope issues
+        print(input_id) # Make pylint happy
         return JsonResponse({"message": "id successfully set"})
     return HttpResponseBadRequest("Invalid Request Type")
 

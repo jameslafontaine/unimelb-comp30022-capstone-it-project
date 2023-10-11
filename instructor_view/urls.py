@@ -42,7 +42,7 @@ urlpatterns = [
     path('request-status/<int:request_id>', get_request_status, name='get_request_status'),
     path('request/<int:request_id>', get_request, name='get_request'),
     path('old-versions/<int:request_id>', get_old_versions, name='get_old_versions'),
-    path('get-subject-settings/<int:subject_id>', get_subject_settings, 
+    path('get-subject-settings/<int:subject_id>', get_subject_settings,
          name='get_subject_settings'),
     path('AAP/<int:aap_id>', get_aap, name='get_AAP'),
     path('request-history/<int:student_id>', get_request_history, name='get_request_history'),
