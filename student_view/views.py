@@ -109,17 +109,32 @@ usr2 = {
     'darkMode': 1,
 }
 
-case12 = {
-    'Date_Updated': 28112001,
-    'Date_Created': 11092001,
-    'caseID' : 12,
-    'users_user_id' : 1,
+
+# fake user 1's cases
+case11 = {
+    'case_id' : 11,
+    'user_id' : 1,
+    'date_created': "11-09-2001 14:12:01",
+    'date_updated': "28-11-2001 12:30:15",
 }
-case13 = {
-    'Date_Updated': 10102023,
-    'Date_Created': 11092023,
-    'caseID' : 13,
-    'users_user_id' : 1,
+case12 = {
+    'case_id' : 12,
+    'user_id' : 1,
+    'date_created': "11-09-2023 03:50:09",
+    'date_updated': "10-10-2023 16:01:59",
+}
+# fake user 2's cases
+case21 ={
+    'case_id' : 21,
+    'user_id' : 2,
+    'date_created': "11-09-2001 14:12:01",
+    'date_updated': "28-11-2001 12:30:15",
+}
+case22 = {
+    'case_id' : 22,
+    'user_id' : 2,
+    'date_created': "11-09-2023 03:50:09",
+    'date_updated': "10-10-2023 16:01:59",
 }
 req1 = {
     'id': 1,

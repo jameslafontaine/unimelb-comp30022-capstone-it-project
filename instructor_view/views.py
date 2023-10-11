@@ -72,9 +72,13 @@ def view_profile_view(request, id):
 # GET REQUESTS
 # test/example purposes only, obviously not useable, must be filled in by backend
 def get_courses(request, user_id):
-    if(user_id == 1):
+    if(user_id == 3):
         return JsonResponse({
-            'courses': json.dumps([course1, course1])
+            'courses': json.dumps([course31, course32])
+        })
+    elif(user_id == 4):
+        return JsonResponse({
+            'courses': json.dumps([course41, course42])
         })
     else: # id not found
         return not_found_view(request)
@@ -123,7 +127,7 @@ def get_request_history(request, student_id):
     else: # id not found
         return not_found_view(request)
 
-def get_id(request):
+def get_user_id(request):
     return JsonResponse({'id': usrId})
 
 
@@ -176,36 +180,49 @@ def change_settings(request):
 
 # fake data to play with before DB connected
 usr3 = {
-    'id': 3,
-    'firstName': 'Ryan',
-    'lastName': 'Goh',
+    'user_id': 3,
+    'name' : 'Ryan Goh',
+    'first_name': 'Ryan',
+    'last_name': 'Goh',
     'email': 'insertEmailHereLol@student.unimelb.edu.au',
-    'emailNotifications': 1,
-    'darkMode': 1,
+    'email_preference': 1,
+    'darkmode_preference': 1,
 }
 usr4 = {
-    'id': 4,
-    'firstName': 'Yan Zong',
-    'lastName': 'Goh',
+    'user_id': 4,
+    'name' : 'Yan Zong Goh',
+    'first_name': 'Yan Zong',
+    'last_name': 'Goh',
     'email': 'thisIsAnEmail@student.unimelb.edu.au',
-    'emailNotifications': 1,
-    'darkMode': 1,
+    'email_preference': 1,
+    'darkmode_preference': 1,
 }
+
+# fake user 3s courses
+course31 = {
+    'course_id': 'COMP30022',
+    'subject_name': 'IT Project',
+}
+course32 = {
+    'course_id': 'COMP30023',
+    'subject_name': 'Computer Systems',
+}
+
+#fake user 4s courses
+course41 = {
+    'course_id': 'COMP30019',
+    'subject_name': 'Graphics and Interaction',
+}
+course42 = {
+    'course_id': 'COMP30026',
+    'subject_name': 'Models of Computation',
+}
+
+# how are we getting the reserved and unresolved cases??
 
 
 
-case12 = {
-    'Date_Updated': 28112001,
-    'Date_Created': 11092001,
-    'caseID' : 12,
-    'users_user_id' : 1,
-}
-case13 = {
-    'Date_Updated': 10102023,
-    'Date_Created': 11092023,
-    'caseID' : 13,
-    'users_user_id' : 1,
-}
+
 req1 = {
     'id': 1,
     'course': 'COMP30022',
@@ -220,6 +237,10 @@ req2 = {
     'status': 'waiting for action',
     'message': 'The cat ate my homework', 
 }
+
+
+
+
 subj1 = {
     'id': 1,
 }

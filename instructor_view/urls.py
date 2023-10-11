@@ -23,7 +23,7 @@ urlpatterns = [
     path('AAP/<int:aap_id>', get_AAP, name='get_AAP'),
     path('request-history/<int:student_id>', get_request_history, name='get_request_history'),
 
-    path('get-id/', get_id, name='get_id'),
+    path('get-user-id/', get_user_id, name='get_id'),
 
     # POST REQUESTS
     path('AAP/', add_AAP, name='add_AAP'),

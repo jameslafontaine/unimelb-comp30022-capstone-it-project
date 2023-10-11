@@ -33,7 +33,7 @@
             fetch(url,{method: 'PUT'}); 
             
             // print the id to the DOM
-            fetch('/instructor/get-id/')
+            fetch('/instructor/get-user-id/')
                 .then(response => response.json())
                 .then(data => {
                     // Update the page with the retrieved data
@@ -58,7 +58,7 @@
 
             // if student id
             if(selectedValue <= 2) {
-
+                window.location.href = '/student/';
             }
 
         }

@@ -1,21 +1,45 @@
 // These will be retrieved from an instructor in the database
-let subjects = [
-	{
-	  code: "COMP30022",
-	  numReserved: 1,
-	  numUnresolved: 1,
-	},
-	{
-	  code: "MAST30027",
-	  numReserved: 5,
-	  numUnresolved: 21,
-	},
-	{
-	  code: "MAST30034",
-	  numReserved: 0,
-	  numUnresolved: 14,
-	},
-  ];
+let subjects = new Array();
+let usrId;
+
+function loadSubjectBoxData(){
+	return getUserId()
+		.then(() => getSubjects())
+		.catch(error => {
+			console.error('Error:', error);
+		});
+
+}
+
+// gets the users id and puts it into usrId for future use
+function getUserId(){
+	return fetch('/instructor/get-user-id/')
+		.then(response => response.json())
+		.then(data => {
+			usrId = data.id;
+			//console.log('usrId', usrId);
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+
+}
+
+
+	
+// Calls the api and makes a list of the subjects (courses)
+function getSubjects(){
+	url = '/instructor/courses/' + usrId;
+	return fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            subjects = JSON.parse(data.courses);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
 
 // Function to create and populate an expandable subject box
 function generateSubjectBox(subject) {
@@ -30,8 +54,11 @@ function generateSubjectBox(subject) {
   
 	// Create the subjectCode element
 	const subjectCodeElement = document.createElement('span');
-	subjectCodeElement.textContent = `${subject.code} (${subject.numReserved} reserved, ${subject.numUnresolved} unresolved)`;
-  
+	subjectCodeElement.textContent = `${subject.course_id}`;
+	
+	// change to this when you can get the numreserved and unresolved
+	//subjectCodeElement.textContent = `${subject.course_id} (${subject.numReserved} reserved, ${subject.numUnresolved} unresolved)`;
+	
 	// Create the rightItems container
 	const rightItems = document.createElement('span');
 	rightItems.classList.add('rightItems');
