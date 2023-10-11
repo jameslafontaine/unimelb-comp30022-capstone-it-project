@@ -1,24 +1,17 @@
-version: '1'
+version: '3.8'
 services:
     db:
-        image: mysql:8.0.34
+        build:
+            context: .
+            dockerfile: Dockerfile.db 
         ports:
             - "33061:3306"
-        command: --init-file /data/app/init.sql
         volumes:
-            - ./init.sql:/data/app/init.sql
-        environment:
-            MYSQL_ROOT_PASSWORD: admin
-            MYSQL_DATABASE: local 
-        healthcheck:
-            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-            interval: 5s
-            retries: 10
+            - ./init.sql:/etc/mysql/conf.d/init.sql
+            - ./my.cnf:/etc/mysq/conf.d/my.cnf
     webapp:
-        build: .
-        command: sh -c "sleep 10 && python manage.py runserver 0.0.0.0:8000"
+        build:
+            context: .
+            dockerfile: Dockerfile
         ports:
             - "8000:8000"
-        depends_on:
-            db:
-                condition: service_healthy
