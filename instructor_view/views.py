@@ -17,7 +17,7 @@ from .tests import subj2
 from .tests import course1
 from .tests import subj_settings
 
-USER_ID = -1 # set to -1 default to detect issues
+INSTRUCTOR_VIEW_USER_ID = -1 # set to -1 default to detect issues
 
 def not_found_view(request):
     '''View not found'''
@@ -29,10 +29,10 @@ def home_view(request):
 
 def instructor_web_header_view(request):
     ''' take the id and edit header with initial data '''
-    if USER_ID == 3:
+    if INSTRUCTOR_VIEW_USER_ID == 3:
         usr = json.dumps(usr3)
         return render(request, 'iWebHeader.html', {'usr': usr})
-    if USER_ID == 4:
+    if INSTRUCTOR_VIEW_USER_ID == 4:
         usr = json.dumps(usr4)
         return render(request, 'iWebHeader.html', {'usr': usr})
     # whoops maybe id doesnt exist
@@ -145,17 +145,17 @@ def get_request_history(request, student_id):
 def get_id(request):
     '''Get the ID of a request ?'''
     print(request) # pylint
-    return JsonResponse({'id': USER_ID})
+    return JsonResponse({'id': INSTRUCTOR_VIEW_USER_ID})
 
 # POST REQUESTS
 @csrf_exempt
 def instructor_add_aap(request):
-    '''POST an aap'''
+    '''POST an aap as an Instructor'''
     if request.method == 'POST':
         try:
             # Parse the JSON data from the request body
             # e.g. aap = json.loads(request.body.decode('utf-8'))
-            print("") # Pylint happy
+            print(INSTRUCTOR_VIEW_USER_ID) # happy Pylint
         except json.JSONDecodeError:
             return HttpResponseBadRequest("Invalid JSON data")
         return JsonResponse({"message": "Case created successfully"})
@@ -176,7 +176,7 @@ def make_complex(request, request_id):
 def set_user_id(request, input_id):
     '''Set a user id'''
     if request.method == 'PUT':
-        # USER_ID = input_id This is commented out because of scope issues
+        # INSTRUCTOR_VIEW_USER_ID = input_id This is commented out because of scope issues
         print(input_id) # Make pylint happy
         return JsonResponse({"message": "id successfully set"})
     return HttpResponseBadRequest("Invalid Request Type")
