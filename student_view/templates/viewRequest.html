@@ -1,178 +1,203 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <!-- Meta -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Student - View Request</title>
+
+        <!--
+        Author: James La Fontaine, Callum Sharman
+        Date Last Modified: October 11, 2023
+        Description: This is the page on which students can view the details of their case
+        -->
+
+        <!-- CSS stylesheets -->
+        <style>
+            .pageAsATable {
+                display: grid;
+                grid-template-columns: 70% 1fr;
+            }
+        </style>
         <link rel="stylesheet" href="{% static 'css/general.css' %}">
         <link rel="stylesheet" href="{% static 'css/header.css' %}">
         <link rel="stylesheet" href="{% static 'css/tables.css' %}">
 
-        <title>Request {{ req.id }}</title>
+        <!-- Include Bootstrap CSS and JavaScript, and its dependencies such as Popper. Also include jQuery JavaScript -->
+
+        <!-- Bootstrap CSS and JavaScript provided by Bootstrap. Visit https://getbootstrap.com/ for more information. -->
+        <!-- jQuery and Popper JavaScript provided by jQuery and PopperJS. Visit https://jquery.com/ and https://popperjs.com/ for more information. -->
+        <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+        rel="stylesheet" 
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
+        crossorigin="anonymous">
+
+        <!-- JS scripts -->
+        <script type="text/javascript"
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+        <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" 
+        integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer"></script>
+        <script type="text/javascript" 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
+        crossorigin="anonymous"></script>
     </head>
     <body>
-        <!-- div to hold data passed from the view -->
-        <div id="load-data" data-req="{{ req }}"></div>
+        <div id="webHeaderContainer"></div>
 
-        <div class="header">
-            <!-- menu -->
-            <div class="dropDown">
-                <div class="dropDownBtn">
-                    <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
+        <div class="mainBody" style="width: 90%;">
+            <div class="pageAsATable">
+                <div class="leftSide">
+                    <p class="title" id="requestNum"></p>
+                    <p class="title" id="versionNum" style="font-size:25px"></p>
+                    <p class="text" id="dates"></p>
+                    <br>
+                    <p class="text">Course</p>
+                    <textarea class="textBox" id="course" style="height:30px; resize:none" readonly></textarea>
+
+                    <p class="text">Assessment</p>
+                    <textarea class="textBox" id="assessment" style="height:30px; resize:none" readonly></textarea>
+
+                    <p class="text">Request Type</p>
+                    <textarea class="textBox" id="requestType" style="height:30px; resize:none" readonly></textarea>
+
+                    <p class="text">Request Title</p>
+                    <textarea class="textBox" id="requestTitle" style="height:30px; resize:none" readonly></textarea>
+
+                    <p class="text">Message</p>
+                    <textarea class="textBox" id="message" style="height:120px; resize:none" readonly>
+                    </textarea>
+
+                    <p class="text">Status</p>
+                    <textarea class="textBox" id="status" style="height:30px; resize:none" readonly></textarea>
+                    
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="notes" style="height:120px; resize:none" readonly></textarea>
+
+                    <p></p>
+
+                    <p class="text">Supporting Documents</p>
+                    <div id="suppDocContainer">
+                        <table>
+                            <!-- Supporting documentation will be dynamically added here -->
+                        </table>
+                    </div>
+
+                    <br><br>
+
+                    <p class="title" style="font-size:24px">Request History</p>
+
+                    <div id="requestHistoryContainer">
+                        <!-- Request history will be added here dynamically -->
+                    </div>
+                    
                 </div>
-                <div class="dropDownMenu">
-                    <div class="dDSection" onclick="window.location.href='/student'">
-                        <p class="dDSectionText">Home</p>
-                    </div>
-                    <div class="dDSection" onclick="window.location.href='/student/submit-req'">
-                        <p class="dDSectionText">Submit a request</p>
-                    </div>
-                    <div class="dDSection" onclick="window.location.href='/student/cases'">
-                        <p class="dDSectionText">View all cases</p>
-                    </div>
-                    <div class="dDSection" onclick="window.location.href='/student/AAPs'">
-                        <p class="dDSectionText">View AAPs</p>
-                    </div>
-                </div>
-            </div>
 
-
-            <img src="{% static 'img/uomLogo.JPG' %}" style="height: 38px;">
-            <div class="headerText" id="headerText">Signed in as:_____</div>
-
-            <!-- settings -->
-            <div class="dropDown settings">
-                <div class="dropDownBtn" style="display: flex;">
-                    <img class="settingsBtn" src="{% static 'img/settingsIcon.png' %}" style="align-self: center;">
-                </div>
-                <div class="dropDownMenu inwards">
-                    <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
-                        <p class="dDSectionText">Email notifications</p>
-                        <input type="checkbox" style="width: 17px;height: 17px;">
+                <div class="rightSide" style="text-align: center;">
+                    <br><br>
+                    <div style="text-align: center; width: fit-content; margin: 0 auto;">
+                        <div>
+                            <p class="bigButton" id="editButton" onclick="window.location.href='sEditRequest.html'">
+                                Edit
+                            </p>
+                            <p class="bigButton" onclick="window.location.href='/student/cases'">
+                                Back
+                            </p>
+                        </div>
                     </div>
-                    <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
-                        <p class="dDSectionText">Dark mode</p>
-                        <input type="checkbox" style="width: 17px;height: 17px;">
-                    </div>
-
                 </div>
             </div>
         </div>
-        
-        <div class="mainBody">
-            <p class="title" id="title">Request #</p>
+        <script src="{% static 'js/modules/sWebHeader.js' %}"></script>
+        <script src="{% static 'js/modules/requests.js' %}"></script>
+        <script>
+            const req1 = {
+                requestId: 987654,
+                creationDate: '10/10/2012',
+                resolveDate: '15/10/2012',
+                reserved: false,
+                course: 'COMP30022 - IT Project',
+                assessment: 'Project 1',
+                requestType: 'Extension',
+                requestTitle: 'Project 1 Extension Request',
+                message: 'I am sick ;\'( why must misfortune happen to me',
+                status: 'Active',
+                instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
+            };
 
-            <p class="text" id="versionAndDateCreated">Version 3 Created 08/09/25</p><p></p>
-            <p class="subTitle" id="course">COMP30022 - Deadline extension for *assessment name*</p>
-            <p class="text">Message:</p>
-            <textarea class="textBox" readonly id="message">I was unwell</textarea>
-            <p class="text">Status</p>
-            <textarea class="textBox" style="height:17px" readonly id="status">Pending</textarea>
+            const suppDocs = [
+                {
+                    name: 'iamsick.pdf',
+                    size: '20 TB'
+                },
+                {
+                    name: 'bible.pdf',
+                    size: '40 MB'
+                },
+                {
+                    name: 'medcert.pdf',
+                    size: '3 MB'
+                }
+            ]
+
+            const prevVersions = [
+                {
+                    date: "2011/09/24",
+                    message: "The power has died!! :(",
+                    documents: [
+                        { name: "iamsick.pdf", size: "20 TB" },
+                        { name: "bible.pdf", size: "40 MB" }
+                    ]
+                },
+                {
+                    date: "2011/09/23",
+                    message: "Haven't thought of an excuse yet.",
+                    documents: [
+                        { name: "bible.pdf", size: "40 MB" }
+                    ]
+                }
+            ];
+            
+
+            // Fill information relating to the current request from the database
+            fillCurrentRequestInformation(req1, prevVersions.length + 1, 'Student');
+
+            // Generate the supporting documentation for the current version of request
+            generateSuppDocTable(suppDocs, '');
+
+            // Generate version boxes for all request prevVersions in the data
+            for (let i = 0; i < prevVersions.length; i++) {
+                generateVersionBox(prevVersions[i], prevVersions.length - i)
+            }
 
 
-            <p class="text">Supporting documents</p>
-            <div class="tableSubmitted">
-                <!--row1-->
-                <span class="tableHeading">Name</span>
-                <span class="tableHeading">Size</span>
-                <span class="emptyTableEntry"></span>
-                <!--row2-->
-                <span class="tableEntry">filename.pdf</span>
-                <span class="tableEntry">29.15MB</span>
-                <span class="emptyTableEntry">
-                    <button class="standardButton">
-                        Download
-                    </button>
-                </span>
-                <!--row3-->
-                <span class="tableEntry">dogatemyhomework.jpeg</span>
-                <span class="tableEntry">420.69TB</span>
-                <span class="emptyTableEntry">
-                    <button class="standardButton">
-                        Download
-                    </button>
-                </span>
-            </div>
+        </script>
+        <!-- Student Details Box Population -->
+        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
+        <script>
+            student = {
+                firstName: 'Callum',
+                lastName: 'Sharman',
+                id: 1178429,
+                email: 'csharman@student.unimelb.edu.au'
+            }
+        </script>
+        <script src="{% static 'js/modules/editRequest.js' %}"></script>
+        <!-- Editing related functionality -->
+        <script>
+            // Only show edit button for active cases
+            if (req1.status != 'Active') {
+                hideEditButton();
+            }
+        </script>
 
-            <p></p>
-
-            <P class="title">Request History</P>
-            <div class="expandableBox">
-                <div class="expandableBoxContents">
-                    Version #2 Created 06/09/25
-                    <span class="expandButton">-</span>
-                </div>
-            </div>
-            <div class="expandableBoxSection" style="height: auto;">
-                <div class="expandableBoxContents" style="display: block;">
-                    <p class="text">Message:</p>
-                    <textarea class="textBox" readonly>The dog ate my homework</textarea>
-                    <p class="text">Supporting documents</p>
-                    <div class="tableSubmitted">
-                        <!--row1-->
-                        <span class="tableHeading" style="background-color: rgb(182, 182, 182);">Name</span>
-                        <span class="tableHeading" style="background-color: rgb(182, 182, 182);">Size</span>
-                        <span class="emptyTableEntry"></span>
-                        <!--row2-->
-                        <span class="tableEntry">filename.pdf</span>
-                        <span class="tableEntry">29.15MB</span>
-                        <span class="emptyTableEntry">
-                            <button class="standardButton">
-                                Download
-                            </button>
-                        </span>
-                        <!--row3-->
-                        <span class="tableEntry">dogatemyhomework.jpeg</span>
-                        <span class="tableEntry">420.69TB</span>
-                        <span class="emptyTableEntry">
-                            <button class="standardButton">
-                                Download
-                            </button>
-                        </span>
-                        <p></p>
-                    </div>
-                </div>
-            </div>
-
-            <p></p>
-
-            <div class="expandableBox">
-                <div class="expandableBoxContents">
-                    Version #1 Created 28/08/25
-                    <span class="expandButton">-</span>
-                </div>
-            </div>
-            <div class="expandableBoxSection" style="height: auto;">
-                <div class="expandableBoxContents" style="display: block;">
-                    <p class="text">Message:</p>
-                    <textarea class="textBox" readonly>The dog ate my homework</textarea>
-                    <p class="text">Supporting documents</p>
-                    <div class="tableSubmitted">
-                        <!--row1-->
-                        <span class="tableHeading" style="background-color: rgb(182, 182, 182);">Name</span>
-                        <span class="tableHeading" style="background-color: rgb(182, 182, 182);">Size</span>
-                        <span class="emptyTableEntry"></span>
-                        <!--row2-->
-                        <span class="tableEntry">filename.pdf</span>
-                        <span class="tableEntry">29.15MB</span>
-                        <span class="emptyTableEntry">
-                            <button class="standardButton">
-                                Download
-                            </button>
-                        </span>
-                        <!--row3-->
-                        <span class="tableEntry">dogatemyhomework.jpeg</span>
-                        <span class="tableEntry">420.69TB</span>
-                        <span class="emptyTableEntry">
-                            <button class="standardButton">
-                                Download
-                            </button>
-                        </span>
-                        <p></p>
-                    </div>
-                </div>
-            </div>
-
-            <script src="{% static 'student/viewRequest.js' %}"></script>
-        </div>
     </body>
 </html>

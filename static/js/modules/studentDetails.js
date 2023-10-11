@@ -1,3 +1,9 @@
+/** 
+ * Author: James La Fontaine
+ * Date Last Modified: October 5, 2023
+ * Description: Handles student detail functionality
+ */
+
 function fillStudentDetailsBox(student) {
     document.getElementById('studentName').innerHTML = student.firstName + ' ' + student.lastName
     document.getElementById('studentId').innerHTML = student.id

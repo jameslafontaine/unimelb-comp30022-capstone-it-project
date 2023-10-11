@@ -1,4 +1,10 @@
 /** 
+ * Author: James La Fontaine
+ * Date Last Modified: October 5, 2023
+ * Description: Handles the subject settings page
+ */
+
+/** 
  * Populates the assessment override dropdowns, extension override dropdown, and the 
  * current deadline, extension and assessment boxes 
  */

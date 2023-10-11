@@ -29,20 +29,13 @@
             var selectedOption = selectedElem.options[selectedIndex];
             var selectedValue = selectedOption.value;
             // set the id
-            url = '/instructor/set-user-id/' + selectedValue;
+            if(selectedValue <= 2){
+                url = '/student/set-user-id/' + selectedValue;
+            }
+            if(selectedValue > 2){
+                url = '/instructor/set-user-id/' + selectedValue;
+            }
             fetch(url,{method: 'PUT'}); 
-            
-            // print the id to the DOM
-            fetch('/instructor/get-id/')
-                .then(response => response.json())
-                .then(data => {
-                    // Update the page with the retrieved data
-                    document.getElementById('testSetUsr').innerHTML = "id set as: " + data.id;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-
         }
         function login(){
             var selectedElem = document.getElementById("idSelection");
@@ -58,7 +51,7 @@
 
             // if student id
             if(selectedValue <= 2) {
-
+                window.location.href = '/student/';
             }
 
         }

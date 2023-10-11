@@ -1,60 +1,80 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+
+        <!-- Meta -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Student - View AAPs</title>
+        
+        <!--
+            Author: James La Fontaine, Callum Sharman
+            Date Last Modified: October 11, 2023
+            Description: This is the page on which students can view, download and remove their AAPs
+        -->
+        
+        <!-- CSS stylesheets -->
         <link rel="stylesheet" href="{% static 'css/general.css' %}">
         <link rel="stylesheet" href="{% static 'css/header.css' %}">
         <link rel="stylesheet" href="{% static 'css/tables.css' %}">
+
+        <!-- Include Bootstrap CSS and JavaScript, and its dependencies such as Popper. Also include jQuery JavaScript -->
+        
+        <!-- Bootstrap CSS and JavaScript provided by Bootstrap. Visit https://getbootstrap.com/ for more information. -->
+        <!-- jQuery and Popper JavaScript provided by jQuery and PopperJS. Visit https://jquery.com/ and https://popperjs.com/ for more information. -->
+        <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+        rel="stylesheet" 
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
+        crossorigin="anonymous">
+        
+        <!-- JS scripts -->
+        <script type="text/javascript"
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+        <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" 
+        integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer"></script>
+        <script type="text/javascript" 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
+        crossorigin="anonymous"></script>
+
     </head>
     <body>
-        <div class="header">
-            <!-- menu -->
-            <div class="dropDown">
-                <div class="dropDownBtn">
-                    <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
-                </div>
-                <div class="dropDownMenu">
-                    <div class="dDSection" onclick="window.location.href='/student'">
-                        <p class="dDSectionText">Home</p>
-                    </div>
-                    <div class="dDSection" onclick="window.location.href='/student/submit-req'">
-                        <p class="dDSectionText">Submit a request</p>
-                    </div>
-                    <div class="dDSection" onclick="window.location.href='/student/cases'">
-                        <p class="dDSectionText">View all cases</p>
-                    </div>
-                    <div class="dDSection" onclick="window.location.href='/student/AAPs'">
-                        <p class="dDSectionText">View AAPs</p>
-                    </div>
-                </div>
-            </div>
-
-
-            <img src="{% static 'img/uomLogo.JPG' %}" style="height: 38px;">
-            <div class="headerText">Signed in as:_____</div>
-
-            <!-- settings -->
-            <div class="dropDown settings">
-                <div class="dropDownBtn" style="display: flex;">
-                    <img class="settingsBtn" src="{% static 'img/settingsIcon.png' %}" style="align-self: center;">
-                </div>
-                <div class="dropDownMenu inwards">
-                    <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
-                        <p class="dDSectionText">Email notifications</p>
-                        <input type="checkbox" style="width: 17px;height: 17px;">
-                    </div>
-                    <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
-                        <p class="dDSectionText">Dark mode</p>
-                        <input type="checkbox" style="width: 17px;height: 17px;">
-                    </div>
-
-                </div>
-            </div>
-        </div>
+        <div id="webHeaderContainer"></div>
         
         <div class="mainBody">
             <p class="title">Academic Adjustment Plans</p>
+
+            <div id="aapTableContainer">
+                <!-- Active cases displayed here dynamically -->
+
+            </div>
         </div>
+
+        <script src="{% static 'js/modules/sWebHeader.js' %}"></script>
+        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
+        <script>
+            aapData = [
+                {
+                    name: 'aap1.pdf',
+                    size: '20 TB',
+                    dateUpdated: '2001/10/10'
+                },
+                {
+                    name: 'aap2.pdf',
+                    size: '40 MB',
+                    dateUpdated: '2001/10/10'
+                },
+            ]
+
+            generateAAPTable(aapData)
+        </script>
     </body>
 </html>

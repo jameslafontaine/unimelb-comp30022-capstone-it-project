@@ -1,4 +1,10 @@
 /** 
+ * Author: James La Fontaine
+ * Date Last Modified: October 5, 2023
+ * Description: handles the students edit request page
+ */
+
+/** 
  * Hides the edit button if a case is resolved
  */
 function hideEditButton() {

@@ -1,4 +1,10 @@
 /** 
+ * Author: James La Fontaine
+ * Date Last Modified: October 5, 2023
+ * Description: Handles the functionality of popups
+ */
+
+/** 
  * Sets up the buttons for opening and closing the popups
  */
 function setupOpenClosePopupButtons() {

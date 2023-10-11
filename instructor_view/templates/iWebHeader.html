@@ -4,11 +4,25 @@
 <html lang="en">
     <head>
 
+        <!-- Meta -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Student - webHeader</title>
+        
+        <!--
+            Author: James La Fontaine, Callum Sharman
+            Date Last Modified: October 11, 2023
+            Description: This represents the header for the instructor view
+        -->
+
+        <!-- CSS stylesheets -->
         <link rel="stylesheet" href="{% static 'css/general.css' %}">
         <link rel="stylesheet" href="{% static 'css/header.css' %}">
         <link rel="stylesheet" href="{% static 'css/tables.css' %}">
+        
     </head>
     <body>
+        
         <!-- div to hold data passed from the view -->
         <div id="load-data" data-usr="{{ usr }}"></div>
 

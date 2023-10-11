@@ -1,5 +1,7 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <!-- Meta -->
         <meta charset="UTF-8">
@@ -7,8 +9,8 @@
         <title>Student - Edit Request</title>
         
         <!--
-            Author: James La Fontaine
-            Date Last Modified: October 10, 2023
+            Author: James La Fontaine, Callum Sharman
+            Date Last Modified: October 11, 2023
             Description: This is the page on which students can edit an active request
         -->
         
@@ -26,9 +28,9 @@
             }
         </style>
 
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/header.css">
-        <link rel="stylesheet" href="../css/tables.css">
+        <link rel="stylesheet" href="{% static 'css/general.css' %}">
+        <link rel="stylesheet" href="{% static 'css/header.css' %}">
+        <link rel="stylesheet" href="{% static 'css/tables.css' %}">
         
         
         
@@ -93,9 +95,9 @@
             </div>
         </div>
 
-        <script src="../js/modules/sWebHeader.js"></script>
+        <script src="{% static 'js/modules/sWebHeader.js' %}"></script>
+        <script src="{% static 'js/modules/requests.js' %}"></script>
 
-        <script src="../js/modules/editRequest.js"></script>
         <script>    
             // List of students current courses
             var courseList = [
@@ -161,7 +163,7 @@
 
                 console.log(req1.creationDate)
                 console.log(req1.message)
-                window.location.href = 'sHome.html';
+                window.location.href = '/student/';
             });
 
 

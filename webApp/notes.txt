@@ -1,4 +1,0 @@
-tie extension lengths to assignments. fine tune at the assihnemtn level. 
-Menu for each specific assignment? "Yes" (in permissions/preferences page)
-
-template responses: tutor wont see request if no checkbox there

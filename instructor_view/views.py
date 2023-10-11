@@ -13,20 +13,22 @@ USER_ID = -1 # set to -1 default to detect issues
 
 # fake data to play with before DB connected
 usr3 = {
-    'id': 3,
-    'firstName': 'Ryan',
-    'lastName': 'Goh',
+    'user_id': 3,
+    'name' : 'Ryan Goh',
+    'first_name': 'Ryan',
+    'last_name': 'Goh',
     'email': 'insertEmailHereLol@student.unimelb.edu.au',
-    'emailNotifications': 1,
-    'darkMode': 1,
+    'email_preference': 1,
+    'darkmode_preference': 1,
 }
 usr4 = {
-    'id': 4,
-    'firstName': 'Yan Zong',
-    'lastName': 'Goh',
+    'user_id': 4,
+    'name' : 'Yan Zong Goh',
+    'first_name': 'Yan Zong',
+    'last_name': 'Goh',
     'email': 'thisIsAnEmail@student.unimelb.edu.au',
-    'emailNotifications': 1,
-    'darkMode': 1,
+    'email_preference': 1,
+    'darkmode_preference': 1,
 }
 
 case12 = {
@@ -41,6 +43,29 @@ case13 = {
     'caseID' : 13,
     'users_user_id' : 1,
 }
+
+# fake user 3s courses
+course31 = {
+    'course_id': 'COMP30022',
+    'subject_name': 'IT Project',
+}
+course32 = {
+    'course_id': 'COMP30023',
+    'subject_name': 'Computer Systems',
+}
+
+#fake user 4s courses
+course41 = {
+    'course_id': 'COMP30019',
+    'subject_name': 'Graphics and Interaction',
+}
+course42 = {
+    'course_id': 'COMP30026',
+    'subject_name': 'Models of Computation',
+}
+
+# how are we getting the reserved and unresolved cases??
+
 req1 = {
     'id': 1,
     'course': 'COMP30022',
@@ -55,6 +80,7 @@ req2 = {
     'status': 'waiting for action',
     'message': 'The cat ate my homework', 
 }
+
 subj1 = {
     'id': 1,
 }
