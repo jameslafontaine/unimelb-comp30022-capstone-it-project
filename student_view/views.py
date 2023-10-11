@@ -117,21 +117,22 @@ def set_user_id(request, id):
 
 # fake data to play with before DB connected
 usr1 = {
-    'id': 1,
-    'firstName': 'Jun',
-    'lastName': 'Youn',
+    'user_id': 1,
+    'first_name': 'Jun',
+    'last_name': 'Youn',
     'email': 'blahblah@student.unimelb.edu.au',
-    'emailNotifications': 1,
-    'darkMode': 1,
+    'email_preference': 1,
+    'darkmode_preference': 1,
 }
 usr2 = {
-    'id': 2,
-    'firstName': 'James',
-    'lastName': 'La Fontaine',
+    'user_id': 2,
+    'first_name': 'James',
+    'last_name': 'La Fontaine',
     'email': 'bingbong@student.unimelb.edu.au',
-    'emailNotifications': 1,
-    'darkMode': 1,
+    'email_preference': 1,
+    'darkmode_preference': 1,
 }
+
 
 
 # fake user 1's cases
