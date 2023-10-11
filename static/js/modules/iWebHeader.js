@@ -1,3 +1,9 @@
+/** 
+ * Author: James La Fontaine, Callum Sharman
+ * Date Last Modified: October 11, 2023
+ * Description: Handles the instructors header
+ */
+
 // Fill in the relevant information for the "Signed in as:" within the header
 function populateSignIn() {
 	let headerText = document.querySelector('.headerText');

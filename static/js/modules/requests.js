@@ -1,4 +1,10 @@
 /** 
+ * Author: James La Fontaine, Callum Sharman
+ * Date Last Modified: October 11, 2023
+ * Description: Handles all functionality surrounding requests
+ */
+
+/** 
  * Generates an interactive table of all active and resolved requests for the currently selected course
  */
 function generateRequestTable(data, type) {

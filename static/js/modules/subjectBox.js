@@ -1,3 +1,9 @@
+/** 
+ * Author: James La Fontaine, Callum Sharman
+ * Date Last Modified: October 11, 2023
+ * Description: handles the loading/creating of subject boxes
+ */
+
 // These will be retrieved from an instructor in the database
 let subjects = new Array();
 let usrId;

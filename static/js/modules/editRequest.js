@@ -1,7 +1,7 @@
 /** 
  * Author: James La Fontaine
  * Date Last Modified: October 5, 2023
- * Description: This is the page on which students can submit a case
+ * Description: handles the students edit request page
  */
 
 /** 

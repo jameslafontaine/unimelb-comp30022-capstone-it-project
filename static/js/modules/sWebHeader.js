@@ -1,3 +1,9 @@
+/** 
+ * Author: James La Fontaine
+ * Date Last Modified: October _, 2023
+ * Description: Handles the students header
+ */
+
 let subjectCoordinator = {
 	id: 1234567890,
 	title: 'Prof.',
