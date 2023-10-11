@@ -501,6 +501,6 @@ function generateStudentRequest(number, courseList) {
 function handleCaseSubmission(numRequests) {
 
     for (let i=0; i < numRequests; i++) {
-        
+        // Save case to database
     }
 }
