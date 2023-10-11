@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <p>ids 1,2 are example students, ids 3,4 are example instructors</p>
+        <label>select id:</label>
+        <select id="idSelection">
+        </select>
+
+        <button onclick="setId()">set id</button>
+        <button onclick="login()">login</button>
+        <p id="testSetUsr"></p>
+
+    </body>
+    <script>
+        for (let i = 1; i <= 4; i++) {
+            const option = document.createElement('option');
+            option.textContent = i;
+            document.getElementById('idSelection').appendChild(option);
+        }
+    </script>
+
+    <script>
+        function setId(){
+            var selectedElem = document.getElementById("idSelection");
+            var selectedIndex = selectedElem.selectedIndex;
+            var selectedOption = selectedElem.options[selectedIndex];
+            var selectedValue = selectedOption.value;
+            // set the id
+            if(selectedValue <= 2){
+                url = '/student/set-user-id/' + selectedValue;
+            }
+            if(selectedValue > 2){
+                url = '/instructor/set-user-id/' + selectedValue;
+            }
+            fetch(url,{method: 'PUT'}); 
+        }
+        function login(){
+            var selectedElem = document.getElementById("idSelection");
+            var selectedIndex = selectedElem.selectedIndex;
+            var selectedOption = selectedElem.options[selectedIndex];
+            var selectedValue = selectedOption.value;
+
+            // if instructor id
+            if(selectedValue > 2){
+                window.location.href = '/instructor/';
+            }
+
+
+            // if student id
+            if(selectedValue <= 2) {
+                window.location.href = '/student/';
+            }
+
+        }
+    </script>
+
+</html>

@@ -1,0 +1,67 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <!-- Meta -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Student - webHeader</title>
+        
+        <!--
+            Author: James La Fontaine, Callum Sharman
+            Date Last Modified: October 11, 2023
+            Description: This represents the header for the instructor view
+        -->
+
+        <!-- CSS stylesheets -->
+        <link rel="stylesheet" href="{% static 'css/general.css' %}">
+        <link rel="stylesheet" href="{% static 'css/header.css' %}">
+        <link rel="stylesheet" href="{% static 'css/tables.css' %}">
+        
+    </head>
+    <body>
+        
+        <!-- div to hold data passed from the view -->
+        <div id="load-data" data-usr="{{ usr }}"></div>
+
+        <div class="header">
+            <!-- menu -->
+            <div class="dropDown">
+                <div class="dropDownBtn">
+                    <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
+                </div>
+                <div class="dropDownMenu">
+                    <div class="dDSection" onclick="window.location.href='/instructor'">
+                        <p class="dDSectionText">Home</p>
+                    </div>
+                    <div class="dDSection" onclick="window.location.href='/instructor/view-reqs'">
+                        <p class="dDSectionText">View all requests</p>
+                    </div>
+                </div>
+            </div>
+        
+            <img src="{% static 'img/uomLogo.JPG' %}" style="height: 38px;">
+            <div class="headerText" id="headerText">Signed in as: ________
+            </div>
+        
+            <!-- settings -->
+            <div class="dropDown settings">
+                <div class="dropDownBtn" style="display: flex;">
+                    <img class="settingsBtn" src="{% static 'img/settingsIcon.png' %}" style="align-self: center;">
+                </div>
+                <div class="dropDownMenu inwards">
+                    <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
+                        <p class="dDSectionText">Email notifications</p>
+                        <input type="checkbox" style="width: 17px;height: 17px;">
+                    </div>
+                    <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
+                        <p class="dDSectionText">Dark mode</p>
+                        <input type="checkbox" style="width: 17px;height: 17px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

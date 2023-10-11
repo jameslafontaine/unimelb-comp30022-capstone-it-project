@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Meta -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Instructor - Home Page</title>
+
+        <!--
+        Author: James La Fontaine, Callum Sharman
+        Date Last Modified: October 5, 2023
+        Description: This is the home page for the instructors.
+        -->
+
+        <!-- CSS stylesheets -->
+
+        <link rel="stylesheet" href="{% static 'css/general.css' %}">
+        <link rel="stylesheet" href="{% static 'css/header.css' %}">
+        <link rel="stylesheet" href="{% static 'css/tables.css' %}">
+
+    </head>
+    <body>
+
+        <!-- Include the header using JavaScript -->
+        <div id="webHeaderContainer"></div>
+        
+        <div class="mainBody">
+            <p class="title">Your Subjects</p>
+
+            <p></p>
+            <p class="text">View requests and queries for the subjects you're teaching. Subject coordinators can 
+                customise settings such as default extensions, template responses, and who can deal with particular types of cases for each subject they coordinate.
+            </p>
+
+            <br>
+
+            <div id="subjectBoxContainer">
+                <!-- Subject boxes will be added here dynamically -->
+            </div>
+
+
+        </div>
+        <script src="{% static 'js/modules/iWebHeader.js' %}"></script>
+        <script src="{% static 'js/modules/subjectBox.js' %}"></script>
+
+        <script>
+            // load all page data first
+            loadSubjectBoxData()
+                .then(() => {
+                    console.log('subjects:', subjects);
+                    // Iterate through the JSON data and create/populate expandable boxes
+                    if (Array.isArray(subjects)) {
+                        subjects.forEach(subject => {
+                            generateSubjectBox(subject);
+                        });
+                    } 
+                    else {
+                        console.log('Subjects is not an array or is empty.');
+                    } 
+                })
+        </script>
+    </body>
+</html>
