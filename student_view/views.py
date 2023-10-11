@@ -9,11 +9,23 @@ from django.http import JsonResponse, HttpResponseBadRequest
 import json
 from django.views.decorators.csrf import csrf_exempt
 
+usrId = -1 # set to -1 default to detect issues
+
 def not_found_view(request):
     return render(request, 'notFound404.html', {})
 
 def home_view(request):
     return render(request, 'sHome.html', {})
+
+def sWeb_header_view(request):
+    # take the id and edit header with initial data
+    if(usrId == 1):
+        usr = json.dumps(usr1)
+        return render(request, 'sWebHeader.html', {'usr':usr})
+    if(usrId == 2):
+        usr = json.dumps(usr2)
+        return render(request, 'sWebHeader.html', {'usr':usr})
+    # whoops maybe id doesnt exist
 
 def submit_req_view(request):
     return render(request, 'submitRequest.html', {})
@@ -77,6 +89,9 @@ def get_old_versions(request, request_id):
             'oldVersionIds' : json.dumps([1,2])})
     else: # id not found
         return not_found_view(request)
+    
+def get_user_id(request):
+    return JsonResponse({'id': usrId})
 
 # POST REQUESTS
 @csrf_exempt
@@ -90,6 +105,15 @@ def new_request(request):
         except json.JSONDecodeError:
             return HttpResponseBadRequest("Invalid JSON data")
         return JsonResponse({"message": "Case created successfully"})
+    
+# PUT REQUESTS
+@csrf_exempt
+def set_user_id(request, id):
+    if request.method == 'PUT':
+        global usrId
+        usrId = id
+        return JsonResponse({"message": "id successfully set"})
+    
 
 # fake data to play with before DB connected
 usr1 = {

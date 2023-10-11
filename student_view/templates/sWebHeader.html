@@ -12,19 +12,17 @@
         <!--
             Author: James La Fontaine, Callum Sharman
             Date Last Modified: October 11, 2023
-            Description: This represents the header for the instructor view
+            Description: This represents the header for the student view
         -->
+
 
         <!-- CSS stylesheets -->
         <link rel="stylesheet" href="{% static 'css/general.css' %}">
         <link rel="stylesheet" href="{% static 'css/header.css' %}">
         <link rel="stylesheet" href="{% static 'css/tables.css' %}">
-        
+
     </head>
     <body>
-        <!-- div to hold data passed from the view -->
-        <div id="load-data" data-usr="{{ usr }}"></div>
-
         <div class="header">
             <!-- menu -->
             <div class="dropDown">
@@ -32,19 +30,24 @@
                     <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
                 </div>
                 <div class="dropDownMenu">
-                    <div class="dDSection" onclick="window.location.href='/instructor'">
+                    <div class="dDSection" onclick="window.location.href='/student/'">
                         <p class="dDSectionText">Home</p>
                     </div>
-                    <div class="dDSection" onclick="window.location.href='/instructor/view-reqs'">
-                        <p class="dDSectionText">View all requests</p>
+                    <div class="dDSection" onclick="window.location.href='/student/submit-req'">
+                        <p class="dDSectionText">Submit a request</p>
+                    </div>
+                    <div class="dDSection" onclick="window.location.href='/student/cases'">
+                        <p class="dDSectionText">View all cases</p>
+                    </div>
+                    <div class="dDSection" onclick="window.location.href='/student/AAPs'">
+                        <p class="dDSectionText">View AAPs</p>
                     </div>
                 </div>
             </div>
-        
+
             <img src="{% static 'img/uomLogo.JPG' %}" style="height: 38px;">
-            <div class="headerText" id="headerText">Signed in as: ________
-            </div>
-        
+            <div class="headerText" id="headerText">Signed in as:_____</div>
+
             <!-- settings -->
             <div class="dropDown settings">
                 <div class="dropDownBtn" style="display: flex;">
@@ -64,3 +67,5 @@
         </div>
     </body>
 </html>
+
+

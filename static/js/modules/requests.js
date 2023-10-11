@@ -333,7 +333,7 @@ function generateStudentCases(caseList, numCases) {
 		    // Add the "View Details" button to the last cell for each request
 		    viewDetailsButton.innerText = 'View Details';
 		    viewDetailsButton.onclick = function () {
-		    	window.location.href = 'sViewRequest.html';
+		    	window.location.href = '/student/view-req/1';
             }
 		    viewDetailsCell.appendChild(viewDetailsButton);
 	    });
@@ -350,7 +350,10 @@ function generateStudentCases(caseList, numCases) {
     
 }
 
-
+/** 
+ * Generates the components required for a student request when a student is
+ * creating a case
+ */
 
 function generateStudentRequest(number, courseList) {
     const caseContainer = document.getElementById("caseContainer");
@@ -489,5 +492,15 @@ function generateStudentRequest(number, courseList) {
         document.getElementById(`requestTypeDropdown${number}`).appendChild(option);
     });
 
-    // initialise supporting documentation table with upload button
-} 
+    // Initialise supporting documentation table with upload button
+}
+
+/** 
+ * Saves each of the requests added during submission by a student
+ */
+function handleCaseSubmission(numRequests) {
+
+    for (let i=0; i < numRequests; i++) {
+        // Save case to database
+    }
+}
