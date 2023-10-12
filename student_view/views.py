@@ -115,6 +115,30 @@ def get_user_id(request):
     print(request + "Yay!") # Make PyLint happy
     return JsonResponse({'id': USER_ID})
 
+def get_threads(request, case_id):
+    if(case_id == 11):
+        return JsonResponse({
+            'threads': json.dumps([thread11])
+        })
+    elif(case_id == 12):
+        return JsonResponse({
+            'threads': json.dumps([thread12, thread13])
+        })
+    
+def get_requests_from_thread(request, thread_id):
+    if(thread_id == 11):
+        return JsonResponse({
+            'requests': json.dumps([req311, req312])
+        })
+    elif(thread_id == 12):
+        return JsonResponse({
+            'requests': json.dumps([req321])
+        })
+    elif(thread_id == 13):
+        return JsonResponse({
+            'requests': json.dumps([req322])
+        })
+
 # POST REQUESTS
 @csrf_exempt
 def student_new_request(request):

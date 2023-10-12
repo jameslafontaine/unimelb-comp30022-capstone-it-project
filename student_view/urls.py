@@ -17,6 +17,7 @@ from .views import student_new_request
 from .views import student_web_header_view
 from .views import get_user_id
 from .views import set_user_id
+from .views import * # idc this is faster
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -37,6 +38,9 @@ urlpatterns = [
     path('old-versions/<int:request_id>/', get_old_versions, name='get_old_versions'),
 
     path('get-user-id/', get_user_id, name='get_id'),
+    path('get-threads/<int:case_id>', get_threads, name='get_threads'),
+    path('requests-from-thread/<int:thread_id>/', get_requests_from_thread,
+         name='get_requests_from_thread'),
 
     # POST REQUESTS
     path('new-request/', student_new_request, name='new_request'),

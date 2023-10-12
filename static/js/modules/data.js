@@ -71,10 +71,21 @@ function sloadActiveCasesData(){
 }
 
 /**
- * STUDENT: Loads in requests from case id from the DB, returns an array full of case JSONs
+ * STUDENT: Loads in threads from case id from the DB, returns an array full of case JSONs
  */
-function sloadCaseRequestsData(caseId){
-    return loadData('/student/requests-from-case/' + caseId)
+function sloadThreadsData(caseId){
+    return loadData('/student/get-threads/' + caseId)
+        .then(data => {
+            return JSON.parse(data.threads);
+        })
+
+}
+
+/**
+ * STUDENT: Loads in requests from thread id from the DB, returns an array full of case JSONs
+ */
+function sloadRequestsData(threadId){
+    return loadData('/student/requests-from-thread/' + threadId)
         .then(data => {
             return JSON.parse(data.requests);
         })

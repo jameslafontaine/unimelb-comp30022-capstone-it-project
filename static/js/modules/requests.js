@@ -284,7 +284,7 @@ function generateStudentCases(cases) {
 
         const expandableBoxContents = document.createElement("div");
         expandableBoxContents.className = "expandableBoxContents";
-        expandableBoxContents.innerHTML = `Case #` + cases[i].caseID;
+        expandableBoxContents.innerHTML = `Case #` + cases[i].case_id;
         expandableBoxContents.setAttribute('data-bs-toggle', 'collapse')
         expandableBoxContents.setAttribute('data-bs-target', `#expandableBoxSection${i}`)
 
@@ -309,61 +309,79 @@ function generateStudentCases(cases) {
 	    const headerRow = table.insertRow();
         
         // wait for the requests to load in and then continue
-        sloadCaseRequestsData(cases[i].caseID)
-            .then(requests => {
-                for (const key in requests[0]) {
-                    if (requests[0].hasOwnProperty(key)) {
-                        const th = document.createElement('th');
-                        th.innerText = key;
-                        headerRow.appendChild(th);
-                    }
-                }
-        
-                // Add an empty header for the button column
-                const emptyHeader = document.createElement('th');
-                emptyHeader.textContent = '';
-                headerRow.appendChild(emptyHeader);
-                
-        
+        sloadThreadsData(cases[i].case_id)
+            .then(threads => {
+                // gets the first request of the first thread just to fill out the headers
+                getLatestRequest(threads[0].thread_id)
+                        .then(request => {
+                            for (const key in request) {
+                                if (request.hasOwnProperty(key)) {
+                                    const th = document.createElement('th');
+                                    th.innerText = key;
+                                    headerRow.appendChild(th);
+                                }
+                            }
+                    
+                            // Add an empty header for the button column
+                            const emptyHeader = document.createElement('th');
+                            emptyHeader.textContent = '';
+                            headerRow.appendChild(emptyHeader);
+                        })
+
                 // Create table data rows
-                requests.forEach(request => {
-                    const row = table.insertRow();
-                    for (const key in request) {
-                        if (request.hasOwnProperty(key)) {
-                            const cell = row.insertCell();
-                            cell.className = 'tableEntry'; // Apply the CSS class to the cell
-                          cell.innerHTML = request[key];
-                        }
-                    }
-        
-                    const viewDetailsCell = row.insertCell();
-                    viewDetailsCell.className = 'tableEntry';
-                    const viewDetailsButton = document.createElement('button');
-                    viewDetailsButton.className = 'standardButton';
-                    // Add the "View Details" button to the last cell for each request
-                    viewDetailsButton.innerText = 'View Details';
-                    viewDetailsButton.onclick = function () {
-                        window.location.href = '/student/view-req/' + request.request_ID;
-                    }
-                    viewDetailsCell.appendChild(viewDetailsButton);
-                });
-                // Append the table to the expandable box
-                expandableBoxSection.appendChild(table);
-        
-                container.appendChild(expandableBox);
-                container.appendChild(expandableBoxSection);
-                container.appendChild(document.createElement("br"));
+                threads.forEach(thread => {
+                    getLatestRequest(thread.thread_id)
+                        .then(request => {
+
+                            const row = table.insertRow();
+                            for (const key in request) {
+                                if (request.hasOwnProperty(key)) {
+                                    const cell = row.insertCell();
+                                    cell.className = 'tableEntry'; // Apply the CSS class to the cell
+                                cell.innerHTML = request[key];
+                                }
+                            }
+                
+                            const viewDetailsCell = row.insertCell();
+                            viewDetailsCell.className = 'tableEntry';
+                            const viewDetailsButton = document.createElement('button');
+                            viewDetailsButton.className = 'standardButton';
+                            // Add the "View Details" button to the last cell for each request
+                            viewDetailsButton.innerText = 'View Details';
+                            viewDetailsButton.onclick = function () {
+                                window.location.href = '/student/view-req/' + request.thread_id;
+                            }
+                            viewDetailsCell.appendChild(viewDetailsButton);
+                        });
+                        // Append the table to the expandable box
+                        expandableBoxSection.appendChild(table);
+                
+                        container.appendChild(expandableBox);
+                        container.appendChild(expandableBoxSection);
+                        container.appendChild(document.createElement("br"));
+                })
+                    
             })
     };
 
     
 }
 
+
+/** 
+ * returns the latest request from the given thread id
+ */
+function getLatestRequest(thread_id) {
+    return sloadRequestsData(thread_id)
+        .then(requests => {
+            return requests[0];
+        })
+}
+
 /** 
  * Generates the components required for a student request when a student is
  * creating a case
  */
-
 function generateStudentRequest(number, courseList) {
     const caseContainer = document.getElementById("caseContainer");
 

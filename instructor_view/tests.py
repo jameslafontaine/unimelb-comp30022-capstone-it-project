@@ -26,54 +26,54 @@ usr4 = {
 # fake user 3s courses
 course31 = {
     'course_id': '31',
-    'subject_name': 'COMP30022',
+    'course_name': 'IT Project',
+    'course_code': 'COMP30022',
 }
 course32 = {
     'course_id': '32',
-    'subject_name': 'COMP30023',
+    'course_name': 'Computer Systems',
+    'course_code': 'COMP30023',
 }
 #fake user 4s courses
 course41 = {
     'course_id': '41',
-    'subject_name': 'COMP30019',
+    'course_name': 'Graphics and Interaction',
+    'course_code': 'COMP30019',
 }
 course42 = {
     'course_id': '42',
-    'subject_name': 'COMP30026',
+    'course_name': 'Models of Computation',
+    'course_code': 'COMP30026',
 }
 # fake course 31 and 41 requests
 req311 = {
-    'request_ID': 311,
-    'proposed_due_date': "11-09-2023 03:50:09",
-    'documentation_ID': 876234587967986,
-    'content': 'The dog ate my homework. L',
-    'application_status': 'Pending',
-    'threadID': 4356,
+    'request_id': 311,
+    'thread_id': 456,
+    'date_created': "11-09-2023",
+    'request_content': 'The dog ate my homework. L',
+    'instructor_notes': 'This was a bad excuse lol',
 }
 req312 = {
-    'request_ID': 313,
-    'proposed_due_date': "17-12-2023 02:55:19",
-    'documentation_ID': 67456745674567,
-    'content': 'The cat ate my homework. L',
-    'application_status': 'Approved',
-    'threadID': 5678, 
+    'request_id': 312,
+    'thread_id': 457,
+    'date_created': "17-12-2023",
+    'request_content': 'The cat ate my homework. L',
+    'instructor_notes': ';lksadf;lksdaf;lksdfa;lkdsfa;lkdsfa;lksdaf',
 }
 # fake course 32 and 42 requests
 req321 = {
-    'request_ID': 321,
-    'proposed_due_date': "01-19-2023 03:50:09",
-    'documentation_ID': 8794325092384,
-    'content': 'Im very sick *sad face*',
-    'application_status': 'Pending',
-    'threadID': 9009,
+    'request_id': 321,
+    'thread_id': 458,
+    'date_created': "01-19-2023",
+    'request_content': 'Im very sick *sad face*',
+    'instructor_notes': 'bingbongbingbong',
 }
 req322 = {
-    'request_ID': 322,
-    'proposed_due_date': "01-19-2023 03:50:09",
-    'documentation_ID': 8790798709,
-    'content': 'Please just give me an extension, im begging',
-    'application_status': 'Rejected',
-    'threadID': 8109,
+    'request_id': 322,
+    'thread_id': 459,
+    'date_created': "01-19-2023",
+    'request_content': 'Please just give me an extension, im begging',
+    'instructor_notes': 'AHHHHHHHHHHHHH',
 }
 
 subjSettings = {

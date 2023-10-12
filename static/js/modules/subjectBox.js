@@ -59,7 +59,7 @@ function generateSubjectBox(subject) {
   
 	// Create the subjectCode element
 	const subjectCodeElement = document.createElement('span');
-	subjectCodeElement.textContent = `${subject.subject_name}`;
+	subjectCodeElement.textContent = `${subject.course_code} (${subject.course_name})`;
 	
 	// change to this when you can get the numreserved and unresolved
 	//subjectCodeElement.textContent = `${subject.course_id} (${subject.numReserved} reserved, ${subject.numUnresolved} unresolved)`;
