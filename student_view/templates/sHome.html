@@ -70,6 +70,13 @@
         <script src="{% static 'js/modules/sWebHeader.js' %}"></script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>
+
+            // OI CALLUM!! You are successfully loading in the cases, sick
+            loadActiveCasesData()
+                .then(cases => {
+                    console.log('cases: ', cases);
+                })
+
             activeCaseList = [
                 [
                     {

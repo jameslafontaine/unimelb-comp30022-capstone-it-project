@@ -28,7 +28,6 @@ function getUserId(){
 		.catch(error => {
 			console.error('Error:', error);
 		});
-
 }
 
 

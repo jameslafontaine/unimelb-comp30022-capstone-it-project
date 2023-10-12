@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 # as this will be deleted when fully attached, i wont bother doing the imports the long way
 from .tests import * 
 
-INSTRUCTOR_VIEW_USER_ID = -1 # set to -1 default to detect issues
+USER_ID = -1 # set to -1 default to detect issues
 
 def not_found_view(request):
     '''View not found'''
@@ -24,10 +24,10 @@ def home_view(request):
 
 def instructor_web_header_view(request):
     ''' take the id and edit header with initial data '''
-    if INSTRUCTOR_VIEW_USER_ID == 3:
+    if USER_ID == 3:
         usr = json.dumps(usr3)
         return render(request, 'iWebHeader.html', {'usr': usr})
-    if INSTRUCTOR_VIEW_USER_ID == 4:
+    if USER_ID == 4:
         usr = json.dumps(usr4)
         return render(request, 'iWebHeader.html', {'usr': usr})
     # whoops maybe id doesnt exist
@@ -86,11 +86,14 @@ def view_profile_view(request, input_id):
 # test/example purposes only, obviously not useable, must be filled in by backend
 def get_courses(request, user_id):
     '''GET request for courses'''
-    if user_id == 1:
+    if(user_id == 3):
         return JsonResponse({
-            'courses': json.dumps([course1, course1])
+            'courses': json.dumps([course31, course32])
         })
-    # id not found
+    elif(user_id == 4):
+        return JsonResponse({
+            'courses': json.dumps([course41, course42])
+        })
     return not_found_view(request)
 
 def get_request_status(request, request_id):
@@ -147,7 +150,7 @@ def get_request_history(request, student_id):
 def get_user_id(request):
     '''Get the ID of a request'''
     print(request) # pylint
-    return JsonResponse({'id': INSTRUCTOR_VIEW_USER_ID})
+    return JsonResponse({'id': USER_ID})
 
 def get_requests(requets, course_id):
     if((course_id == 31) or (course_id == 41)):
@@ -168,7 +171,7 @@ def instructor_add_aap(request):
         try:
             # Parse the JSON data from the request body
             # e.g. aap = json.loads(request.body.decode('utf-8'))
-            print(INSTRUCTOR_VIEW_USER_ID) # happy Pylint
+            print(USER_ID) # happy Pylint
         except json.JSONDecodeError:
             return HttpResponseBadRequest("Invalid JSON data")
         return JsonResponse({"message": "Case created successfully"})
@@ -189,8 +192,8 @@ def make_complex(request, request_id):
 def set_user_id(request, input_id):
     '''Set a user id'''
     if request.method == 'PUT':
-        global INSTRUCTOR_VIEW_USER_ID
-        INSTRUCTOR_VIEW_USER_ID = input_id
+        global USER_ID
+        USER_ID = input_id
         print(input_id) # Make pylint happy
         return JsonResponse({"message": "id successfully set"})
     return HttpResponseBadRequest("Invalid Request Type")

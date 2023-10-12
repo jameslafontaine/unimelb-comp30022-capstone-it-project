@@ -8,11 +8,7 @@ import json
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
-from .tests import student_user_1
-from .tests import student_user_2
-from .tests import student_request_1
-from .tests import student_request_2
-from .tests import student_case_1_2
+from .tests import *
 
 USER_ID = -1
 
@@ -28,10 +24,10 @@ def student_web_header_view(request):
     '''Student web header view'''
     # take the id and edit header with initial data
     if USER_ID == 1:
-        usr = json.dumps(student_user_1)
+        usr = json.dumps(usr1)
         return render(request, 'sWebHeader.html', {'usr':usr})
     if USER_ID == 2:
-        usr = json.dumps(student_user_2)
+        usr = json.dumps(usr2)
         return render(request, 'sWebHeader.html', {'usr':usr})
     # whoops maybe id doesnt exist
     return HttpResponseBadRequest("Not a POST request, invalid")
@@ -68,13 +64,16 @@ def get_case(request, case_id):
         return JsonResponse(student_case_1_2)
     return student_not_found_view(request)
 
-def get_active_cases(request, user_id):
+def get_active_cases(request):
     '''GET active cases'''
-    if user_id == 1: # id found
+
+    if USER_ID == 1:
         return JsonResponse({
-            'cases': {
-                'case12': student_case_1_2,
-            }
+            'cases': json.dumps([case11, case12])
+        })
+    elif USER_ID == 2:
+        return JsonResponse({
+            'cases': json.dumps([case21, case22])
         })
     return student_not_found_view(request)
 
@@ -123,7 +122,8 @@ def student_new_request(request):
 def set_user_id(request, input_id):
     '''Set user ID'''
     if request.method == 'PUT':
-        # USER_ID = input_id
+        global USER_ID
+        USER_ID = input_id
         print(input_id) # make pylint happy
         return JsonResponse({"message": "id successfully set"})
     return HttpResponseBadRequest("Not a POST request, invalid")

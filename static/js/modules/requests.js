@@ -20,6 +20,20 @@ function loadRequestData(courseId){
 		});
 }
 
+/**
+ * Loads in active cases from the DB, returns an array full of case JSONs
+ */
+function loadActiveCasesData(){
+    return fetch('/student/active-cases')
+        .then(response => response.json())
+        .then(data => {
+            return JSON.parse(data.cases);
+        })
+        .catch(error => {
+			console.error('Error:', error);
+		});
+}
+
 /** 
  * Generates an interactive table of all active and resolved requests for the currently selected course
  */
