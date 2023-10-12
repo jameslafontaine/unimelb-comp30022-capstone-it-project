@@ -91,3 +91,33 @@ function sloadRequestsData(threadId){
         })
 
 }
+
+/**
+ * STUDENT: Loads in a thread from thread id from the DB, returns JSON
+ */
+function sloadThread(threadId){
+    return loadData('/student/get-thread/' + threadId)
+        .then(data => {
+            return data;
+        })
+}
+
+/**
+ * STUDENT: Loads in a course from course id from the DB, returns JSON
+ */
+function sloadCourse(courseId){
+    return loadData('/student/get-course/' + courseId)
+        .then(data => {
+            return data;
+        })
+}
+
+/**
+ * STUDENT: Loads in an assignment from assignment id from the DB, returns JSON
+ */
+function sloadAssignment(assignId){
+    return loadData('/student/get-assignment/' + assignId)
+        .then(data => {
+            return data;
+        })
+}

@@ -44,17 +44,12 @@ def aaps_view(request):
     '''AAPs view'''
     return render(request, 'viewAAPs.html', {})
 
-def view_req_view(request, input_id):
+def view_req_view(request, thread_id):
     '''View requests view'''
     # check the id exists
 
-    if input_id == student_request_1['id']:
-        req = json.dumps(student_request_1)
-        return render(request, 'viewRequest.html', {'req':req})
-    if input_id == student_request_2['id']:
-        req = json.dumps(student_request_2)
-        return render(request, 'viewRequest.html', {'req':req})
-    return JsonResponse({'error': 'Record not found'}, status=404)
+    return render(request, 'viewRequest.html', {'thread_id': thread_id})
+    #return JsonResponse({'error': 'Record not found'}, status=404)
 
 # GET REQUESTS
 # test/example purposes only, obviously not useable, must be filled in by backend
@@ -138,6 +133,37 @@ def get_requests_from_thread(request, thread_id):
         return JsonResponse({
             'requests': json.dumps([req322])
         })
+
+def get_thread(request, thread_id):
+    if(thread_id == 11):
+        return JsonResponse(thread11)
+    elif(thread_id == 12):
+        return JsonResponse(thread12)
+    elif(thread_id == 13):
+        return JsonResponse(thread13)
+
+def get_course(request, course_id):
+    if(course_id == 31):
+        return JsonResponse(course31)
+    elif(course_id == 32):
+        return JsonResponse(course32)
+    elif(course_id == 41):
+        return JsonResponse(course41)
+    elif(course_id == 42):
+        return JsonResponse(course42)
+
+def get_assignment(request, assign_id):
+    if(assign_id == 1):
+        return JsonResponse(assign1)
+    elif(assign_id == 2):
+        return JsonResponse(assign2)
+    elif(assign_id == 3):
+        return JsonResponse(assign3)
+    elif(assign_id == 4):
+        return JsonResponse(assign4)
+    elif(assign_id == 5):
+        return JsonResponse(assign5)
+
 
 # POST REQUESTS
 @csrf_exempt

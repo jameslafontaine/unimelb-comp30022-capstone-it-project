@@ -81,32 +81,55 @@ function generateRequestTable(data, type) {
 /** 
  * Fills in the appropriate information required for the current version of a request on the review request and view resolved pages
  */
-function fillCurrentRequestInformation(requestData, versionNumber, view) {
+function fillCurrentRequestInformation(threadId, versionNumber, view) {
 
-    if (requestData.reserved == true & view == 'Instructor') {
-        document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
-    } else if (view == 'Instructor') {
-        document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; ">☆</span>'
-    } else {
-        document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId
-    }
-    
-    
-    document.getElementById("versionNum").innerHTML = 'Version #' + versionNumber
-    document.getElementById("dates").innerHTML = 'Created ' + requestData.creationDate
-    if (requestData.resolveDate != '') {
-        document.getElementById("dates").innerHTML = document.getElementById("dates").innerHTML + ', Resolved ' + requestData.resolveDate
-    }
-    document.getElementById("course").innerHTML = requestData.course
-    document.getElementById("assessment").innerHTML = requestData.assessment
-    document.getElementById("requestType").innerHTML = requestData.requestType
-    document.getElementById("requestTitle").innerHTML = requestData.requestTitle
-    document.getElementById("message").innerHTML = requestData.message
-    document.getElementById("status").innerHTML = requestData.status
-    // Place instructor notes (only exist for resolved requests)
-    if (document.getElementById("notes") !== null) {
-        document.getElementById("notes").innerHTML = requestData.instructorNotes;
-    }
+    getLatestRequest(threadId)
+        .then(requestData => {
+            if (requestData.reserved == true & view == 'Instructor') { // INSTRUCTOR COMPLEX
+                document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+            } else if (view == 'Instructor') { // INSTRUCTOR NON-COMPLEX
+                document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; ">☆</span>'
+            } else { // STUDENT
+                document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id;
+            }
+            
+            // count how many requests belong to the thread to find version number
+            sloadRequestsData(threadId)
+                .then(requests => {
+                    versionNumber = requests.length;
+                    document.getElementById("versionNum").innerHTML = 'Version #' + versionNumber
+                })
+
+            document.getElementById("dates").innerHTML = 'Created ' + requestData.date_created;
+            /* need to figure out how we can tell if a request has been resolved or not
+            if (requestData.resolveDate != '') {
+                document.getElementById("dates").innerHTML = document.getElementById("dates").innerHTML + ', Resolved ' + requestData.resolveDate
+            }
+            */
+
+            sloadThread(threadId)
+                .then(thread => {
+                    // course identification
+                    sloadCourse(thread.course_id)
+                        .then(course => {
+                            document.getElementById("course").innerHTML = 
+                                                course.course_code + ' - ' + course.course_name;
+                        })
+                    // assignment name
+                    sloadAssignment(thread.assignment_id)
+                        .then(assignment => {
+                            document.getElementById("assessment").innerHTML = assignment.assignment_name;
+                        })
+                    document.getElementById("requestType").innerHTML = thread.request_type;
+                    document.getElementById("status").innerHTML = thread.current_status;
+                })
+            //document.getElementById("requestTitle").innerHTML = requestData.requestTitle
+            document.getElementById("message").innerHTML = requestData.request_content;
+            // Place instructor notes (only exist for resolved requests)
+            //if (document.getElementById("notes") !== null) {
+            //    document.getElementById("notes").innerHTML = requestData.instructorNotes;
+            //}
+        })
 };
 
 
