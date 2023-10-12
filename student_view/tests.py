@@ -108,25 +108,6 @@ course42 = {
     'course_code': 'COMP30026',
 }
 
-usr2 = {
-    'user_id': 2,
-    'name': 'James La Fontaine',
-    'first_name': 'James',
-    'last_name': 'La Fontaine',
-    'email': 'bingbong@student.unimelb.edu.au',
-    'email_preference': 1,
-    'darkmode_preference': 1,
-}
-# user 2's cases
-case21 = {
-    'case_id' : 21,
-    'user_id' : 2,
-}
-case22 = {
-    'case_id' : 22,
-    'user_id' : 2,
-}
-
 assign1 = {
     'assignment_id': 1,
     'course_id': 31,
@@ -171,4 +152,26 @@ assign5 = {
     'assignment_weightage': 6,
     'start_date': "54-43-2023",
     'due_date': "56-56-2023",
+}
+
+
+
+
+usr2 = {
+    'user_id': 2,
+    'name': 'James La Fontaine',
+    'first_name': 'James',
+    'last_name': 'La Fontaine',
+    'email': 'bingbong@student.unimelb.edu.au',
+    'email_preference': 1,
+    'darkmode_preference': 1,
+}
+# user 2's cases
+case21 = {
+    'case_id' : 21,
+    'user_id' : 2,
+}
+case22 = {
+    'case_id' : 22,
+    'user_id' : 2,
 }

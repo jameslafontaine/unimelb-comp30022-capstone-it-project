@@ -121,3 +121,14 @@ function sloadAssignment(assignId){
             return data;
         })
 }
+
+/**
+ * STUDENT: Generates a list of "previous versions" of a request
+ */
+function getPreviousVersions(threadId){
+    return sloadRequestsData(threadId)
+        .then(requests => {
+            // cuts off the first request (current request)
+            return requests.splice(1);
+        })
+}

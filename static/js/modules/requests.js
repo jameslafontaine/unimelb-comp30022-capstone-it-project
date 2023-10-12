@@ -76,12 +76,10 @@ function generateRequestTable(data, type) {
 	tableContainer.appendChild(table);
 };
 
-
-
 /** 
  * Fills in the appropriate information required for the current version of a request on the review request and view resolved pages
  */
-function fillCurrentRequestInformation(threadId, versionNumber, view) {
+function fillCurrentRequestInformation(threadId, view) {
 
     getLatestRequest(threadId)
         .then(requestData => {
@@ -131,8 +129,6 @@ function fillCurrentRequestInformation(threadId, versionNumber, view) {
             //}
         })
 };
-
-
 
 /** 
  * Generates a supporting documentation table, number denotes which supporting documentation table this is on the page
@@ -199,7 +195,7 @@ function generateVersionBox(version, number) {
 
     const expandableBoxContents = document.createElement("div");
     expandableBoxContents.className = "expandableBoxContents";
-    expandableBoxContents.innerHTML = `Version #${number} (${version.date})`;
+    expandableBoxContents.innerHTML = `Version #${number} (${version.date_created})`;
     expandableBoxContents.setAttribute('data-bs-toggle', 'collapse')
     expandableBoxContents.setAttribute('data-bs-target', `#expandableBoxSection${number}`)
 
@@ -227,7 +223,7 @@ function generateVersionBox(version, number) {
     messageTextarea.className = "textBox";
     messageTextarea.setAttribute("readonly", true);
     messageTextarea.style = "resize:none"
-    messageTextarea.textContent = version.message;
+    messageTextarea.textContent = version.request_content;
     
     const suppDocSpan = document.createElement("p");
     suppDocSpan.className = "text";
@@ -249,7 +245,7 @@ function generateVersionBox(version, number) {
     container.appendChild(expandableBoxSection);
     container.appendChild(document.createElement("br"));
     
-    generateSuppDocTable(version.documents, number);
+    //generateSuppDocTable(version.documents, number);
     //container.appendChild(document.createElement("br"));
     //container.appendChild(document.createElement("br"));
     //container.appendChild(document.createElement("br"));

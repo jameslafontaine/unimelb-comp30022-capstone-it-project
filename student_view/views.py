@@ -68,7 +68,7 @@ def get_active_cases(request):
         })
     elif USER_ID == 2:
         return JsonResponse({
-            'cases': json.dumps([case21, case22])
+            'cases': json.dumps([case11, case12])
         })
     return student_not_found_view(request)
 

@@ -125,19 +125,6 @@
         <script>createHeader("student")</script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>
-            const req1 = {
-                requestId: 987654,
-                creationDate: '10/10/2012',
-                resolveDate: '15/10/2012',
-                reserved: false,
-                course: 'COMP30022 - IT Project',
-                assessment: 'Project 1',
-                requestType: 'Extension',
-                requestTitle: 'Project 1 Extension Request',
-                message: 'I am sick ;\'( why must misfortune happen to me',
-                status: 'Active',
-                instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
-            };
 
             const suppDocs = [
                 {
@@ -153,38 +140,24 @@
                     size: '3 MB'
                 }
             ]
-
-            const prevVersions = [
-                {
-                    date: "2011/09/24",
-                    message: "The power has died!! :(",
-                    documents: [
-                        { name: "iamsick.pdf", size: "20 TB" },
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                },
-                {
-                    date: "2011/09/23",
-                    message: "Haven't thought of an excuse yet.",
-                    documents: [
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                }
-            ];
             
             // read in thread id from the provided data
             let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
 
             // Fill information relating to the current request from the database
-            fillCurrentRequestInformation(threadId, prevVersions.length + 1, 'Student');
+            fillCurrentRequestInformation(threadId, 'Student');
 
             // Generate the supporting documentation for the current version of request
             generateSuppDocTable(suppDocs, '');
-
-            // Generate version boxes for all request prevVersions in the data
-            for (let i = 0; i < prevVersions.length; i++) {
-                generateVersionBox(prevVersions[i], prevVersions.length - i)
-            }
+            
+            // generate a list of all previous versions of a thread
+            getPreviousVersions(threadId)
+                .then(prevVersions => {
+                    // Generate version boxes for all request prevVersions in the data
+                    for (let i = 0; i < prevVersions.length; i++) {
+                        generateVersionBox(prevVersions[i], prevVersions.length - i)
+                    }
+                })
 
 
         </script>
@@ -202,9 +175,11 @@
         <!-- Editing related functionality -->
         <script>
             // Only show edit button for active cases
+            /*
             if (req1.status != 'Active') {
                 hideEditButton();
             }
+            */
         </script>
 
     </body>
