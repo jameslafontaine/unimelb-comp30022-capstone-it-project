@@ -1,38 +1,8 @@
 /** 
  * Author: James La Fontaine, Callum Sharman
- * Date Last Modified: October 11, 2023
+ * Date Last Modified: October 12, 2023
  * Description: Handles all functionality surrounding requests
  */
-
-
-/**
- * Loads in requests, given a course from the DB, returns an array full of request JSONs
- */
-function loadRequestData(courseId){
-
-    return fetch('/instructor/requests/' + courseId)
-        .then(response => response.json())
-        .then(data => {
-            return JSON.parse(data.requests);
-        })
-        .catch(error => {
-			console.error('Error:', error);
-		});
-}
-
-/**
- * Loads in active cases from the DB, returns an array full of case JSONs
- */
-function loadActiveCasesData(){
-    return fetch('/student/active-cases')
-        .then(response => response.json())
-        .then(data => {
-            return JSON.parse(data.cases);
-        })
-        .catch(error => {
-			console.error('Error:', error);
-		});
-}
 
 /** 
  * Generates an interactive table of all active and resolved requests for the currently selected course
@@ -299,8 +269,8 @@ function handleComplexRequestFunctionality(requestData) {
  * Generates expandable tables for each of a student's active cases
  */
 
-function generateStudentCases(caseList, numCases) {
-
+function generateStudentCases(cases) {
+    numCases = cases.length;
     const container = document.getElementById("caseContainer");
 
     // For each active case, create an expandable table containing all requests in that case
@@ -314,7 +284,7 @@ function generateStudentCases(caseList, numCases) {
 
         const expandableBoxContents = document.createElement("div");
         expandableBoxContents.className = "expandableBoxContents";
-        expandableBoxContents.innerHTML = `Case #${i+1}`;
+        expandableBoxContents.innerHTML = `Case #` + cases[i].caseID;
         expandableBoxContents.setAttribute('data-bs-toggle', 'collapse')
         expandableBoxContents.setAttribute('data-bs-target', `#expandableBoxSection${i}`)
 
@@ -338,49 +308,52 @@ function generateStudentCases(caseList, numCases) {
         // Create table header row
 	    const headerRow = table.insertRow();
         
-	    for (const key in caseList[i][0]) {
-		    if (caseList[i][0].hasOwnProperty(key)) {
-			    const th = document.createElement('th');
-			    th.innerText = key;
-			    headerRow.appendChild(th);
-		    }
-	    }
-
-        // Add an empty header for the button column
-	    const emptyHeader = document.createElement('th');
-	    emptyHeader.textContent = '';
-	    headerRow.appendChild(emptyHeader);
-	    
-	    // Create table data rows
-	    caseList[i].forEach(request => {
-		    const row = table.insertRow();
-		    for (const key in request) {
-			    if (request.hasOwnProperty(key)) {
-			    	const cell = row.insertCell();
-				    cell.className = 'tableEntry'; // Apply the CSS class to the cell
-                  cell.innerHTML = request[key];
-			    }
-	        }
-
-		    const viewDetailsCell = row.insertCell();
-		    viewDetailsCell.className = 'tableEntry';
-		    const viewDetailsButton = document.createElement('button');
-		    viewDetailsButton.className = 'standardButton';
-		    // Add the "View Details" button to the last cell for each request
-		    viewDetailsButton.innerText = 'View Details';
-		    viewDetailsButton.onclick = function () {
-		    	window.location.href = '/student/view-req/1';
-            }
-		    viewDetailsCell.appendChild(viewDetailsButton);
-	    });
-	    // Append the table to the expandable box
-	    expandableBoxSection.appendChild(table);
-
-        container.appendChild(expandableBox);
-        container.appendChild(expandableBoxSection);
-        container.appendChild(document.createElement("br"));
-
-
+        // wait for the requests to load in and then continue
+        sloadCaseRequestsData(cases[i].caseID)
+            .then(requests => {
+                for (const key in requests[0]) {
+                    if (requests[0].hasOwnProperty(key)) {
+                        const th = document.createElement('th');
+                        th.innerText = key;
+                        headerRow.appendChild(th);
+                    }
+                }
+        
+                // Add an empty header for the button column
+                const emptyHeader = document.createElement('th');
+                emptyHeader.textContent = '';
+                headerRow.appendChild(emptyHeader);
+                
+        
+                // Create table data rows
+                requests.forEach(request => {
+                    const row = table.insertRow();
+                    for (const key in request) {
+                        if (request.hasOwnProperty(key)) {
+                            const cell = row.insertCell();
+                            cell.className = 'tableEntry'; // Apply the CSS class to the cell
+                          cell.innerHTML = request[key];
+                        }
+                    }
+        
+                    const viewDetailsCell = row.insertCell();
+                    viewDetailsCell.className = 'tableEntry';
+                    const viewDetailsButton = document.createElement('button');
+                    viewDetailsButton.className = 'standardButton';
+                    // Add the "View Details" button to the last cell for each request
+                    viewDetailsButton.innerText = 'View Details';
+                    viewDetailsButton.onclick = function () {
+                        window.location.href = '/student/view-req/' + request.request_ID;
+                    }
+                    viewDetailsCell.appendChild(viewDetailsButton);
+                });
+                // Append the table to the expandable box
+                expandableBoxSection.appendChild(table);
+        
+                container.appendChild(expandableBox);
+                container.appendChild(expandableBoxSection);
+                container.appendChild(document.createElement("br"));
+            })
     };
 
     

@@ -79,9 +79,21 @@ def get_active_cases(request):
 
 def get_requests_from_case(request, case_id):
     '''GET requests from case'''
-    if case_id == 1:
+    if case_id == 11:
         return JsonResponse({
-            'requestIds': json.dumps([1,2])
+            'requests': json.dumps([req311, req312])
+        })
+    if case_id == 12:
+        return JsonResponse({
+            'requests': json.dumps([req321, req322])
+        })
+    if case_id == 21:
+        return JsonResponse({
+            'requests': json.dumps([req311, req312])
+        })
+    if case_id == 22:
+        return JsonResponse({
+            'requests': json.dumps([req321, req322])
         })
     return student_not_found_view(request)
 
