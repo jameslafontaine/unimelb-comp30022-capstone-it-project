@@ -5,7 +5,7 @@
  */
 
 /**
- * GET call to API to 'url', returns a JSON on success 
+ * GET call to 'url', returns a JSON on success 
  * (if array make sure to JSON.parse() the data needed from the string outside).
  */
 function loadData(url){
@@ -21,7 +21,7 @@ function loadData(url){
 }
 
 /**
- * GET call to API to 'url', returns text on success 
+ * GET call to 'url', returns text on success 
  * Used for situations where HTML is being retrieved
  */
 function loadTextData(url){
@@ -37,23 +37,9 @@ function loadTextData(url){
 }
 
 /**
- * PUT call to API to 'url', sends the data in 'request' 
- */
-function putData(url, request){
-
-}
-
-/**
- * POST call to API to 'url', sends the data in 'request' 
- */
-function postData(url, request){
-
-}
-
-/**
  * INSTRUCTOR: Loads in requests, given a course from the DB, returns an array full of request JSONs
  */
-function iloadRequestData(courseId){
+function iloadThreadData(courseId){
     return loadData('/instructor/requests/' + courseId)
         .then(data =>{
             return JSON.parse(data.requests)

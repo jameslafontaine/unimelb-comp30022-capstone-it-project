@@ -100,7 +100,7 @@
 
             // Put subject code at start of title
             var course = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
-            subjectCode = course.subject_name;
+            subjectCode = course.course_code;
             
             // Get the title by its ID
             const myElement = document.getElementById("title").innerHTML = 
@@ -127,7 +127,7 @@
                     status: 'Rejected'
                 },
             ];
-
+// OI CALLUM THIS IS WHERE YOU WERE LAST!! You need to know the values "current_status" in a thread can take so that you can generate awaiting and resolved tables and use those to fill out the tables
             // Call the function with the JSON data
             generateRequestTable(jsonDataAwaiting, 'Awaiting');
             generateRequestTable(jsonDataResolved, 'Resolved');

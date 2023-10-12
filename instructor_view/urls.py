@@ -25,6 +25,7 @@ from .views import make_complex
 from .views import request_response
 from .views import change_settings
 from .views import set_user_id
+from .views import * # i know i know i know. Ill change it later blah blah
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -50,7 +51,7 @@ urlpatterns = [
 
 
     path('get-user-id/', get_user_id, name='get_id'),
-    path('requests/<int:course_id>', get_requests, name='get_requests'),
+    path('threads/<int:course_id>', get_threads, name='get_threads'),
 
     # POST REQUESTS
     path('AAP/', instructor_add_aap, name='add_AAP'),

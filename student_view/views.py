@@ -8,7 +8,7 @@ import json
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
-from .tests import *
+from canvas_app.tests import *
 
 USER_ID = -1
 

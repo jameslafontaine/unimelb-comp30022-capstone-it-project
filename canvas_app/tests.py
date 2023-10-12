@@ -1,8 +1,7 @@
 """
-Tests for student view
+Tests for use until backend connected
 """
 # from django.test import TestCase
-
 usr1 = {
     'user_id': 1,
     'name': 'Jun Youn',
@@ -12,12 +11,51 @@ usr1 = {
     'email_preference': 1,
     'darkmode_preference': 1,
 }
-# user 1's cases
+usr2 = {
+    'user_id': 2,
+    'name': 'James La Fontaine',
+    'first_name': 'James',
+    'last_name': 'La Fontaine',
+    'email': 'bingbong@student.unimelb.edu.au',
+    'email_preference': 1,
+    'darkmode_preference': 1,
+}
+usr3 = {
+    'user_id': 3,
+    'name' : 'Ryan Goh',
+    'first_name': 'Ryan',
+    'last_name': 'Goh',
+    'email': 'insertEmailHereLol@student.unimelb.edu.au',
+    'email_preference': 1,
+    'darkmode_preference': 1,
+}
+usr4 = {
+    'user_id': 4,
+    'name' : 'Yan Zong Goh',
+    'first_name': 'Yan Zong',
+    'last_name': 'Goh',
+    'email': 'thisIsAnEmail@student.unimelb.edu.au',
+    'email_preference': 1,
+    'darkmode_preference': 1,
+}
+
 case11 = {
     'case_id' : 11,
     'user_id' : 1,
 }
-# case11's threads
+case12 = {
+    'case_id' : 12,
+    'user_id' : 1,
+}
+case21 = {
+    'case_id' : 21,
+    'user_id' : 2,
+}
+case22 = {
+    'case_id' : 22,
+    'user_id' : 2,
+}
+
 thread11 = {
     'thread_id': 11,
     'case_id': 11,
@@ -28,28 +66,6 @@ thread11 = {
     'current_status':'pending',
     'assignment_id': 1,
 }
-
-# thread11's requests
-req311 = {
-    'request_id': 311,
-    'thread_id': 11,
-    'date_created': "11-09-2023",
-    'request_content': 'The dog ate my homework. L',
-    'instructor_notes': 'This was a bad excuse lol',
-}
-req312 = {
-    'request_id': 312,
-    'thread_id': 11,
-    'date_created': "17-12-2023",
-    'request_content': 'The cat ate my homework. L',
-    'instructor_notes': ';lksadf;lksdaf;lksdfa;lkdsfa;lkdsfa;lksdaf',
-}
-
-case12 = {
-    'case_id' : 12,
-    'user_id' : 1,
-}
-# case12's threads
 thread12 = {
     'thread_id': 12,
     'case_id': 12,
@@ -70,7 +86,21 @@ thread13 = {
     'current_status':'pending',
     'assignment_id':3,
 }
-# thread12's requests
+
+req311 = {
+    'request_id': 311,
+    'thread_id': 11,
+    'date_created': "11-09-2023",
+    'request_content': 'The dog ate my homework. L',
+    'instructor_notes': 'This was a bad excuse lol',
+}
+req312 = {
+    'request_id': 312,
+    'thread_id': 11,
+    'date_created': "17-12-2023",
+    'request_content': 'The cat ate my homework. L',
+    'instructor_notes': ';lksadf;lksdaf;lksdfa;lkdsfa;lkdsfa;lksdaf',
+}
 req321 = {
     'request_id': 321,
     'thread_id': 12,
@@ -78,7 +108,6 @@ req321 = {
     'request_content': 'Im very sick *sad face*',
     'instructor_notes': 'bingbongbingbong',
 }
-# thread13's requests
 req322 = {
     'request_id': 322,
     'thread_id': 13,
@@ -152,26 +181,4 @@ assign5 = {
     'assignment_weightage': 6,
     'start_date': "54-43-2023",
     'due_date': "56-56-2023",
-}
-
-
-
-
-usr2 = {
-    'user_id': 2,
-    'name': 'James La Fontaine',
-    'first_name': 'James',
-    'last_name': 'La Fontaine',
-    'email': 'bingbong@student.unimelb.edu.au',
-    'email_preference': 1,
-    'darkmode_preference': 1,
-}
-# user 2's cases
-case21 = {
-    'case_id' : 21,
-    'user_id' : 2,
-}
-case22 = {
-    'case_id' : 22,
-    'user_id' : 2,
 }

@@ -10,7 +10,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 
 # as this will be deleted when fully attached, i wont bother doing the imports the long way
-from .tests import * 
+from canvas_app.tests import *
 
 USER_ID = -1 # set to -1 default to detect issues
 
@@ -148,20 +148,25 @@ def get_request_history(request, student_id):
     return not_found_view(request)
 
 def get_user_id(request):
-    '''Get the ID of a request'''
+    '''Get the ID of the user'''
     print(request) # pylint
     return JsonResponse({'id': USER_ID})
 
-def get_requests(requets, course_id):
-    if((course_id == 31) or (course_id == 41)):
+def get_threads(request, course_id):
+    '''Get the threads belonging to a course'''
+    print(request) # pylint
+    if((course_id == 31)):
         return JsonResponse({
-            'requests': json.dumps([req311, req312])
+            'threads': json.dumps([thread11])
         })
-    if((course_id == 32) or (course_id == 42)):
+    elif((course_id == 32)):
         return JsonResponse({
-            'requests': json.dumps([req321, req322])
+            'threads': json.dumps([thread12])
         })
-
+    elif((course_id == 41)):
+        return JsonResponse({
+            'threads': json.dumps([thread13])
+        })
 
 # POST REQUESTS
 @csrf_exempt
