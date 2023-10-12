@@ -19,7 +19,6 @@ from .views import get_subject_settings
 from .views import get_aap
 from .views import get_request_history
 from .views import get_user_id
-from .views import get_requests
 from .views import instructor_add_aap
 from .views import make_complex
 from .views import request_response
