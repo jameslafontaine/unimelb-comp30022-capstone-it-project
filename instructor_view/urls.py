@@ -32,7 +32,7 @@ urlpatterns = [
 
     path('not-found-404/', not_found_view, name='not_found_view'),
 
-    path('review-req/<int:input_id>/', review_req_view, name='review-req'),
+    path('review-req/<int:thread_id>/', review_req_view, name='review-req'),
     path('view-reqs/<int:id>', view_reqs_view, name='view-reqs'),
     path('view-resolved/<int:input_id>/', view_resolved_view, name='view-resolved'),
     path('subject-settings/<int:input_id>/', subj_settings_view, name='subject-settings'),
@@ -51,6 +51,8 @@ urlpatterns = [
 
     path('get-user-id/', get_user_id, name='get_id'),
     path('threads/<int:course_id>', get_threads, name='get_threads'),
+    path('get-threads-pending/<int:course_id>', get_threads_pending, name='get_threads_pending'),
+    path('get-threads-resolved/<int:course_id>', get_threads_resolved, name='get_threads_resolved'),
 
     # POST REQUESTS
     path('AAP/', instructor_add_aap, name='add_AAP'),

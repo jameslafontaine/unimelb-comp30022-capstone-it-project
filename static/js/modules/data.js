@@ -79,30 +79,30 @@ function sloadRequestsData(threadId){
 }
 
 /**
- * STUDENT: Loads in a thread from thread id from the DB, returns JSON
+ * GENERIC: Loads in a thread from thread id from the DB, returns JSON
  */
-function sloadThread(threadId){
-    return loadData('/student/get-thread/' + threadId)
+function loadThread(threadId){
+    return loadData('/get-thread/' + threadId)
         .then(data => {
             return data;
         })
 }
 
 /**
- * STUDENT: Loads in a course from course id from the DB, returns JSON
+ * GENERIC: Loads in a course from course id from the DB, returns JSON
  */
-function sloadCourse(courseId){
-    return loadData('/student/get-course/' + courseId)
+function loadCourse(courseId){
+    return loadData('/get-course/' + courseId)
         .then(data => {
             return data;
         })
 }
 
 /**
- * STUDENT: Loads in an assignment from assignment id from the DB, returns JSON
+ * GENERIC: Loads in an assignment from assignment id from the DB, returns JSON
  */
-function sloadAssignment(assignId){
-    return loadData('/student/get-assignment/' + assignId)
+function loadAssignment(assignId){
+    return loadData('/get-assignment/' + assignId)
         .then(data => {
             return data;
         })
@@ -111,10 +111,30 @@ function sloadAssignment(assignId){
 /**
  * STUDENT: Generates a list of "previous versions" of a request
  */
-function getPreviousVersions(threadId){
+function sGetPreviousVersions(threadId){
     return sloadRequestsData(threadId)
         .then(requests => {
             // cuts off the first request (current request)
             return requests.splice(1);
+        })
+}
+
+/**
+ * INSTRUCTOR: Gets a list of all requests "awaiting action"
+ */
+function iloadThreadsPending(courseId){
+    return loadData('/instructor/get-threads-pending/' + courseId)
+        .then(data => {
+            return JSON.parse(data.threads);
+        })
+}
+
+/**
+ * INSTRUCTOR: Gets a list of all "resolved" requests
+ */
+function iloadThreadsResolved(courseId){
+    return loadData('/instructor/get-threads-resolved/' + courseId)
+        .then(data => {
+            return JSON.parse(data.threads);
         })
 }

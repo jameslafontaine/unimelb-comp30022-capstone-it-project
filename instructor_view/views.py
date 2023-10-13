@@ -33,15 +33,9 @@ def instructor_web_header_view(request):
     # whoops maybe id doesnt exist
     return HttpResponseBadRequest("Invalid Request Type")
 
-def review_req_view(request, input_id):
+def review_req_view(request, thread_id):
     ''' check the id exists '''
-    if input_id == req1['id']:
-        req = json.dumps(req1)
-        return render(request, 'reviewRequest.html', {'req':req})
-    if input_id == req2['id']:
-        req = json.dumps(req2)
-        return render(request, 'reviewRequest.html', {'req':req})
-    return JsonResponse({'error': 'Record not found'}, status=404)
+    return render(request, 'reviewRequest.html', {'thread_id': thread_id})
 
 def view_reqs_view(request, id):
     courseId = id
@@ -167,6 +161,23 @@ def get_threads(request, course_id):
         return JsonResponse({
             'threads': json.dumps([thread13])
         })
+
+def get_threads_pending(request, course_id):
+    ''' Gets the pending threads belonging to a course '''
+
+    # just pretending here that they are specific to a course haha
+    return JsonResponse({
+            'threads': json.dumps([thread11])
+        })
+
+def get_threads_resolved(request, course_id):
+    ''' Gets the resolved (not pending) threads belonging to a course '''
+
+    # just pretending here that they are specific to a course haha
+    return JsonResponse({
+            'threads': json.dumps([thread12, thread13])
+        })
+
 
 # POST REQUESTS
 @csrf_exempt

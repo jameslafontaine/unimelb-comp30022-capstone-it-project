@@ -47,7 +47,6 @@
     </head>
     <body>
 
-
         <!-- div to hold data passed from the view -->
         <div id="load-data" data-course="{{ course }}"></div>
 
@@ -106,32 +105,15 @@
             const myElement = document.getElementById("title").innerHTML = 
             subjectCode + document.getElementById("title").innerHTML;
 
-
-            // All requests for the current subject the instructor is looking at
-            const jsonDataAwaiting = [
-                {
-                    reserved: true,
-                    date: '29/08/2023',
-                    studentName: 'Joe Bloggs',
-                    requestType: 'Extension',
-                    status: 'Pending'
-                },
-            ];
-
-            const jsonDataResolved = [
-                {
-                    reserved: false,
-                    date: '29/08/2023',
-                    studentName: 'Joe Bloggs',
-                    requestType: 'Extension',
-                    status: 'Rejected'
-                },
-            ];
-// OI CALLUM THIS IS WHERE YOU WERE LAST!! You need to know the values "current_status" in a thread can take so that you can generate awaiting and resolved tables and use those to fill out the tables
             // Call the function with the JSON data
-            generateRequestTable(jsonDataAwaiting, 'Awaiting');
-            generateRequestTable(jsonDataResolved, 'Resolved');
-
+            iloadThreadsPending(course.course_id)
+                .then(threads => {
+                    generateRequestTable(threads, 'Awaiting');
+                })
+            iloadThreadsResolved(course.course_id)
+                .then(threads => {
+                    generateRequestTable(threads, 'Resolved');
+                })
             
         </script>
 

@@ -41,9 +41,6 @@ urlpatterns = [
     path('get-threads/<int:case_id>', get_threads, name='get_threads'),
     path('requests-from-thread/<int:thread_id>/', get_requests_from_thread,
          name='get_requests_from_thread'),
-    path('get-thread/<int:thread_id>', get_thread, name='get_thread'),
-    path('get-course/<int:course_id>', get_course, name='get_course'),
-    path('get-assignment/<int:assign_id>', get_assignment, name='get_assignment'),
 
     # POST REQUESTS
     path('new-request/', student_new_request, name='new_request'),

@@ -63,17 +63,17 @@ thread11 = {
     'date_updated': "11-09-2023",
     'request_type':'dumb', 
     'complex_case':1,
-    'current_status':'pending',
+    'current_status':'PENDING',
     'assignment_id': 1,
 }
 thread12 = {
     'thread_id': 12,
     'case_id': 12,
-    'course_id': 32,
+    'course_id': 31,
     'date_updated': "01-19-2023",
     'request_type':'dumb',
     'complex_case':0,
-    'current_status':'pending',
+    'current_status':'APPROVED',
     'assignment_id':2,
 }
 thread13 = {
@@ -83,7 +83,7 @@ thread13 = {
     'date_updated': "01-19-2023",
     'request_type':'dumb',
     'complex_case':1,
-    'current_status':'pending',
+    'current_status':'REJECTED',
     'assignment_id':3,
 }
 

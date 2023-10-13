@@ -1,76 +1,82 @@
 /** 
  * Author: James La Fontaine, Callum Sharman
- * Date Last Modified: October 12, 2023
+ * Date Last Modified: October 14, 2023
  * Description: Handles all functionality surrounding requests
  */
 
 /** 
  * Generates an interactive table of all active and resolved requests for the currently selected course
  */
-function generateRequestTable(data, type) {
+function generateRequestTable(threads, type) {
 	const tableContainer = document.getElementById('tableContainer' + type);
 	const table = document.createElement('table');
 	
 	// Create table header row
 	const headerRow = table.insertRow();
-	
-	for (const key in data[0]) {
-		if (data[0].hasOwnProperty(key)) {
-			const th = document.createElement('th');
-			th.innerText = key;
-			headerRow.appendChild(th);
-		}
-	}
-	
-	// Add an empty header for the button column
-	const emptyHeader = document.createElement('th');
-	emptyHeader.textContent = '';
-	headerRow.appendChild(emptyHeader);
-	
-	// Create table data rows
-	data.forEach(request => {
-		const row = table.insertRow();
-		for (const key in request) {
-			if (request.hasOwnProperty(key)) {
-				const cell = row.insertCell();
-				cell.className = 'tableEntry'; // Apply the CSS class to the cell
-				 // Check if the key is 'reserved'
-				 if (key === 'reserved') {
-                    // Check if 'reserved' is true, and display a yellow star for such requests
-                    if (request[key] === true) {
-                        const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
-                        cell.innerHTML = yellowStar;
-                    } else {
-                        // Display a hollow star for non-reserved requests
-                        const hollowStar = '<span style="font-size: 300%; ">☆</span>';
-                        cell.innerHTML = hollowStar;
-                    }
-                } else {
-                    // For other keys, just display the value as is
-                    cell.innerHTML = request[key];
-                }
-			}
-		}
 
-		const reviewCell = row.insertCell();
-		reviewCell.className = 'tableEntry';
-		const requestButton = document.createElement('button');
-		requestButton.className = 'standardButton';
-		// Add the "Review" button to the last cell if this is the awaiting action table
-		if (type === 'Awaiting') {
-			requestButton.innerText = 'Review';
-			requestButton.onclick = function () {
-				window.location.href = '/instructor/review-req/1'; // id needs to be fetched and put in here 
-			};
-		// Otherwise add the "View details" button to the last cell of a row if this is the resolved table
-		} else if (type === 'Resolved') {
-			requestButton.innerText = 'View details';
-			requestButton.onclick = function () {
-				window.location.href = '/instructor/view-resolved/1'; 
-			};
-		}
-		reviewCell.appendChild(requestButton);
-	});
+    getLatestRequest(threads[0].thread_id)
+        .then(request => {
+            for (const key in request) {
+                if (request.hasOwnProperty(key)) {
+                    const th = document.createElement('th');
+                    th.innerText = key;
+                    headerRow.appendChild(th);
+                }
+            }
+
+            // Add an empty header for the button column
+            const emptyHeader = document.createElement('th');
+            emptyHeader.textContent = '';
+            headerRow.appendChild(emptyHeader);
+        })
+	
+    // Create table data rows
+	threads.forEach(thread => {
+        getLatestRequest(thread.thread_id)
+            .then(request => {
+                const row = table.insertRow();
+                for (const key in request) {
+                    if (request.hasOwnProperty(key)) {
+                        const cell = row.insertCell();
+                        cell.className = 'tableEntry'; // Apply the CSS class to the cell
+                        // Check if the key is 'reserved'
+                        if (key === 'reserved') {
+                            // Check if 'reserved' is true, and display a yellow star for such requests
+                            if (request[key] === true) {
+                                const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
+                                cell.innerHTML = yellowStar;
+                            } else {
+                                // Display a hollow star for non-reserved requests
+                                const hollowStar = '<span style="font-size: 300%; ">☆</span>';
+                                cell.innerHTML = hollowStar;
+                            }
+                        } else {
+                            // For other keys, just display the value as is
+                            cell.innerHTML = request[key];
+                        }
+                    }
+                }
+
+                const reviewCell = row.insertCell();
+                reviewCell.className = 'tableEntry';
+                const requestButton = document.createElement('button');
+                requestButton.className = 'standardButton';
+                // Add the "Review" button to the last cell if this is the awaiting action table
+                if (type === 'Awaiting') {
+                    requestButton.innerText = 'Review';
+                    requestButton.onclick = function () {
+                        window.location.href = '/instructor/review-req/1'; // id needs to be fetched and put in here 
+                    };
+                // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
+                } else if (type === 'Resolved') {
+                    requestButton.innerText = 'View details';
+                    requestButton.onclick = function () {
+                        window.location.href = '/instructor/view-resolved/1'; 
+                    };
+                }
+                reviewCell.appendChild(requestButton);
+            })
+    })
 	
 	// Append the table to the container
 	tableContainer.appendChild(table);
@@ -105,16 +111,16 @@ function fillCurrentRequestInformation(threadId, view) {
             }
             */
 
-            sloadThread(threadId)
+            loadThread(threadId)
                 .then(thread => {
                     // course identification
-                    sloadCourse(thread.course_id)
+                    loadCourse(thread.course_id)
                         .then(course => {
                             document.getElementById("course").innerHTML = 
                                                 course.course_code + ' - ' + course.course_name;
                         })
                     // assignment name
-                    sloadAssignment(thread.assignment_id)
+                    loadAssignment(thread.assignment_id)
                         .then(assignment => {
                             document.getElementById("assessment").innerHTML = assignment.assignment_name;
                         })
@@ -385,7 +391,6 @@ function generateStudentCases(cases) {
 
     
 }
-
 
 /** 
  * returns the latest request from the given thread id

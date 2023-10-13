@@ -17,10 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from login.views import login_view
+from .views import * 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', login_view, name='login'),
     path('instructor/', include('instructor_view.urls')),
     path('student/', include('student_view.urls')),
+
+
+    # GET REQUESTS (shared between all apps)
+    path('get-thread/<int:thread_id>', get_thread, name='get_thread'),
+    path('get-course/<int:course_id>', get_course, name='get_course'),
+    path('get-assignment/<int:assign_id>', get_assignment, name='get_assignment'),
 ]
