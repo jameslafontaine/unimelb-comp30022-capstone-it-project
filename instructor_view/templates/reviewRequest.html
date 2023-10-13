@@ -55,6 +55,10 @@
         crossorigin="anonymous"></script>
     </head>
     <body>
+
+        <!-- div to hold data passed from the view -->
+        <div id="load-thread-id" data-thread-id="{{ thread_id }}"></div>
+
         <div id="webHeaderContainer"></div>
         
         <!----------------------------- Popup HTML starts here ----------------------------->
@@ -432,18 +436,25 @@
                     ]
                 }
             ];
+
+            // read in thread id from the provided data
+            let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
             
 
             // Fill information relating to the current request from the database
-            fillCurrentRequestInformation(req1, prevVersions.length + 1, 'Instructor');
+            fillCurrentRequestInformation(threadId, 'Instructor');
 
             // Generate the supporting documentation for the current version of request
             generateSuppDocTable(suppDocs, '');
 
-            // Generate version boxes for all previous request versions in the database
-            for (let i = 0; i < prevVersions.length; i++) {
-                generateVersionBox(prevVersions[i], prevVersions.length - i)
-            }
+            // generate a list of all previous versions of a thread
+            sGetPreviousVersions(threadId)
+                .then(prevVersions => {
+                    // Generate version boxes for all request prevVersions in the data
+                    for (let i = 0; i < prevVersions.length; i++) {
+                        generateVersionBox(prevVersions[i], prevVersions.length - i)
+                    }
+                })
 
             handleComplexRequestFunctionality(req1);
 

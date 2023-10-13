@@ -65,13 +65,13 @@ function generateRequestTable(threads, type) {
                 if (type === 'Awaiting') {
                     requestButton.innerText = 'Review';
                     requestButton.onclick = function () {
-                        window.location.href = '/instructor/review-req/1'; // id needs to be fetched and put in here 
+                        window.location.href = '/instructor/review-req/' + request.thread_id; // id needs to be fetched and put in here 
                     };
                 // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
                 } else if (type === 'Resolved') {
                     requestButton.innerText = 'View details';
                     requestButton.onclick = function () {
-                        window.location.href = '/instructor/view-resolved/1'; 
+                        window.location.href = '/instructor/view-resolved/' + request.thread_id; 
                     };
                 }
                 reviewCell.appendChild(requestButton);
