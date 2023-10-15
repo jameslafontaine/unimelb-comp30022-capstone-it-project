@@ -7,7 +7,7 @@ usr1 = {
     'name': 'Jun Youn',
     'first_name': 'Jun',
     'last_name': 'Youn',
-    'email': 'blahblah@student.unimelb.edu.au',
+    'email': 'jyoun@student.unimelb.edu.au',
     'email_preference': 1,
     'darkmode_preference': 1,
 }
@@ -73,7 +73,7 @@ thread12 = {
     'date_updated': "01-19-2023",
     'request_type':'dumb',
     'complex_case':0,
-    'current_status':'APPROVED',
+    'current_status':'PENDING',
     'assignment_id':2,
 }
 thread13 = {

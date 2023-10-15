@@ -53,6 +53,7 @@ urlpatterns = [
     path('threads/<int:course_id>', get_threads, name='get_threads'),
     path('get-threads-pending/<int:course_id>', get_threads_pending, name='get_threads_pending'),
     path('get-threads-resolved/<int:course_id>', get_threads_resolved, name='get_threads_resolved'),
+    path('get-student-details/<int:thread_id>', get_student_details, name='get_student_details'),
 
     # POST REQUESTS
     path('AAP/', instructor_add_aap, name='add_AAP'),

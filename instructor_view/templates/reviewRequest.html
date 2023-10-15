@@ -355,7 +355,7 @@
                             <span class="text" id="studentId"></span>
                             <span class="text" id="studentEmail" style="font-size: 14px;"></span>
                             <span>
-                                <button class="standardButton" onclick="window.location.href='/instructor/view-profile/1'">
+                                <button class="standardButton" onclick=toProfile()>
                                     View Profile
                                 </button>
                             </span>
@@ -484,6 +484,8 @@
             // List of assessments for this subject
             const assessments = ['Project 1', 'Project 2', 'Mid Semester Test'];
 
+            // read in thread id from the provided data
+
             setupOpenClosePopupButtons();
             populatePopups(req1, assessments);
             HideAndDisplayButtons(req1.requestType);
@@ -496,14 +498,13 @@
         <!-- Student Details Box Population -->
         <script src="{% static 'js/modules/studentDetails.js' %}"></script>
         <script>
-            student = {
-                firstName: 'Callum',
-                lastName: 'Sharman',
-                id: 1178429,
-                email: 'csharman@student.unimelb.edu.au'
+            iloadStudentDetails(threadId)
+                .then(student => {
+                    fillStudentDetailsBox(student);
+                })
+            function toProfile(){
+                redirectToProfile(threadId);
             }
-
-            fillStudentDetailsBox(student);
         </script>
     </body>
 </html>

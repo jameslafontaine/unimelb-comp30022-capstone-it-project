@@ -138,3 +138,23 @@ function iloadThreadsResolved(courseId){
             return JSON.parse(data.threads);
         })
 }
+
+/**
+ * INSTRUCTOR: Gets student details from a threadId
+ */
+function iloadStudentDetails(threadId){
+    return loadData('/instructor/get-student-details/' + threadId)
+        .then(data => {
+            return JSON.parse(data.student);
+        })
+}
+
+/**
+ * INSTRUCTOR: Redirect to student profile
+ */
+function redirectToProfile(threadId){
+    iloadStudentDetails(threadId)
+        .then(student => {
+            window.location.href = '/instructor/view-profile/' + student.user_id; 
+        })
+}

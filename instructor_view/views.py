@@ -167,7 +167,7 @@ def get_threads_pending(request, course_id):
 
     # just pretending here that they are specific to a course haha
     return JsonResponse({
-            'threads': json.dumps([thread11])
+            'threads': json.dumps([thread11, thread12])
         })
 
 def get_threads_resolved(request, course_id):
@@ -175,8 +175,14 @@ def get_threads_resolved(request, course_id):
 
     # just pretending here that they are specific to a course haha
     return JsonResponse({
-            'threads': json.dumps([thread12, thread13])
+            'threads': json.dumps([thread13])
         })
+
+def get_student_details(request, thread_id):
+    '''Gets student details from a request_id'''
+    print(request) # pylint
+    return JsonResponse({'student': json.dumps(usr1)})
+
 
 
 # POST REQUESTS
