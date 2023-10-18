@@ -262,9 +262,9 @@ function generateVersionBox(version, number) {
  * the mark as complex button
  */
 
-function handleComplexRequestFunctionality(requestData) {
+function handleComplexRequestFunctionality(thread) {
     // If a case has already been reserved then we show the unmark button
-    if (requestData.reserved == true) {
+    if (thread.complex_case) {
         reserveButton.innerHTML = 'Unmark'
     }
     // Modify the reserved status when mark as complex is clicked and change the 'Mark as complex' button
@@ -276,17 +276,25 @@ function handleComplexRequestFunctionality(requestData) {
 
     // Perform the aforementioned steps on button click
     reserveButton.addEventListener('click', function() {
-        if (requestData.reserved == false) {
-            reserveButton.innerHTML = 'Unmark'
-            requestData.reserved = true;
-            document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
-            console.log(`Reserved status changed: ${requestData.reserved}`); // Prints to console when inspecting page
-        } else {
-            reserveButton.innerHTML = 'Mark as complex'
-            requestData.reserved = false;
-            document.getElementById("requestNum").innerHTML = 'Request #' + requestData.requestId + '    <span style="font-size: 150%; ">☆</span>'
-            console.log(`Reserved status changed: ${requestData.reserved}`); // Prints to console when inspecting page
-        }
+        setComplex(thread.thread_id) // when returns true it has worked
+            .then(response => {
+                if(response == true){
+                    // set successfully, change the DOM
+                    getLatestRequest(thread.thread_id)
+                        .then(request => {
+                            if (thread.complex_case) { // it is complex now
+                                reserveButton.innerHTML = 'Unmark'
+                                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+                            } else { // it is not complex
+                                reserveButton.innerHTML = 'Mark as complex'
+                                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+                            }
+                        })
+                }
+                else{
+                    console.log("ERROR: ", "put thingo didnt work man");
+                }
+            })
     });
 }
 
@@ -390,16 +398,6 @@ function generateStudentCases(cases) {
     };
 
     
-}
-
-/** 
- * returns the latest request from the given thread id
- */
-function getLatestRequest(thread_id) {
-    return sloadRequestsData(thread_id)
-        .then(requests => {
-            return requests[0];
-        })
 }
 
 /** 

@@ -38,45 +38,36 @@ function setupOpenClosePopupButtons() {
  * Populates the popup with assessment override dropdowns, extension override dropdown, and the 
  * current deadline, extension and assessment boxes 
  */
-function populatePopups(requestData, assessmentList) {
+function populatePopups(thread) {
 
-        // Populate current deadline (THIS WILL LIKELY HAVE TO BE MODIFIED TO WORK WITH DATE TYPE)
-        document.getElementById('currentDeadline').value = requestData.dueDate
-        
-        // Populate default extension
-        document.getElementById('defaultExtension').value = requestData.defaultExtension + ' days'
-        
-        // Populate override extension dropdown
-        for (let i = 1; i <= requestData.maxExtension; i++) {
-            const option = document.createElement('option');
-            option.textContent = i;
-            document.getElementById('extensionOverrideAExt').appendChild(option);
-        }
-        
-        // Set extension override to match default extension
-        document.getElementById('extensionOverrideAExt').value = requestData.defaultExtension
-        
-        // Populate student selected assessment
-        document.getElementById('selectedAssessmentAExt').value = requestData.assessment
-        document.getElementById('selectedAssessmentRExt').value = requestData.assessment
-        document.getElementById('selectedAssessmentARem').value = requestData.assessment
-        document.getElementById('selectedAssessmentRRem').value = requestData.assessment
-        document.getElementById('selectedAssessmentAQui').value = requestData.assessment
-        document.getElementById('selectedAssessmentRQui').value = requestData.assessment
-        
-        
-        // Get all elements with the class "assessmentOverride"
-        const overrideDropdowns = document.querySelectorAll('.assessmentOverride');
-        
-        // Populate override assessment dropdowns
-        overrideDropdowns.forEach(overrideDropdown => {
-            assessmentList.forEach(assessment => {
-                const option = document.createElement('option');
-                option.textContent = assessment;
-                overrideDropdown.appendChild(option);
-            });
-            overrideDropdown.value = requestData.assessment;
-        });
+    loadAssignment(thread.assignment_id)
+        .then(assignment => {
+            // Populate current deadline
+            document.getElementById('currentDeadline').value = assignment.due_date;
+            // Populate student selected assessment
+            document.getElementById('selectedAssessmentAExt').value = assignment.assignment_name;
+            document.getElementById('selectedAssessmentRExt').value = assignment.assignment_name;
+            document.getElementById('selectedAssessmentARem').value = assignment.assignment_name;
+            document.getElementById('selectedAssessmentRRem').value = assignment.assignment_name;
+            document.getElementById('selectedAssessmentAQui').value = assignment.assignment_name;
+            document.getElementById('selectedAssessmentRQui').value = assignment.assignment_name;
+        })
+
+    // Populate override extension dropdown
+    for (let i = 1; i <= 10; i++) {
+        const option = document.createElement('option');
+        option.textContent = i;
+        document.getElementById('extensionOverrideAExt').appendChild(option);
+    }
+
+    iloadCoursePreferenceFromThread(thread.thread_id)
+        .then(prefs => {
+            // Populate default extension
+            document.getElementById('defaultExtension').value = prefs.global_extension_length;
+            // Set extension override to match default extension
+            document.getElementById('extensionOverrideAExt').value = prefs.global_extension_length;
+        })
+
 }
 
 
@@ -86,11 +77,11 @@ function populatePopups(requestData, assessmentList) {
  * The approve and reject buttons are displayed for all other request types
  * 
  */
-function HideAndDisplayButtons(requestType) {
+function HideAndDisplayButtons(thread) {
 
-    const reqShort = requestType.substring(0,3);
+    const reqShort = thread.request_type.substring(0,3);
 
-    if (requestType != 'Query' && requestType != 'Other') {
+    if (thread.request_type != 'Query' && thread.request_type != 'Other') {
         document.getElementById('approveButton').setAttribute('data-target', `approve${reqShort}Popup`);
         document.getElementById('rejectButton').setAttribute('data-target', `reject${reqShort}Popup`);
         $("#answerButton").hide();
@@ -107,15 +98,14 @@ function HideAndDisplayButtons(requestType) {
  * Updates the appropriate information when a request is approved, rejected or answered and performs any other
  * steps that are required
  */
-function handleApprovalRejectionAnswer(requestData, requestType) {
+function handleApprovalRejectionAnswer(thread) {
+
 
     // First 3 letters of request type used for HTML identifiers
-    reqShort = requestType.substring(0,3)
-
-
+    reqShort = thread.request_type.substring(0,3)
 
     // Initialise approve and request buttons for all request types except queries and other
-    if (requestType != "Query" && requestType != "Other") {
+    if (thread.request_type != "Query" && thread.request_type != "Other") {
         // Get the Approve Request button
         const popupApproveButton = document.getElementById(`popupApproveButton${reqShort}`);
         
@@ -123,12 +113,14 @@ function handleApprovalRejectionAnswer(requestData, requestType) {
         popupApproveButton.addEventListener('click', function() {
             
             // Update relevant information
-            if (requestType == 'Extension') {
+            /*
+            if (thread.request_type == 'Extension') {
                 
                 requestData.approvedExtension = document.getElementById('extensionOverrideAExt').value
                 console.log('Approved Extension: ', requestData.approvedExtension);
             }
-            
+            */
+            /*
             requestData.instructorNotes = document.getElementById(`instructorNotesA${reqShort}`).value
             console.log('Instructor Notes: ', requestData.instructorNotes);
             
@@ -137,9 +129,9 @@ function handleApprovalRejectionAnswer(requestData, requestType) {
             
             requestData.status = 'Approved'
             console.log('Updated Request Status: ', requestData.status);
-            
-            // Change the page to iViewRequests.html (could make a confirmation page or just show confirmation message at top)
-            window.location.href = '/instructor/view-reqs';
+            */
+            // Change the page to home (could make a confirmation page or just show confirmation message at top)
+            redirectHome();
             
         });
         
@@ -150,6 +142,7 @@ function handleApprovalRejectionAnswer(requestData, requestType) {
         popupRejectButton.addEventListener('click', function() {
             
             // Update the relevant information
+            /*
             requestData.instructorNotes = document.getElementById(`instructorNotesR${reqShort}`).value
             console.log('Instructor Notes: ', requestData.instructorNotes);
             
@@ -158,9 +151,9 @@ function handleApprovalRejectionAnswer(requestData, requestType) {
             
             requestData.status = 'Rejected'
             console.log('Updated Request Status: ', requestData.status);
-            
-            // Change the page to iViewRequests.html (could make a confirmation page or just show confirmation message at top)
-            window.location.href = '/instructor/view-reqs';
+            */
+            // Change the page to home (could make a confirmation page or just show confirmation message at top)
+            redirectHome();
             
         });
 
@@ -173,14 +166,15 @@ function handleApprovalRejectionAnswer(requestData, requestType) {
         popupAnswerButton.addEventListener('click', function() {
             
             // Update the relevant information
+            /*
             requestData.instructorNotes = document.getElementById('instructorNotesAns').value
             console.log('Instructor Notes: ', requestData.instructorNotes);
             
             requestData.status = 'Answered'
             console.log('Updated Request Status: ', requestData.status);
-            
-            // Change the page to iViewRequests.html (could make a confirmation page or just show confirmation message at top)
-            window.location.href = '/instructor/view-reqs';
+            */
+            // Change the page to home (could make a confirmation page or just show confirmation message at top)
+            redirectHome();
         });
     }
 }

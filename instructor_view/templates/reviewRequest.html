@@ -93,16 +93,10 @@
                         <span class="text" style="font-weight:normal">day(s)</span>
                     </div>
                     </div>
-                    <br><br>
-                    <div style="text-align:center">
-                        <p class="text">Student Selected Assessment</p>
-                        <textarea class="textBox" id="selectedAssessmentAExt" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
-                    </div>
                     <br>
                     <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
-                        <select class="assessmentOverride" id="assessmentOverrideAExt">
-                        </select>
+                        <p class="text">Student Selected Assessment</p>
+                        <textarea class="textBox" id="selectedAssessmentAExt" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br><br>
                     <div class="popupButton" id="popupApproveButtonExt">Approve</div>
@@ -132,12 +126,6 @@
                         <textarea class="textBox" id="selectedAssessmentRExt" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
-                    <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
-                        <select class="assessmentOverride" id="assessmentOverrideRExt">
-                        </select>
-                    </div>
-                    <br><br>
                     <div class="popupButton" id="popupRejectButtonExt">Reject</div>
                     <br>
                 </div>
@@ -185,12 +173,6 @@
                         <textarea class="textBox" id="selectedAssessmentARem" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
-                    <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
-                        <select class="assessmentOverride" id="assessmentOverrideARem">
-                        </select>
-                    </div>
-                    <br><br>
                     <div class="popupButton" id="popupApproveButtonRem">Approve</div>
                     <br>
                 </div>
@@ -218,12 +200,6 @@
                         <textarea class="textBox" id="selectedAssessmentRRem" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
-                    <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
-                        <select class="assessmentOverride" id="assessmentOverrideRRem">
-                        </select>
-                    </div>
-                    <br><br>
                     <div class="popupButton" id="popupRejectButtonRem">Reject</div>
                     <br>
                 </div>
@@ -251,12 +227,6 @@
                         <textarea class="textBox" id="selectedAssessmentAQui" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
-                    <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
-                        <select class="assessmentOverride" id="assessmentOverrideAQui">
-                        </select>
-                    </div>
-                    <br><br>
                     <div class="popupButton" id="popupApproveButtonQui">Approve</div>
                     <br>
                 </div>
@@ -284,12 +254,6 @@
                         <textarea class="textBox" id="selectedAssessmentRQui" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
-                    <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
-                        <select class="assessmentOverride" id="assessmentOverrideRQui">
-                        </select>
-                    </div>
-                    <br><br>
                     <div class="popupButton" id="popupRejectButtonQui">Reject</div>
                     <br>
                 </div>
@@ -376,7 +340,7 @@
                             <p class="bigButton" id="rejectButton">
                                 Reject Request
                             </p>
-                            <p class="bigButton" onclick="window.location.href='/instructor/view-reqs'">
+                            <p class="bigButton" onclick=back()>
                                 Back
                             </p>
                             </div>
@@ -455,8 +419,10 @@
                         generateVersionBox(prevVersions[i], prevVersions.length - i)
                     }
                 })
-
-            handleComplexRequestFunctionality(req1);
+            loadThread(threadId)
+                .then(thread => {
+                    handleComplexRequestFunctionality(thread);
+                })
 
         </script>
         <script src="{% static 'js/modules/popups.js' %}"></script>
@@ -481,19 +447,14 @@
                 approvedExtension: 0
             };
 
-            // List of assessments for this subject
-            const assessments = ['Project 1', 'Project 2', 'Mid Semester Test'];
-
-            // read in thread id from the provided data
-
             setupOpenClosePopupButtons();
-            populatePopups(req1, assessments);
-            HideAndDisplayButtons(req1.requestType);
-            handleApprovalRejectionAnswer(req1, req1.requestType);
+            loadThread(threadId)
+                .then(thread => {
+                    populatePopups(thread);
+                    HideAndDisplayButtons(thread);
+                    handleApprovalRejectionAnswer(thread);
+                })
             
-
-
-
         </script>
         <!-- Student Details Box Population -->
         <script src="{% static 'js/modules/studentDetails.js' %}"></script>
@@ -504,6 +465,12 @@
                 })
             function toProfile(){
                 redirectToProfile(threadId);
+            }
+            function back(){
+                loadThread(threadId)
+                    .then(thread => {
+                        redirectToViewReqs(thread.course_id)
+                    })
             }
         </script>
     </body>

@@ -61,7 +61,7 @@ thread11 = {
     'case_id': 11,
     'course_id': 31,
     'date_updated': "11-09-2023",
-    'request_type':'dumb', 
+    'request_type':'Extension', 
     'complex_case':1,
     'current_status':'PENDING',
     'assignment_id': 1,
@@ -71,7 +71,7 @@ thread12 = {
     'case_id': 12,
     'course_id': 31,
     'date_updated': "01-19-2023",
-    'request_type':'dumb',
+    'request_type':'Query',
     'complex_case':0,
     'current_status':'PENDING',
     'assignment_id':2,
@@ -81,7 +81,7 @@ thread13 = {
     'case_id': 12,
     'course_id': 41,
     'date_updated': "01-19-2023",
-    'request_type':'dumb',
+    'request_type':'Other',
     'complex_case':1,
     'current_status':'REJECTED',
     'assignment_id':3,
@@ -181,4 +181,17 @@ assign5 = {
     'assignment_weightage': 6,
     'start_date': "54-43-2023",
     'due_date': "56-56-2023",
+}
+
+preferences31 = {
+    'global_extension_length': 3,
+}
+preferences32 = {
+    'global_extension_length': 4,
+}
+preferences41 = {
+    'global_extension_length': 1,
+}
+preferences42 = {
+    'global_extension_length': 6,
 }

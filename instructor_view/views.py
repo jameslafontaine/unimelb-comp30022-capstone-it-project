@@ -183,6 +183,15 @@ def get_student_details(request, thread_id):
     print(request) # pylint
     return JsonResponse({'student': json.dumps(usr1)})
 
+def get_pref_from_thread(request, thread_id):
+    '''Gets a course preferences from a thread id'''
+    print(request) # pylint
+    if(thread_id == 11):
+        return JsonResponse(preferences31)
+    elif(thread_id == 12):
+        return JsonResponse(preferences32)
+    elif(thread_id == 13):
+        return JsonResponse(preferences41)
 
 
 # POST REQUESTS
@@ -201,14 +210,20 @@ def instructor_add_aap(request):
 
 # PUT REQUESTS
 @csrf_exempt
-def make_complex(request, request_id):
+def make_complex(request, thread_id):
     '''Make a request complex'''
-    # check the id exists and all that jazz
+    print(request) # Pylint happy
     if request.method == 'PUT':
-        # if complex, set to non-complex
+        # check thread id, if complex, set to non-complex
         # else make complex
-        print(request_id) # Pylint happy
-    return JsonResponse({"message": "Case created successfully"})
+
+        #success
+        return JsonResponse({}, status=200)
+        #failure
+        #return JsonResponse({}, status=400)
+    else: 
+        #failure
+        return JsonResponse({}, status=400)
 
 @csrf_exempt
 def set_user_id(request, input_id):

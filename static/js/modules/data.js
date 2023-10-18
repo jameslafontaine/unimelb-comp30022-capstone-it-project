@@ -1,7 +1,8 @@
 /** 
  * Author: Callum Sharman
- * Date Last Modified: October 12, 2023
+ * Date Last Modified: October 18, 2023
  * Description: Encapsulates everything surrounding data reading, writing and processing
+ * In a perfect world URLs are only ever used here
  */
 
 /**
@@ -18,6 +19,34 @@ function loadData(url){
         .catch(error => {
 			console.error('Error:', error);
 		});
+}
+
+/**
+ * PUT call to 'url' with the given json. Returns the response data
+ */
+function putData(url, json){
+
+    return fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(json)
+    })
+        .then(response => {
+            if (response.ok) {
+                // Parse the response JSON if successful
+                return response.json();
+            }
+            throw new Error('Network response was not ok');
+        })
+        .then(data => {
+            // Process the response data
+            return data;
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
 }
 
 /**
@@ -156,5 +185,53 @@ function redirectToProfile(threadId){
     iloadStudentDetails(threadId)
         .then(student => {
             window.location.href = '/instructor/view-profile/' + student.user_id; 
+        })
+}
+
+/**
+ * INSTRUCTOR: Redirect to home
+ */
+function redirectHome(){
+    window.location.href = '/instructor/';
+}
+
+/**
+ * INSTRUCTOR: Redirects to a view reqs page for a course
+ */
+function redirectToViewReqs(courseId){
+    window.location.href = '/instructor/view-reqs/' + courseId;
+}
+
+/**
+ * INSTRUCTOR: Get course preferences from threadId
+ */
+function iloadCoursePreferenceFromThread(threadId){
+    return loadData('/instructor/get-pref-from-thread/' + threadId)
+        .then(data => {
+            return data;
+        })
+}
+
+/**
+ * INSTRUCTOR: Sets a thread to complex if non-complex, sets it to non if complex. Returns true on success, false otherwise
+ */
+function setComplex(threadId){
+    return putData(('/instructor/set-complex/' + threadId), {})
+        .then(responseData => {
+            return true; // replace when checking response data
+        })
+        .catch(error => {
+            console.error('There was a problem setting the complex status:', error);
+            return false;
+        });
+}
+
+/** 
+ * GENERIC: returns the latest request from the given thread id
+ */
+function getLatestRequest(thread_id) {
+    return sloadRequestsData(thread_id)
+        .then(requests => {
+            return requests[0];
         })
 }

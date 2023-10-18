@@ -54,12 +54,13 @@ urlpatterns = [
     path('get-threads-pending/<int:course_id>', get_threads_pending, name='get_threads_pending'),
     path('get-threads-resolved/<int:course_id>', get_threads_resolved, name='get_threads_resolved'),
     path('get-student-details/<int:thread_id>', get_student_details, name='get_student_details'),
+    path('get-pref-from-thread/<int:thread_id>', get_pref_from_thread, name='get_pref_from_thread'),
 
     # POST REQUESTS
     path('AAP/', instructor_add_aap, name='add_AAP'),
 
     # PUT REQUESTS
-    path('set-complex/<int:request_id>', make_complex, name='make_complex'),
+    path('set-complex/<int:thread_id>', make_complex, name='make_complex'),
     path('request-response/<int:request_id>', request_response, name='request_response'),
     path('settings/', change_settings, name='change_settings'),
     path('set-user-id/<int:input_id>', set_user_id, name='set_user_id'),
