@@ -29,7 +29,7 @@ function generateRequestTable(data, type) {
 				const cell = row.insertCell();
 				cell.className = 'tableEntry'; // Apply the CSS class to the cell
 				 // Check if the key is 'reserved'
-				 if (key === 'reserved') {
+				 if (key === 'Reserved') {
                     // Check if 'reserved' is true, and display a yellow star for such requests
                     if (request[key] === true) {
                         const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
