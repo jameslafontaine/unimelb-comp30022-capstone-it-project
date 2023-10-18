@@ -55,7 +55,7 @@ function generateSubjectBox(subject) {
 	// Create the standardBoxContents element
 	const standardBoxContents = document.createElement('div');
 	standardBoxContents.classList.add('standardBoxContents');
-	standardBoxContents.style.fontSize = '13px';
+	standardBoxContents.style.fontSize = '18px';
   
 	// Create the subjectCode element
 	const subjectCodeElement = document.createElement('span');
@@ -73,6 +73,7 @@ function generateSubjectBox(subject) {
 	const viewRequestsButton = document.createElement('button');
 	viewRequestsButton.classList.add('standardButton');
 	viewRequestsButton.textContent = 'View Requests & Queries';
+	viewRequestsButton.style = 'font-size:16px'
 	viewRequestsButton.onclick = function() {
 		window.location.href = '/instructor/view-reqs/' + subject.course_id; 
 	};
@@ -82,6 +83,7 @@ function generateSubjectBox(subject) {
 	const settingsButton = document.createElement('button');
 	settingsButton.classList.add('standardButton');
 	settingsButton.textContent = 'Settings';
+	settingsButton.style = 'font-size:16px'
 	settingsButton.onclick = function() {
 		window.location.href = '/instructor/subject-settings/' + subject.course_id; 
 	};
@@ -95,5 +97,6 @@ function generateSubjectBox(subject) {
   
 	// Append the subject box to the container
 	document.getElementById('subjectBoxContainer').appendChild(standardBox );
+	document.getElementById('subjectBoxContainer').appendChild(document.createElement('br'));
 };
   
