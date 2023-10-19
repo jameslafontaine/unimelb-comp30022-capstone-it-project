@@ -143,7 +143,7 @@ def get_request_history(request, student_id):
     return not_found_view(request)
 
 def get_id(request):
-    '''Get the ID of a request ?'''
+    '''Get user ID'''
     print(request) # pylint
     return JsonResponse({'id': INSTRUCTOR_VIEW_USER_ID})
 

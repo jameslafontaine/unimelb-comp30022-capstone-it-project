@@ -2,8 +2,6 @@
 Tests for student view
 """
 
-# from django.test import TestCase
-
 # fake data to play with before DB connected
 student_user_1 = {
     'user_id': 1,
