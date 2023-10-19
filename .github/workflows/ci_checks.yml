@@ -59,6 +59,16 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+    - name: Restore Node.js dependencies cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    - name: Restore Python dependencies cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
     - name: Run docker compose up
       run: docker compose up -d
     - name: Wait for services to start
