@@ -1,7 +1,9 @@
 """
-Tests for student view
+Request and Query Management System - Testing suite
+student_view Unit Tests
 """
 
+import json
 import time
 import requests
 
@@ -40,7 +42,11 @@ def test_student_view_get_requests_from_case():
     Acceptance criteria:
         - Returns all requests in a case
     '''
-    assert True, ""
+    response = requests.get('http://localhost:8000/student/requests-from-case/1', timeout = 5)
+    assert response.json == \
+    {
+        'requestIds': json.dumps([1,2])
+    }, "/student/requests-from-case/ endpoint failed"
 
 def test_student_view_get_requests():
     '''
@@ -49,16 +55,8 @@ def test_student_view_get_requests():
     Acceptance criteria:
         - Returns all requests in a case
     '''
-    assert True, ""
-
-def test_student_view_get_old_versions_of_request():
-    '''
-    Testing:
-        - /student/old-versions/<request_id>
-    Acceptance criteria:
-        - Returns all old versions of a request
-    '''
-    assert True, ""
+    response = requests.get('http://localhost:8000/student/request/1', timeout = 5)
+    assert response.json() == student_request_1, "/student/request/ endpoint failed"
 
 def test_student_view_post_new_request():
     '''
@@ -67,6 +65,11 @@ def test_student_view_post_new_request():
     Acceptance criteria:
         - A request is confirmed created
     '''
+    # POST a new request
+    # requests.post('http://localhost:8000/student/new-request/', timeout = 5)
+    # Confirm creation by
+    ## Calling the database OR
+    ## /student/request/<new_request_id> returns this id
     assert True, ""
 
 # fake data to play with before DB connected

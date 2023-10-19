@@ -71,5 +71,7 @@ jobs:
       run: pytest blackbox_tests.py
     - name: Component tests
       run: pytest component_tests.py
-    - name: Unit tests
+    - name: student_view - unit tests
       run: pytest student_view/tests.py
+    - name: instructor_view - unit tests
+      run: pytest instructor_view/tests.py
