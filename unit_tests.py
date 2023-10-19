@@ -6,7 +6,6 @@ Unit Tests
 import json
 import time
 import requests
-from django.http import JsonResponse
 from instructor_view.tests import course1
 from student_view.tests import student_case_1_2
 
@@ -92,5 +91,4 @@ def test_instructor_view_get_courses():
     '''
     response = requests.get('http://localhost:8000/instructor/courses/1', timeout = 5)
     assert response.status_code == 200, "/instructor/courses/<id> doesn't work"
-    assert response.json() == {"courses": json.dump([course1, course1])}
-
+    assert response.json() == {"courses": [course1, course1]}
