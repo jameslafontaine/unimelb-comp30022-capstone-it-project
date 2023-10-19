@@ -3,6 +3,7 @@ Tests for student view
 """
 
 import time
+import requests
 
 def test_student_view_get_cases():
     '''
