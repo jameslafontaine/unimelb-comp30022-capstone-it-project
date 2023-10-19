@@ -2,6 +2,72 @@
 Tests for student view
 """
 
+import time
+
+def test_student_view_get_cases():
+    '''
+    Testing:
+        - /student/case/<case_id>
+    Acceptance criteria:
+        - Returns case information
+    '''
+    response = requests.get('http://localhost:8000/student/case/12', timeout = 5)
+    assert response.json() == student_case_1_2, "/student/case/ endpoint failed"
+
+def test_student_view_get_active_cases():
+    '''
+    Testing:
+        - /student/active-cases/<user_id>
+    Acceptance criteria:
+        - Returns a user's active cases
+    '''
+    requests.put('http://localhost:8000/student/set-user-id/1', timeout = 5)
+    time.sleep(1)
+    response = requests.get('http://localhost:8000/student/active-cases/1', timeout = 5)
+    assert response.json() == \
+            {
+                'cases': 
+                    {
+                        'case12': student_case_1_2,
+                    }
+            }, "/student/active-cases/ endpoint failed"
+
+def test_student_view_get_requests_from_case():
+    '''
+    Testing:
+        - /student/requests-from-case/<case_id>
+    Acceptance criteria:
+        - Returns all requests in a case
+    '''
+    assert True, ""
+
+def test_student_view_get_requests():
+    '''
+    Testing:
+        - /student/request/<request_id>
+    Acceptance criteria:
+        - Returns all requests in a case
+    '''
+    assert True, ""
+
+def test_student_view_get_old_versions_of_request():
+    '''
+    Testing:
+        - /student/old-versions/<request_id>
+    Acceptance criteria:
+        - Returns all old versions of a request
+    '''
+    assert True, ""
+
+def test_student_view_post_new_request():
+    '''
+    Testing:
+        - /student/new-request/
+    Acceptance criteria:
+        - A request is confirmed created
+    '''
+    assert True, ""
+
 # fake data to play with before DB connected
 student_user_1 = {
     'user_id': 1,

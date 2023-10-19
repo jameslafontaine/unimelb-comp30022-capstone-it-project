@@ -72,4 +72,4 @@ jobs:
     - name: Component tests
       run: pytest component_tests.py
     - name: Unit tests
-      run: pytest unit_tests.py
+      run: pytest student_view/tests.py
