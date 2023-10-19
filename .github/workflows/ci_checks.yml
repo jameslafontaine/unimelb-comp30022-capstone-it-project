@@ -61,4 +61,4 @@ jobs:
     - name: Run docker compose up
       run: docker compose up -d
     - name: Django is running
-      run: python ci_check_django_instance.py
+      run: python ci_check_django_running.py
