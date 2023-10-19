@@ -3,7 +3,6 @@ Request and Query Management System - Testing Suite
 Unit Tests
 """
 
-import json
 import time
 import requests
 from instructor_view.tests import course1
