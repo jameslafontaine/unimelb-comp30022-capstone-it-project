@@ -10,11 +10,9 @@ from django.http import JsonResponse
 from instructor_view.tests import course1
 from student_view.tests import student_case_1_2
 
-'''
-
-Student View tests
-
-'''
+#
+#Student View tests
+#
 
 def test_student_view_get_cases():
     '''
@@ -35,12 +33,13 @@ def test_student_view_get_active_cases():
     '''
     requests.put('http://localhost:8000/student/set-user-id/1', timeout = 5)
     time.sleep(1)
-    assert requests.get('http://localhost:8000/student/active-cases/1') == JsonResponse(
+    assert requests.get('http://localhost:8000/student/active-cases/1', timeout = 5) \
+        == JsonResponse(
             {
                 'cases': {
                     'case12': student_case_1_2,
             }
-        }), "/student/active-cases/ endpoint failed"
+            }), "/student/active-cases/ endpoint failed"
 
 def test_student_view_get_requests_from_case():
     '''
@@ -78,11 +77,9 @@ def test_student_view_post_new_request():
     '''
     assert True, ""
 
-'''
-
-Instructor View tests
-
-'''
+#
+# Instructor View tests
+#
 
 def test_instructor_view_get_courses():
     '''
