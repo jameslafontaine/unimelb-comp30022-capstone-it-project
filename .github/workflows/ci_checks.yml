@@ -48,6 +48,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pylint
+        pip install pytest
     - name: Analysing the code with pylint
       run: |
         pylint --ignore=manage.py $(git ls-files '*.py')
@@ -60,7 +61,9 @@ jobs:
       uses: actions/checkout@v3
     - name: Run docker compose up
       run: docker compose up -d
-    - name: Django is running
-      run: python ci_check_django_running.py
+    - name: Wait for services to start
+      run: sleep 15
     - name: Black box tests
       run: pytest blackbox_tests.py
+    - name: Component tests
+      run: pytest component_tests.py
