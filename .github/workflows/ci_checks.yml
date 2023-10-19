@@ -48,7 +48,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pylint
-        pip install pytest
     - name: Analysing the code with pylint
       run: |
         pylint --ignore=manage.py $(git ls-files '*.py')
@@ -59,16 +58,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Restore Node.js dependencies cache
-      uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-    - name: Restore Python dependencies cache
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
     - name: Run docker compose up
       run: docker compose up -d
     - name: Wait for services to start
