@@ -62,3 +62,5 @@ jobs:
       run: docker compose up -d
     - name: Django is running
       run: python ci_check_django_running.py
+    - name: Black box tests
+      run: pytest blackbox_tests.py
