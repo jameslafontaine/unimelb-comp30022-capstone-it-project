@@ -22,7 +22,7 @@ def test_student_view_get_cases():
         - Returns case information
     '''
     response = requests.get('http://localhost:8000/student/case/12', timeout = 5)
-    assert response == JsonResponse(student_case_1_2), "/student/case/ endpoint failed"
+    assert response.json() == student_case_1_2, "/student/case/ endpoint failed"
 
 def test_student_view_get_active_cases():
     '''
@@ -33,13 +33,14 @@ def test_student_view_get_active_cases():
     '''
     requests.put('http://localhost:8000/student/set-user-id/1', timeout = 5)
     time.sleep(1)
-    assert requests.get('http://localhost:8000/student/active-cases/1', timeout = 5) \
-        == JsonResponse(
+    response = requests.get('http://localhost:8000/student/active-cases/1', timeout = 5)
+    assert response.json() == \
             {
-                'cases': {
-                    'case12': student_case_1_2,
-            }
-            }), "/student/active-cases/ endpoint failed"
+                'cases': 
+                    {
+                        'case12': student_case_1_2,
+                    }
+            }, "/student/active-cases/ endpoint failed"
 
 def test_student_view_get_requests_from_case():
     '''
