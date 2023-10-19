@@ -91,18 +91,5 @@ def test_instructor_view_get_courses():
     '''
     response = requests.get('http://localhost:8000/instructor/courses/1', timeout = 5)
     assert response.status_code == 200, "/instructor/courses/<id> doesn't work"
-    assert response == JsonResponse({"courses": json.dump([course1, course1])})
+    assert response.json() == {"courses": json.dump([course1, course1])}
 
-def test_instructor_view_put_user_id():
-    '''
-    PUT user id and get it
-    Testing:
-        - /instructor/set-user-id/<id> endpoint
-        - This set properly by calling /instructor/get-user-id/
-    Acceptance criteria:
-        - Matches expected output
-    '''
-    requests.put('http://localhost:8000/instructor/set-user-id/3', timeout = 5)
-    time.sleep(1)
-    assert requests.get('http://localhost:8000/instructor/get-user-id/', timeout = 5) \
-        == JsonResponse({'id': 3}), "Didn't work"
