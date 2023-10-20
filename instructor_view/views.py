@@ -143,7 +143,7 @@ def get_request_history(request, student_id):
     return not_found_view(request)
 
 def get_id(request):
-    '''Get the ID of a request ?'''
+    '''Get user ID'''
     print(request) # pylint
     return JsonResponse({'id': INSTRUCTOR_VIEW_USER_ID})
 
@@ -170,7 +170,8 @@ def make_complex(request, request_id):
         # if complex, set to non-complex
         # else make complex
         print(request_id) # Pylint happy
-    return JsonResponse({"message": "Case created successfully"})
+        return JsonResponse({"message": "Made complex"})
+    return HttpResponseBadRequest("Invalid Request Type")
 
 @csrf_exempt
 def set_user_id(request, input_id):

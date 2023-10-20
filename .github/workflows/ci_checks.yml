@@ -6,8 +6,15 @@ jobs:
   ESLint:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -23,7 +30,15 @@ jobs:
       matrix:
         python-version: ["3.11"]
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Cache Python dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-python-
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
@@ -41,8 +56,22 @@ jobs:
     needs: pylint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
+    - name: Run docker compose up
       run: docker compose up -d
-    - name: The images have been built
-      run: docker inspect --format "{{.State.Status}}" $(docker ps -q -f name=it-project-6-people-webapp-1)
+    - name: Wait for services to start
+      run: sleep 15
+    - name: Blackbox tests
+      run: pytest blackbox_tests.py
+    - name: Component tests
+      run: pytest component_tests.py
+    - name: student_view - unit tests
+      run: pytest student_view/tests.py
+    - name: instructor_view - unit tests
+      run: pytest instructor_view/tests.py
