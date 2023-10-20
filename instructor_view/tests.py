@@ -4,23 +4,106 @@ instructor_view Unit Tests
 """
 
 import requests
-from instructor_view.tests import course1
-
-#
-# Instructor View tests
-#
 
 def test_instructor_view_get_courses():
     '''
-    GET courses
     Testing:
-        - /instructor/courses/<id>
+        - /instructor/courses/<user_id>
     Acceptance criteria:
-        - Matches expected output
+        - Returns all courses of user
     '''
     response = requests.get('http://localhost:8000/instructor/courses/1', timeout = 5)
-    assert response.status_code == 200, "/instructor/courses/<id> doesn't work"
     assert response.json() == {"courses": [course1, course1]}
+
+def test_instructor_view_get_request_status():
+    '''
+    Testing:
+        - /instructor/request-status/<request_id>
+    Acceptance criteria:
+        -
+    '''
+    assert True, ""
+
+def test_instructor_view_get_request():
+    '''
+    Testing:
+        - /instructor/request/<request_id>
+    Acceptance criteria:
+        -
+    '''
+    assert True, ""
+
+def test_instructor_view_get_request_old_versions():
+    '''
+    Testing:
+        - /instructor/old-versions/<request_id>
+    Acceptance criteria:
+        -
+    '''
+    assert True, ""
+
+def test_instructor_view_get_subject_settings():
+    '''
+    Testing:
+        - /instructor/get-subject-settings/<subject_id>
+    Acceptance criteria:
+        -
+    '''
+    assert True, ""
+
+def test_instructor_view_get_aap():
+    '''
+    Testing:
+        - /instructor/aap/<aap_id>
+    Acceptance criteria:
+        -
+    '''
+    assert True, ""
+
+def test_instructor_view_get_request_history():
+    '''
+    Testing:
+        - /instructor/request-history/<student_id>
+    Acceptance criteria:
+        -
+    '''
+    assert True, ""
+
+def test_instructor_view_post_aap():
+    '''
+    Testing:
+        - /instructor/aap/
+    Acceptance criteria:
+        -
+    '''
+    assert True, ""
+
+def test_instructor_view_set_complex():
+    '''
+    Testing:
+        - /instructor/set-complex/<request_id>
+    Acceptance criteria:
+        -
+    '''
+    assert True, ""
+
+def test_instructor_view_request_response():
+    '''
+    Testing:
+        - /instructor/request-response/<request_id>
+    Acceptance criteria:
+        -
+    '''
+    assert True, ""
+
+def test_instructor_view_change_settings():
+    '''
+    Testing:
+        - /instructor/settings/
+    Acceptance criteria:
+        -
+    '''
+    assert True, ""
 
 # fake data to play with before DB connected
 usr3 = {

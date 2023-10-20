@@ -53,7 +53,7 @@ def test_student_view_get_requests():
     Testing:
         - /student/request/<request_id>
     Acceptance criteria:
-        - Returns all requests in a case
+        - Returns a request's details
     '''
     response = requests.get('http://localhost:8000/student/request/1', timeout = 5)
     assert response.json() == student_request_1, "/student/request/ endpoint failed"
