@@ -43,7 +43,7 @@ def test_student_view_get_requests_from_case():
         - Returns all requests in a case
     '''
     response = requests.get('http://localhost:8000/student/requests-from-case/1', timeout = 5)
-    assert response.json == \
+    assert response.json() == \
     {
         'requestIds': json.dumps([1,2])
     }, "/student/requests-from-case/ endpoint failed"
