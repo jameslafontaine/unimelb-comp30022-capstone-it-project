@@ -56,5 +56,5 @@ urlpatterns = [
     path('set-complex/<int:request_id>', make_complex, name='make_complex'),
     path('request-response/<int:request_id>', request_response, name='request_response'),
     path('settings/', change_settings, name='change_settings'),
-    path('set-user-id/<int:id>', set_user_id, name='set_user_id'),
+    path('set-user-id/<int:input_id>', set_user_id, name='set_user_id'),
 ]

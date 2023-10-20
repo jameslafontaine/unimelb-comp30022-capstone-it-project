@@ -67,7 +67,11 @@ jobs:
       run: docker compose up -d
     - name: Wait for services to start
       run: sleep 15
-    - name: Black box tests
+    - name: Blackbox tests
       run: pytest blackbox_tests.py
     - name: Component tests
       run: pytest component_tests.py
+    - name: student_view - unit tests
+      run: pytest student_view/tests.py
+    - name: instructor_view - unit tests
+      run: pytest instructor_view/tests.py
