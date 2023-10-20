@@ -218,7 +218,7 @@ function iloadCoursePreferenceFromThread(threadId){
 function setComplex(threadId){
     return putData(('/instructor/set-complex/' + threadId), {})
         .then(responseData => {
-            return true; // replace when checking response data
+            return true;
         })
         .catch(error => {
             console.error('There was a problem setting the complex status:', error);
