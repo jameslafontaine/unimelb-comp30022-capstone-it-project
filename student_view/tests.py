@@ -7,6 +7,8 @@ import json
 import time
 import requests
 
+LOCALHOST_PATH = 'http://localhost:8000'
+
 def test_student_view_get_cases():
     '''
     Testing:
@@ -14,7 +16,7 @@ def test_student_view_get_cases():
     Acceptance criteria:
         - Returns case information
     '''
-    response = requests.get('http://localhost:8000/student/case/12', timeout = 5)
+    response = requests.get(LOCALHOST_PATH + '/student/case/12', timeout = 5)
     assert response.json() == student_case_1_2, "/student/case/ endpoint failed"
 
 def test_student_view_get_active_cases():
@@ -24,9 +26,9 @@ def test_student_view_get_active_cases():
     Acceptance criteria:
         - Returns a user's active cases
     '''
-    requests.put('http://localhost:8000/student/set-user-id/1', timeout = 5)
+    requests.put(LOCALHOST_PATH + '/student/set-user-id/1', timeout = 5)
     time.sleep(1)
-    response = requests.get('http://localhost:8000/student/active-cases/1', timeout = 5)
+    response = requests.get(LOCALHOST_PATH + '/student/active-cases/1', timeout = 5)
     assert response.json() == \
             {
                 'cases': 
@@ -42,7 +44,7 @@ def test_student_view_get_requests_from_case():
     Acceptance criteria:
         - Returns all requests in a case
     '''
-    response = requests.get('http://localhost:8000/student/requests-from-case/1', timeout = 5)
+    response = requests.get(LOCALHOST_PATH + '/student/requests-from-case/1', timeout = 5)
     assert response.json() == \
     {
         'requestIds': json.dumps([1,2])
@@ -55,7 +57,7 @@ def test_student_view_get_requests():
     Acceptance criteria:
         - Returns a request's details
     '''
-    response = requests.get('http://localhost:8000/student/request/1', timeout = 5)
+    response = requests.get(LOCALHOST_PATH + '/student/request/1', timeout = 5)
     assert response.json() == student_request_1, "/student/request/ endpoint failed"
 
 def test_student_view_post_new_request():
