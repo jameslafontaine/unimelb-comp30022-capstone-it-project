@@ -1,6 +1,6 @@
 /** 
  * Author: James La Fontaine
- * Date Last Modified: October 5, 2023
+ * Date Last Modified: October 21, 2023
  * Description: Handles the functionality of popups
  */
 
@@ -111,28 +111,17 @@ function handleApprovalRejectionAnswer(thread) {
         
         // Add click event listener to Approve Request button
         popupApproveButton.addEventListener('click', function() {
-            
-            // Update relevant information
-            /*
-            if (thread.request_type == 'Extension') {
-                
-                requestData.approvedExtension = document.getElementById('extensionOverrideAExt').value
-                console.log('Approved Extension: ', requestData.approvedExtension);
+
+            responseJson = {
+                'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                'status' : 'Approved',
+                'extended by' : document.getElementById('extensionOverrideAExt').value,
             }
-            */
-            /*
-            requestData.instructorNotes = document.getElementById(`instructorNotesA${reqShort}`).value
-            console.log('Instructor Notes: ', requestData.instructorNotes);
-            
-            requestData.assessment = document.getElementById(`assessmentOverrideA${reqShort}`).value
-            console.log('Selected Assessment Override: ', requestData.assessment);
-            
-            requestData.status = 'Approved'
-            console.log('Updated Request Status: ', requestData.status);
-            */
+
+            respond(thread.thread_id, responseJson);
+
             // return to view reqs (could make a confirmation page or just show confirmation message at top)
             redirectToViewReqs(thread.course_id);
-            
         });
         
         // Get the Reject Request button
@@ -140,18 +129,14 @@ function handleApprovalRejectionAnswer(thread) {
         
         // Add click event listener to Reject Request button
         popupRejectButton.addEventListener('click', function() {
-            
-            // Update the relevant information
-            /*
-            requestData.instructorNotes = document.getElementById(`instructorNotesR${reqShort}`).value
-            console.log('Instructor Notes: ', requestData.instructorNotes);
-            
-            requestData.assessment = document.getElementById(`assessmentOverrideR${reqShort}`).value
-            console.log('Selected Assessment Override: ', requestData.assessment);
-            
-            requestData.status = 'Rejected'
-            console.log('Updated Request Status: ', requestData.status);
-            */
+            responseJson = {
+                'instructorNotes' : document.getElementById(`instructorNotesR${reqShort}`).value,
+                'status' : 'Rejected',
+                'extended by' : 0,
+            }
+
+            respond(thread.thread_id, responseJson);
+
             // return to view reqs (could make a confirmation page or just show confirmation message at top)
             redirectToViewReqs(thread.course_id);
             

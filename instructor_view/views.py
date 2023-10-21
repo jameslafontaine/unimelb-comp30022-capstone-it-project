@@ -241,6 +241,11 @@ def request_response(request, thread_id):
     '''
     request body contains info, takes the following form for:
         extension
+            responseJson = {
+                'instructorNotes' : '',
+                'status' : 'Rejected',
+                'extended by' : 0,
+            }
         query
             reponseJson = {
                 'instructorNotes' : '',
