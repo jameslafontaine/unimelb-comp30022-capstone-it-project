@@ -54,6 +54,9 @@
         crossorigin="anonymous"></script>
     </head>
     <body>
+        <!-- div to hold data passed from the view -->
+        <div id="load-thread-id" data-thread-id="{{ thread_id }}"></div>
+
         <div id="webHeaderContainer"></div>
 
         <div class="mainBody" style="width: 90%;">
@@ -113,7 +116,7 @@
                             <span class="text" id="studentId"></span>
                             <span class="text" id="studentEmail" style="font-size: 14px;"></span>
                             <span>
-                                <button class="standardButton" onclick="window.location.href='/instructor/view-profile/1'">
+                                <button class="standardButton" onclick=toProfile()>
                                     View Profile
                                 </button>
                             </span>
@@ -122,7 +125,7 @@
                     <br><br><br><br><br><br>
                     <div style="text-align: center; width: fit-content; margin: 0 auto;">
                         <div>
-                            <p class="bigButton" onclick="window.location.href='/instructor/view-reqs'">
+                            <p class="bigButton" onclick=back()>
                                 Back
                             </p>
                         </div>
@@ -135,19 +138,6 @@
         <script>createHeader("instructor")</script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>
-            const req2 = {
-                requestId: 987654,
-                creationDate: '10/10/2012',
-                resolveDate: '15/10/2012',
-                reserved: false,
-                course: 'COMP30022 - IT Project',
-                assessment: 'Project 1',
-                requestType: 'Extension',
-                requestTitle: 'Project 1 Extension Request',
-                message: 'I am sick ;\'( why must misfortune happen to me',
-                status: 'Rejected',
-                instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
-            };
 
             const suppDocs = [
                 {
@@ -164,48 +154,42 @@
                 }
             ]
 
-            const prevVersions = [
-                {
-                    date: "2011/09/24",
-                    message: "The power has died!! :(",
-                    documents: [
-                        { name: "iamsick.pdf", size: "20 TB" },
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                },
-                {
-                    date: "2011/09/23",
-                    message: "Haven't thought of an excuse yet.",
-                    documents: [
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                }
-            ];
-            
+            // read in thread id from the provided data
+            let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
 
             // Fill information relating to the current request from the database
-            fillCurrentRequestInformation(req2, prevVersions.length + 1, 'Instructor');
+            fillCurrentRequestInformation(threadId, 'Instructor');
 
             // Generate the supporting documentation for the current version of request
             generateSuppDocTable(suppDocs, '');
 
-            // Generate version boxes for all request prevVersions in the data
-            for (let i = 0; i < prevVersions.length; i++) {
-                generateVersionBox(prevVersions[i], prevVersions.length - i)
-            }
+            // generate a list of all previous versions of a thread
+            getPreviousVersions(threadId)
+                .then(prevVersions => {
+                    // Generate version boxes for all request prevVersions in the data
+                    for (let i = 0; i < prevVersions.length; i++) {
+                        generateVersionBox(prevVersions[i], prevVersions.length - i)
+                    }
+                })
 
         </script>
         <!-- Student Details Box Population -->
         <script src="{% static 'js/modules/studentDetails.js' %}"></script>
         <script>
-            student = {
-                firstName: 'Callum',
-                lastName: 'Sharman',
-                id: 1178429,
-                email: 'csharman@student.unimelb.edu.au'
+
+            iloadStudentDetails(threadId)
+                .then(student => {
+                    fillStudentDetailsBox(student);
+                })
+            function toProfile(){
+                redirectToProfile(threadId);
             }
-        
-            fillStudentDetailsBox(student);
+            function back(){
+                loadThread(threadId)
+                    .then(thread => {
+                        redirectToViewReqs(thread.course_id)
+                    })
+            }
         </script>
     </body>
 </html>

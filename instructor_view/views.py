@@ -48,10 +48,10 @@ def view_reqs_view(request, id):
     if(courseId == 42):
         return render(request, 'viewRequests.html', {'course': json.dumps(course42)})
 
-def view_resolved_view(request, input_id):
+def view_resolved_view(request, thread_id):
     '''View resolved requests'''
-    print(input_id) # To make pylint happy
-    return render(request, 'viewResolved.html', {})
+    print(thread_id) # To make pylint happy
+    return render(request, 'viewResolved.html', {'thread_id': thread_id})
 
 def subj_settings_view(request, input_id):
     '''View for subject preferences'''
@@ -222,7 +222,6 @@ def make_complex(request, thread_id):
         #return JsonResponse({}, status=400)
     #failure
     return JsonResponse({}, status=400)
-
 
 @csrf_exempt
 def set_user_id(request, input_id):

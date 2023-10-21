@@ -37,3 +37,17 @@ def get_assignment(request, assign_id):
         return JsonResponse(assign4)
     elif(assign_id == 5):
         return JsonResponse(assign5)
+    
+def get_requests_from_thread(request, thread_id):
+    if(thread_id == 11):
+        return JsonResponse({
+            'requests': json.dumps([req311, req312])
+        })
+    elif(thread_id == 12):
+        return JsonResponse({
+            'requests': json.dumps([req321])
+        })
+    elif(thread_id == 13):
+        return JsonResponse({
+            'requests': json.dumps([req322,req323,req324])
+        })

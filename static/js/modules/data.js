@@ -97,10 +97,10 @@ function sloadThreadsData(caseId){
 }
 
 /**
- * STUDENT: Loads in requests from thread id from the DB, returns an array full of case JSONs
+ * GENERIC: Loads in requests from thread id from the DB, returns an array full of case JSONs
  */
-function sloadRequestsData(threadId){
-    return loadData('/student/requests-from-thread/' + threadId)
+function loadRequestsData(threadId){
+    return loadData('/requests-from-thread/' + threadId)
         .then(data => {
             return JSON.parse(data.requests);
         })
@@ -138,10 +138,10 @@ function loadAssignment(assignId){
 }
 
 /**
- * STUDENT: Generates a list of "previous versions" of a request
+ * GENERIC: Generates a list of "previous versions" of a request
  */
-function sGetPreviousVersions(threadId){
-    return sloadRequestsData(threadId)
+function getPreviousVersions(threadId){
+    return loadRequestsData(threadId)
         .then(requests => {
             // cuts off the first request (current request)
             return requests.splice(1);
@@ -230,7 +230,7 @@ function setComplex(threadId){
  * GENERIC: returns the latest request from the given thread id
  */
 function getLatestRequest(thread_id) {
-    return sloadRequestsData(thread_id)
+    return loadRequestsData(thread_id)
         .then(requests => {
             return requests[0];
         })

@@ -115,6 +115,20 @@ req322 = {
     'request_content': 'Please just give me an extension, im begging',
     'instructor_notes': 'AHHHHHHHHHHHHH',
 }
+req323 = {
+    'request_id': 323,
+    'thread_id': 13,
+    'date_created': "01-11-2023",
+    'request_content': 'balls and ass',
+    'instructor_notes': 'hello student',
+}
+req324 = {
+    'request_id': 324,
+    'thread_id': 13,
+    'date_created': "02-11-2023",
+    'request_content': 'skr skr',
+    'instructor_notes': 'nope',
+}
 
 course31 = {
     'course_id': '31',

@@ -34,7 +34,7 @@ urlpatterns = [
 
     path('review-req/<int:thread_id>/', review_req_view, name='review-req'),
     path('view-reqs/<int:id>', view_reqs_view, name='view-reqs'),
-    path('view-resolved/<int:input_id>/', view_resolved_view, name='view-resolved'),
+    path('view-resolved/<int:thread_id>/', view_resolved_view, name='view-resolved'),
     path('subject-settings/<int:input_id>/', subj_settings_view, name='subject-settings'),
     path('view-profile/<int:input_id>/', view_profile_view, name='view-profile'),
 

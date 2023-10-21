@@ -98,7 +98,7 @@ function fillCurrentRequestInformation(threadId, view) {
             }
             
             // count how many requests belong to the thread to find version number
-            sloadRequestsData(threadId)
+            loadRequestsData(threadId)
                 .then(requests => {
                     versionNumber = requests.length;
                     document.getElementById("versionNum").innerHTML = 'Version #' + versionNumber

@@ -355,51 +355,6 @@
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script src="{% static 'js/modules/buttons.js' %}"></script>
         <script>
-            var req1 = {
-                requestId: 123456,
-                creationDate: '10/10/2012',
-                resolveDate: '',
-                reserved: false,
-                course: 'COMP30022 - IT Project',
-                assessment: 'Project 1',
-                requestType: 'Extension',
-                requestTitle: 'Project 1 Extension Request',
-                message: 'I am sick ;\'( why must misfortune happen to me',
-                status: 'Waiting for action'
-            };
-
-            const suppDocs = [
-                {
-                    name: 'iamsick.pdf',
-                    size: '20 TB'
-                },
-                {
-                    name: 'bible.pdf',
-                    size: '40 MB'
-                },
-                {
-                    name: 'medcert.pdf',
-                    size: '3 MB'
-                }
-            ]
-
-            const prevVersions = [
-                {
-                    date: "2011/09/24",
-                    message: "The power has died!! :(",
-                    documents: [
-                        { name: "iamsick.pdf", size: "20 TB" },
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                },
-                {
-                    date: "2011/09/23",
-                    message: "Haven't thought of an excuse yet.",
-                    documents: [
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                }
-            ];
 
             // read in thread id from the provided data
             let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));

@@ -151,7 +151,7 @@
             generateSuppDocTable(suppDocs, '');
             
             // generate a list of all previous versions of a thread
-            sGetPreviousVersions(threadId)
+            getPreviousVersions(threadId)
                 .then(prevVersions => {
                     // Generate version boxes for all request prevVersions in the data
                     for (let i = 0; i < prevVersions.length; i++) {
