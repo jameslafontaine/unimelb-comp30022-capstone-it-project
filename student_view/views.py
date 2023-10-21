@@ -120,6 +120,13 @@ def get_threads(request, case_id):
             'threads': json.dumps([thread12, thread13])
         })
 
+def get_all_cases(request):
+    '''Gets all of the users cases'''
+    return JsonResponse({
+            'cases': json.dumps([case11,case12])
+        })
+
+
 
 # POST REQUESTS
 @csrf_exempt

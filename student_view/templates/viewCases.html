@@ -63,55 +63,10 @@
         <script src="{% static 'js/modules/requests.js' %}"></script>
 
         <script>
-            activeCaseList = [
-                [
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-
-                ],
-                [
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Resolved'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Resolved'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Resolved'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Resolved'
-                    }
-                ]
-            ]
-
-            generateStudentCases(activeCaseList, activeCaseList.length)
+            getAllCases()
+                .then(cases => {
+                    generateStudentCases(cases)
+                })
         </script>
     </body>
 </html>

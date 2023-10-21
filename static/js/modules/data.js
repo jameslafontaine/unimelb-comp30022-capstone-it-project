@@ -227,7 +227,7 @@ function setComplex(threadId){
 }
 
 /** 
- * GENERIC: returns the latest request from the given thread id
+ * GENERIC: Returns the latest request from the given thread id
  */
 function getLatestRequest(thread_id) {
     return loadRequestsData(thread_id)
@@ -248,4 +248,14 @@ function respond(threadId, response){
             console.error('There was a problem responding to the request:', error);
             return false;
         });
+}
+
+/**
+ * STUDENT: Returns all of the users cases
+ */
+function getAllCases(){
+    return loadData('/student/get-all-cases/')
+        .then(data => {
+            return JSON.parse(data.cases);
+        })
 }
