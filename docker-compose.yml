@@ -8,7 +8,6 @@ services:
             - "33061:3306"
         volumes:
             - ./init.sql:/etc/mysql/conf.d/init.sql
-            - ./my.cnf:/etc/mysq/conf.d/my.cnf
     webapp:
         build:
             context: .

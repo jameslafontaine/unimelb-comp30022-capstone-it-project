@@ -216,13 +216,13 @@ def make_complex(request, thread_id):
     if request.method == 'PUT':
         # check thread id, if complex, set to non-complex
         # else make complex
-
         #success
         return JsonResponse({}, status=200)
         #failure
         #return JsonResponse({}, status=400)
     #failure
     return JsonResponse({}, status=400)
+
 
 @csrf_exempt
 def set_user_id(request, input_id):

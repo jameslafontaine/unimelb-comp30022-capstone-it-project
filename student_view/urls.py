@@ -32,6 +32,7 @@ urlpatterns = [
     # GET REQUESTS
     path('active-cases/', get_active_cases, name='get_active_cases'),
     path('case/<int:case_id>/', get_case, name='get_case'),
+    path('active-cases/<int:user_id>/', get_active_cases, name='get_active_cases'),
     path('requests-from-case/<int:case_id>/', get_requests_from_case,
          name='get_requests_from_case'),
     path('request/<int:request_id>/', get_request, name='get_request'),
