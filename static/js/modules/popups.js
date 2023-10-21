@@ -130,8 +130,8 @@ function handleApprovalRejectionAnswer(thread) {
             requestData.status = 'Approved'
             console.log('Updated Request Status: ', requestData.status);
             */
-            // Change the page to home (could make a confirmation page or just show confirmation message at top)
-            redirectHome();
+            // return to view reqs (could make a confirmation page or just show confirmation message at top)
+            redirectToViewReqs(thread.course_id);
             
         });
         
@@ -152,8 +152,8 @@ function handleApprovalRejectionAnswer(thread) {
             requestData.status = 'Rejected'
             console.log('Updated Request Status: ', requestData.status);
             */
-            // Change the page to home (could make a confirmation page or just show confirmation message at top)
-            redirectHome();
+            // return to view reqs (could make a confirmation page or just show confirmation message at top)
+            redirectToViewReqs(thread.course_id);
             
         });
 
@@ -164,17 +164,13 @@ function handleApprovalRejectionAnswer(thread) {
         
         // Add click event listener to the Answer button
         popupAnswerButton.addEventListener('click', function() {
-            
-            // Update the relevant information
-            /*
-            requestData.instructorNotes = document.getElementById('instructorNotesAns').value
-            console.log('Instructor Notes: ', requestData.instructorNotes);
-            
-            requestData.status = 'Answered'
-            console.log('Updated Request Status: ', requestData.status);
-            */
-            // Change the page to home (could make a confirmation page or just show confirmation message at top)
-            redirectHome();
+            // write the response json with notes and status
+            responseJson = {
+                'instructorNotes' : document.getElementById('instructorNotesAns').value,
+                'status' : 'Answered',
+            }
+            respond(thread.thread_id, responseJson);
+            redirectToViewReqs(thread.course_id);
         });
     }
 }

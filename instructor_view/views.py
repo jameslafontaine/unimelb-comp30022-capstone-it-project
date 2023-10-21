@@ -221,9 +221,8 @@ def make_complex(request, thread_id):
         return JsonResponse({}, status=200)
         #failure
         #return JsonResponse({}, status=400)
-    else: 
-        #failure
-        return JsonResponse({}, status=400)
+    #failure
+    return JsonResponse({}, status=400)
 
 @csrf_exempt
 def set_user_id(request, input_id):
@@ -236,14 +235,36 @@ def set_user_id(request, input_id):
     return HttpResponseBadRequest("Invalid Request Type")
 
 @csrf_exempt
-def request_response(request, request_id):
-    '''Set response request'''
+def request_response(request, thread_id):
+    '''Set request response'''
+    print(thread_id) # make pylint happy
+    '''
+    request body contains info, takes the following form for:
+        extension
+        query
+            reponseJson = {
+                'instructorNotes' : '',
+                'status' : 'Answered',
+            }
+        other
+            ?
+    '''
+
     # check the id exists and all that jazz
     if request.method == 'PUT':
-        # read the header to see what the response is and set it
-        print(request_id) # make pylint happy
-        return JsonResponse({"message": "Case created successfully"})
-    return HttpResponseBadRequest("Invalid Request Type")
+        try:
+            data = json.loads(request.body)
+            # do things here
+            # success
+            return JsonResponse(data, status=200)
+            # failure
+            # return JsonResponse({}, status=400)
+        except json.JSONDecodeError:
+            # Return a JSON response with an error message if the request body is not valid JSON
+            return JsonResponse({'error': 'Invalid JSON in request body'}, status=400)
+
+    # Return a JSON response with an error message for other HTTP methods
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 @csrf_exempt
 def change_settings(request):

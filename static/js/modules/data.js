@@ -32,7 +32,7 @@ function putData(url, json){
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(json)
-    })
+        })
         .then(response => {
             if (response.ok) {
                 // Parse the response JSON if successful
@@ -234,4 +234,18 @@ function getLatestRequest(thread_id) {
         .then(requests => {
             return requests[0];
         })
+}
+
+/**
+ * INSTRUCTOR: Respond to a request, in the request specify response, notes, etc.
+ */
+function respond(threadId, response){
+    return putData(('/instructor/request-response/' + threadId), response)
+        .then(responseData => {
+            return true;
+        })
+        .catch(error => {
+            console.error('There was a problem responding to the request:', error);
+            return false;
+        });
 }

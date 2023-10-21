@@ -61,7 +61,7 @@ urlpatterns = [
 
     # PUT REQUESTS
     path('set-complex/<int:thread_id>', make_complex, name='make_complex'),
-    path('request-response/<int:request_id>', request_response, name='request_response'),
+    path('request-response/<int:thread_id>', request_response, name='request_response'),
     path('settings/', change_settings, name='change_settings'),
     path('set-user-id/<int:input_id>', set_user_id, name='set_user_id'),
 ]
