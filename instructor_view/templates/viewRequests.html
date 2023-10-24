@@ -105,7 +105,6 @@
             const myElement = document.getElementById("title").innerHTML = 
             subjectCode + document.getElementById("title").innerHTML;
 
-            // Call the function with the JSON data
             iloadThreadsPending(course.course_id)
                 .then(threads => {
                     generateRequestTable(threads, 'Awaiting');

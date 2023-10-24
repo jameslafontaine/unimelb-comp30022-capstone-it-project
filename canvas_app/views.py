@@ -51,3 +51,13 @@ def get_requests_from_thread(request, thread_id):
         return JsonResponse({
             'requests': json.dumps([req322,req323,req324])
         })
+
+def get_user_details(request, user_id):
+    if(user_id == 1):
+        return JsonResponse(usr1)
+    elif(user_id == 2):
+        return JsonResponse(usr2)
+    elif(user_id == 3):
+        return JsonResponse(usr3)
+    elif(user_id == 4):
+        return JsonResponse(usr4)

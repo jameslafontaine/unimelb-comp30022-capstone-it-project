@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-            <!-- Meta -->
+        <!-- Meta -->
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Instructor - View Student Profile</title>
@@ -52,6 +52,10 @@
         crossorigin="anonymous"></script>
     </head>
     <body>
+
+        <!-- div to hold data passed from the view -->
+        <div id="load-user-id" data-user-id="{{ user_id }}"></div>
+
         <div id="webHeaderContainer"></div>
 
         <div class="mainBody" style="width: 90%;">
@@ -120,55 +124,22 @@
         <script>createHeader("instructor")</script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>
-            // Need all active requests/queries linked to this particular student here
-            requestDataActive = [
-                {
-                    reserved: true,
-                    date: '29/08/2023',
-                    studentName: 'Callum Sharman',
-                    requestType: 'Extension',
-                    status: 'Pending'
-                },		
-                {
-                    reserved: false,
-                    date: '29/08/2023',
-                    studentName: 'Callum Sharman',
-                    requestType: 'Extension',
-                    status: 'Pending'
-                }
-            ]
 
+            // read in user id from the provided data
+            let userId = JSON.parse(document.getElementById('load-user-id').getAttribute('data-user-id'));
 
-            // Need all resolved request/queries linked to this particular student here
-            requestDataResolved = [
-            {
-                reserved: true,
-                date: '29/08/2023',
-                studentName: 'Callum Sharman',
-                requestType: 'Extension',
-                status: 'Rejected'
-            },		
-            {
-                reserved: false,
-                date: '29/08/2023',
-                studentName: 'Callum Sharman',
-                requestType: 'Extension',
-                status: 'Accepted'
-            }
-        ]
-
-        generateRequestTable(requestDataActive, 'Awaiting')
-        generateRequestTable(requestDataResolved, 'Resolved')
+            iloadThreadsPendingFromUser(userId)
+                .then(threads => {
+                    generateRequestTable(threads, 'Awaiting');
+                })
+            iloadThreadsResolvedFromUser(userId)
+                .then(threads => {
+                    generateRequestTable(threads, 'Resolved');
+                })
 
         </script>
         <script src="{% static 'js/modules/studentDetails.js' %}"></script>
         <script>
-            student = {
-                firstName: 'Callum',
-                lastName: 'Sharman',
-                id: 1178429,
-                email: 'csharman@student.unimelb.edu.au'
-            }
 
             // Need AAP data for this student here
             aapData = [
@@ -185,8 +156,11 @@
             ]
                 
             
-        
-            fillStudentDetailsBox(student);
+            loadUserDetails(userId)
+                .then(user => {
+                    fillStudentDetailsBox(user);
+                })
+
             generateAAPTable(aapData)
         </script>
     </body>

@@ -36,7 +36,7 @@ urlpatterns = [
     path('view-reqs/<int:id>', view_reqs_view, name='view-reqs'),
     path('view-resolved/<int:thread_id>/', view_resolved_view, name='view-resolved'),
     path('subject-settings/<int:input_id>/', subj_settings_view, name='subject-settings'),
-    path('view-profile/<int:input_id>/', view_profile_view, name='view-profile'),
+    path('view-profile/<int:user_id>/', view_profile_view, name='view-profile'),
 
     # GET REQUESTS
     path('courses/<int:user_id>', get_courses, name='get_courses'),
@@ -44,7 +44,7 @@ urlpatterns = [
     path('request/<int:request_id>', get_request, name='get_request'),
     path('old-versions/<int:request_id>', get_old_versions, name='get_old_versions'),
     path('get-subject-settings/<int:subject_id>', get_subject_settings,
-         name='get_subject_settings'),
+        name='get_subject_settings'),
     path('AAP/<int:aap_id>', get_aap, name='get_AAP'),
     path('request-history/<int:student_id>', get_request_history, name='get_request_history'),
 
@@ -53,6 +53,10 @@ urlpatterns = [
     path('threads/<int:course_id>', get_threads, name='get_threads'),
     path('get-threads-pending/<int:course_id>', get_threads_pending, name='get_threads_pending'),
     path('get-threads-resolved/<int:course_id>', get_threads_resolved, name='get_threads_resolved'),
+    path('get-threads-pending-from-user/<int:user_id>', get_threads_pending_from_user,
+        name='get_threads_pending_from_user'),
+    path('get-threads-resolved-from-user/<int:user_id>', get_threads_resolved_from_user,
+        name='get_threads_resolved_from_user'),
     path('get-student-details/<int:thread_id>', get_student_details, name='get_student_details'),
     path('get-pref-from-thread/<int:thread_id>', get_pref_from_thread, name='get_pref_from_thread'),
 

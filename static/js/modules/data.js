@@ -149,7 +149,7 @@ function getPreviousVersions(threadId){
 }
 
 /**
- * INSTRUCTOR: Gets a list of all requests "awaiting action"
+ * INSTRUCTOR: Gets a list of all requests "awaiting action" from a courseId
  */
 function iloadThreadsPending(courseId){
     return loadData('/instructor/get-threads-pending/' + courseId)
@@ -159,7 +159,7 @@ function iloadThreadsPending(courseId){
 }
 
 /**
- * INSTRUCTOR: Gets a list of all "resolved" requests
+ * INSTRUCTOR: Gets a list of all "resolved" requests from a courseId
  */
 function iloadThreadsResolved(courseId){
     return loadData('/instructor/get-threads-resolved/' + courseId)
@@ -167,6 +167,27 @@ function iloadThreadsResolved(courseId){
             return JSON.parse(data.threads);
         })
 }
+
+/**
+ * INSTRUCTOR: Gets a list of all requests "awaiting action" from a userId
+ */
+function iloadThreadsPendingFromUser(userId){
+    return loadData('/instructor/get-threads-pending-from-user/' + userId)
+        .then(data => {
+            return JSON.parse(data.threads);
+        })
+}
+
+/**
+ * INSTRUCTOR: Gets a list of all "resolved" requests from a userId
+ */
+function iloadThreadsResolvedFromUser(userId){
+    return loadData('/instructor/get-threads-resolved-from-user/' + userId)
+        .then(data => {
+            return JSON.parse(data.threads);
+        })
+}
+
 
 /**
  * INSTRUCTOR: Gets student details from a threadId
@@ -257,5 +278,15 @@ function getAllCases(){
     return loadData('/student/get-all-cases/')
         .then(data => {
             return JSON.parse(data.cases);
+        })
+}
+
+/**
+ * GENERIC: Returns user details from a user id
+ */
+function loadUserDetails(userId){
+    return loadData('/get-user-details/' + userId)
+        .then(data => {
+            return data;
         })
 }

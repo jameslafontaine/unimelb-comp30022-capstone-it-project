@@ -64,16 +64,10 @@ def subj_settings_view(request, input_id):
         return render(request, 'subjectSettings.html', {'req':req})
     return JsonResponse({'error': 'Record not found'}, status=404)
 
-def view_profile_view(request, input_id):
+def view_profile_view(request, user_id):
     '''View for student profile'''
-    # check the id exists
-    if input_id == usr3['id']:
-        usr = json.dumps(usr3)
-        return render(request, 'viewProfile.html', {'usr':usr})
-    if input_id == usr4['id']:
-        usr = json.dumps(usr4)
-        return render(request, 'viewProfile.html', {'usr':usr})
-    return JsonResponse({'error': 'Record not found'}, status=404)
+    
+    return render(request, 'viewProfile.html', {'user_id':user_id})
 
 
 # GET REQUESTS
@@ -172,6 +166,22 @@ def get_threads_pending(request, course_id):
 
 def get_threads_resolved(request, course_id):
     ''' Gets the resolved (not pending) threads belonging to a course '''
+
+    # just pretending here that they are specific to a course haha
+    return JsonResponse({
+            'threads': json.dumps([thread13])
+        })
+
+def get_threads_pending_from_user(request, user_id):
+    ''' Gets the pending threads belonging to a user '''
+
+    # just pretending here that they are specific to a course haha
+    return JsonResponse({
+            'threads': json.dumps([thread11, thread12])
+        })
+
+def get_threads_resolved_from_user(request, user_id):
+    ''' Gets the resolved (not pending) threads belonging to a user '''
 
     # just pretending here that they are specific to a course haha
     return JsonResponse({
