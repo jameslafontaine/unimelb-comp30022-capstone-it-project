@@ -209,3 +209,32 @@ preferences41 = {
 preferences42 = {
     'global_extension_length': 6,
 }
+
+aap1 = {
+    'file_id': 1,
+    'file_name': 'medical condition',
+    'file_type': 'pdf',
+    'user_id': 1,
+    'request_id': 'nullll',
+}
+aap2 = {
+    'file_id': 2,
+    'file_name': 'another medical condition',
+    'file_type': 'pdf',
+    'user_id': 1,
+    'request_id': 'nullll',
+}
+aap3 = {
+    'file_id': 3,
+    'file_name': 'chronic dumbass syndrome',
+    'file_type': 'pdf',
+    'user_id': 1,
+    'request_id': 'nullll',
+}
+aap4 = {
+    'file_id': 4,
+    'file_name': 'another aap',
+    'file_type': 'pdf',
+    'user_id': 1,
+    'request_id': 'nullll',
+}

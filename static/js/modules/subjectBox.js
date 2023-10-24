@@ -9,7 +9,7 @@ let subjects = new Array();
 let usrId;
 
 function loadSubjectBoxData(){
-	return getUserId()
+	return getInstructorId()
 		.then(() => getSubjects())
 		.catch(error => {
 			console.error('Error:', error);
@@ -18,7 +18,7 @@ function loadSubjectBoxData(){
 }
 
 // gets the users id and puts it into usrId for future use
-function getUserId(){
+function getInstructorId(){
 	return fetch('/instructor/get-user-id/')
 		.then(response => response.json())
 		.then(data => {

@@ -107,7 +107,7 @@ def get_old_versions(request, request_id):
 
 def get_user_id(request):
     '''Get user ID'''
-    print(request + "Yay!") # Make PyLint happy
+    print(request) # Make PyLint happy
     return JsonResponse({'id': USER_ID})
 
 def get_threads(request, case_id):

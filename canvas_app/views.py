@@ -61,3 +61,8 @@ def get_user_details(request, user_id):
         return JsonResponse(usr3)
     elif(user_id == 4):
         return JsonResponse(usr4)
+    
+def get_user_aaps(request, user_id):
+    return JsonResponse({
+        'aaps': json.dumps([aap1,aap2,aap3,aap4])
+    })

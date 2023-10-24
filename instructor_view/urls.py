@@ -16,7 +16,6 @@ from .views import get_request_status
 from .views import get_request
 from .views import get_old_versions
 from .views import get_subject_settings
-from .views import get_aap
 from .views import get_request_history
 from .views import get_user_id
 from .views import instructor_add_aap
@@ -45,7 +44,6 @@ urlpatterns = [
     path('old-versions/<int:request_id>', get_old_versions, name='get_old_versions'),
     path('get-subject-settings/<int:subject_id>', get_subject_settings,
         name='get_subject_settings'),
-    path('AAP/<int:aap_id>', get_aap, name='get_AAP'),
     path('request-history/<int:student_id>', get_request_history, name='get_request_history'),
 
 

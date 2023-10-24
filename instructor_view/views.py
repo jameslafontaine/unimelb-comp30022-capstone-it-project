@@ -119,13 +119,6 @@ def get_subject_settings(request, subject_id):
     # id not found
     return not_found_view(request)
 
-def get_aap(request, aap_id):
-    '''GET AAPs of request?'''
-    if aap_id == 1:
-        return JsonResponse({'this is an aap': 'aap go beep boop'})
-    # id not found
-    return not_found_view(request)
-
 def get_request_history(request, student_id):
     '''GET the history of requests'''
     if student_id == 1:

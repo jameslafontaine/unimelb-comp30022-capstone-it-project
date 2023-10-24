@@ -33,4 +33,5 @@ urlpatterns = [
     path('requests-from-thread/<int:thread_id>/', get_requests_from_thread,
          name='get_requests_from_thread'),
     path('get-user-details/<int:user_id>', get_user_details, name='get_user_details'),
+    path('get-user-aaps/<int:user_id>', get_user_aaps, name='get_user_aaps'),
 ]

@@ -62,20 +62,15 @@
         <script>createHeader("student")</script>
         <script src="{% static 'js/modules/studentDetails.js' %}"></script>
         <script>
-            aapData = [
-                {
-                    name: 'aap1.pdf',
-                    size: '20 TB',
-                    dateUpdated: '2001/10/10'
-                },
-                {
-                    name: 'aap2.pdf',
-                    size: '40 MB',
-                    dateUpdated: '2001/10/10'
-                },
-            ]
 
-            generateAAPTable(aapData)
+            getUserId('student')
+                .then(userId => {
+                    loadUserAAPs(userId)
+                        .then(aaps => {
+                            generateAAPTable(aaps)
+                        })
+                })
+                
         </script>
     </body>
 </html>

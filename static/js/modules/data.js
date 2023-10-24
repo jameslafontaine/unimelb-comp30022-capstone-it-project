@@ -290,3 +290,35 @@ function loadUserDetails(userId){
             return data;
         })
 }
+
+/**
+ * GENERIC: Returns a given users aaps
+ */
+function loadUserAAPs(userId){
+    return loadData('/get-user-aaps/' + userId)
+        .then(data => {
+            return JSON.parse(data.aaps);
+        })
+}
+
+/**
+ * GENERIC: this will need to be changed upon canvas integration
+ * Returns the logged in users id
+ */
+function getUserId(type){
+    if(type == 'instructor'){
+        return loadData('/instructor/get-user-id/')
+        .then(data => {
+            return data.id;
+        })
+    }
+    else if(type == 'student'){
+        return loadData('/student/get-user-id/')
+        .then(data => {
+            return data.id;
+        })
+    }
+    else{
+        return "nerd, you done fucked up";
+    }
+}
