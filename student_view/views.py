@@ -126,6 +126,12 @@ def get_all_cases(request):
             'cases': json.dumps([case11,case12])
         })
 
+def get_active_courses(request):
+    '''Gets the active courses of the current user'''
+    return JsonResponse({
+            'courses': json.dumps([course31, course32, course41, course42])
+        })
+
 
 
 # POST REQUESTS

@@ -98,17 +98,18 @@
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>    
             const MAX_REQUESTS = 16;
-
-            // List of students current courses
-            var courseList = [
-                'COMP30022',
-                'MAST30027',
-                'MAST30034'
-            ]
-
             var numRequests = 1;
 
-            generateStudentRequest(numRequests, courseList)
+            // List of students current course codes
+            const courseCodes = []
+
+            getActiveCourses()
+                .then(courses => {
+                    courses.forEach(item => {
+                        courseCodes.push(item.course_code);
+                    })
+                    generateStudentRequest(numRequests, courseCodes);
+                })
 
             const addButton = document.getElementById('addButton');            
             const removeButton = document.getElementById('removeButton');

@@ -322,3 +322,13 @@ function getUserId(type){
         return "nerd, you done fucked up";
     }
 }
+
+/**
+ * STUDENT: returns active courses enrolled in
+ */
+function getActiveCourses(){
+    return loadData('/student/get-active-courses/')
+        .then(data => {
+            return JSON.parse(data.courses);
+        })
+}

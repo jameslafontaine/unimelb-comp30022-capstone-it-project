@@ -455,13 +455,17 @@ function generateStudentRequest(number, courseList) {
     requestTypeDropdown.style = 'margin-bottom: 5px;'
     requestTypeDropdown.id = `requestTypeDropdown${number}`
 
+    // create an assignment holder to be filled in later if needed
+    const assignment = document.createElement("label");
+    assignment.className = "text";
+    assignment.id = `assignment${number}`;
+
     const requestTypeTextBox = document.createElement("textarea");
     requestTypeTextBox.className = "textBox";
 
     const requestTitle = document.createElement("span");
     requestTitle.className = "text";
     requestTitle.textContent = "Request Title";
-    
     
     const requestTitleTextBox = document.createElement("textarea");
     requestTitleTextBox.className = "textBox";
@@ -502,6 +506,8 @@ function generateStudentRequest(number, courseList) {
     expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(requestTypeDropdown);
     expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(assignment);
+    expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(requestTitle);
     expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(requestTitleTextBox);
@@ -516,6 +522,13 @@ function generateStudentRequest(number, courseList) {
 
     caseContainer.appendChild(expandableBox);
     caseContainer.appendChild(expandableBoxSection);
+
+    // only done here because the first option will always be extension which needs it
+    createAssignmentDropDown(number);
+
+    // listen for changes in the request type and add or remove drop down as needed
+    assignmentDropDownListener(number);
+
 
     lastLineBreak = document.createElement("br")
 
@@ -546,6 +559,49 @@ function generateStudentRequest(number, courseList) {
     });
 
     // Initialise supporting documentation table with upload button
+
+}
+
+/**
+ * Listens for changes in the request type to either add or delete the assignment dropdown
+ */
+function assignmentDropDownListener(number){
+
+    const requestDropDown = document.getElementById(`requestTypeDropdown${number}`);
+    const assignment = document.getElementById(`assignment${number}`);
+
+    requestDropDown.addEventListener("change", function() {
+        const selectedValue = requestDropDown.value;
+
+        // when the request type is any of these the user must pick the assignment as well
+        if((selectedValue == "Extension") || 
+           (selectedValue == "Remark") || 
+           (selectedValue == "Quiz Code")){
+            createAssignmentDropDown(number);
+        } 
+        // if the request type is any of the following any assignment dropdown much be removed
+        else if((selectedValue == "General Query") ||
+                  (selectedValue == "Other")){
+            while (assignment.firstChild) {
+                assignment.removeChild(assignment.firstChild);
+            }
+        }
+    });
+}
+
+/**
+ * Creates and add the assignments dropdown
+ */
+function createAssignmentDropDown(number){
+
+    const assignment = document.getElementById(`assignment${number}`);
+    assignment.textContent = "Assignment"; 
+    const assignmentDropdown = document.createElement("select")
+    assignmentDropdown.style = 'margin-bottom: 5px;'
+    assignmentDropdown.id = `assignmentDropdown${number}`;
+    assignment.appendChild(document.createElement("br"));
+    assignment.appendChild(assignmentDropdown);
+    assignment.appendChild(document.createElement("br"));
 }
 
 /** 
