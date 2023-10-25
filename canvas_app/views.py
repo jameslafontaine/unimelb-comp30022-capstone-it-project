@@ -66,3 +66,9 @@ def get_user_aaps(request, user_id):
     return JsonResponse({
         'aaps': json.dumps([aap1,aap2,aap3,aap4])
     })
+
+def get_course_assessments(request, course_id):
+    print(course_id)
+    return JsonResponse({
+        'assessments': json.dumps(['Project 1', 'Project 2', 'Mid Semester Test', 'Meow my guy'])
+    })

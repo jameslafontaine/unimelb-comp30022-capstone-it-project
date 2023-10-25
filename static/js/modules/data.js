@@ -332,3 +332,13 @@ function getActiveCourses(){
             return JSON.parse(data.courses);
         })
 }
+/**
+ * GENERIC: GET all assessments for a course
+ */
+function getCourseAssessments(courseId) {
+    return loadData('/get-course-assessments/' + courseId)
+        .then(data => {
+            return data
+        });
+}
+
