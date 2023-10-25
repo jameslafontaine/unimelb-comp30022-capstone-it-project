@@ -327,7 +327,7 @@ function getUserId(type){
  * GENERIC: GET all assessments for a course
  */
 function getCourseAssessments(courseId) {
-    return loadData('/get-assessments/' + courseId)
+    return loadData('/get-course-assessments/' + courseId)
         .then(data => {
             return data
         });

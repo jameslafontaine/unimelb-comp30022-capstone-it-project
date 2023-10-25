@@ -70,5 +70,5 @@ def get_user_aaps(request, user_id):
 def get_course_assessments(request, course_id):
     print(course_id)
     return JsonResponse({
-        'assessments:': json.dumps(['Project 1', 'Project 2', 'Mid Semester Test', 'Meow my guy'])
+        'assessments': json.dumps(['Project 1', 'Project 2', 'Mid Semester Test', 'Meow my guy'])
     })
