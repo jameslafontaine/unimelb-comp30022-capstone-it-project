@@ -8,8 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Instructor - Subject Settings</title>
         <!--
-            Author: James La Fontaine, Callum Sharman
-            Date Last Modified: October 18, 2023
+            Author: James La Fontaine, Callum Sharman, Jun Youn
+            Date Last Modified: October 25, 2023
             Description: This is the page on which instructors can modify settings for a subject such as template responses,
             default extensions, maximium extensions, and tutor and subject coordinator permissions
         -->
@@ -54,7 +54,9 @@
         crossorigin="anonymous"></script>
     </head>
     <body>
+
         <div id="webHeaderContainer"></div>
+
         <div class="mainBody">
             <p class="title" id="title"> Subject Settings</p>
             <br>
@@ -163,7 +165,11 @@
             </table>
             <p></p>
         </div>
+
+        <script src="{% static 'js/modules/data.js' %}"></script>
         <script src="{% static 'js/modules/webHeader.js' %}"></script>
+        <script>createHeader("instructor")</script>
+
         <script>
             // Put subject code at start of title
             subjectCode = "COMP30022";
