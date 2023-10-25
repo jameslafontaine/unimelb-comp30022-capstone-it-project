@@ -322,3 +322,13 @@ function getUserId(type){
         return "nerd, you done fucked up";
     }
 }
+
+/**
+ * GENERIC: GET all assessments for a course
+ */
+function getCourseAssessments(courseId) {
+    return loadData('/get-assessments/' + courseId)
+        .then(data => {
+            return data
+        });
+}
