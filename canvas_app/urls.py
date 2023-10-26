@@ -35,4 +35,6 @@ urlpatterns = [
     path('get-user-details/<int:user_id>', get_user_details, name='get_user_details'),
     path('get-user-aaps/<int:user_id>', get_user_aaps, name='get_user_aaps'),
     path('get-course-assessments/<int:course_id>', get_course_assessments, name='get_course_assessments'),
+    path('get-course-data/<str:course_code>', get_course_data, name='get_course_data'),
+    path('get-assignments/<str:course_id>', get_assignments, name='get_assignments'),
 ]

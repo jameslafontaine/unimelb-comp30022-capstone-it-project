@@ -342,3 +342,23 @@ function getCourseAssessments(courseId) {
         });
 }
 
+/**
+ * GENERIC: GET course data from a course code
+ */
+function getCourseData(courseCode){
+    return loadData('/get-course-data/' + courseCode)
+        .then(data => {
+            return data;
+        })
+}
+
+/**
+ * GENERIC: get assignments from a courseId
+ */
+function getAssignments(courseId){
+    return loadData('/get-assignments/' + courseId)
+        .then(data => {
+            return JSON.parse(data.assignments);
+        })
+}
+
