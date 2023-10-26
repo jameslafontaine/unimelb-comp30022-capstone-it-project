@@ -103,25 +103,24 @@
                     courses.forEach(item => {
                         courseCodes.push(item.course_code);
                     })
-                    generateStudentRequest(numRequests, courseCodes);
+                    generateStudentRequest(numRequests, courseCodes)
+                    const addButton = document.getElementById('addButton');            
+                    const removeButton = document.getElementById('removeButton');
+                    
+                    // Add a new request when the add request button is clicked
+                    addButton.addEventListener('click', function() {
+                        numRequests += 1;
+                        generateStudentRequest(numRequests, courseCodes)
+                        if (numRequests == MAX_REQUESTS) {
+                            addButton.style.display = 'none';   ; 
+                        } else if (numRequests == 0) {
+                            removeButton.style.display = 'none'; 
+                        } else if (numRequests > 0 & numRequests < MAX_REQUESTS) {
+                            removeButton.style.display = 'inline';
+                            addButton.style.display = 'inline';  
+                        }
+                    });
                 })
-
-            const addButton = document.getElementById('addButton');            
-            const removeButton = document.getElementById('removeButton');
-
-            // Add a new request when the add request button is clicked
-            addButton.addEventListener('click', function() {
-                numRequests += 1;
-                generateStudentRequest(numRequests, courseList)
-                if (numRequests == MAX_REQUESTS) {
-                    addButton.style.display = 'none';   ; 
-                } else if (numRequests == 0) {
-                    removeButton.style.display = 'none'; 
-                } else if (numRequests > 0 & numRequests < MAX_REQUESTS) {
-                    removeButton.style.display = 'inline';
-                    addButton.style.display = 'inline';  
-                }
-            });
             
             // Remove a request when the remove request button is clicked
             removeButton.addEventListener('click', function() {
