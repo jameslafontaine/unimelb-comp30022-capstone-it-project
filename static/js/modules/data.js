@@ -1,6 +1,6 @@
 /** 
- * Author: Callum Sharman
- * Date Last Modified: October 21, 2023
+ * Author: Callum Sharman, Jun Youn
+ * Date Last Modified: October 26, 2023
  * Description: Encapsulates everything surrounding data reading, writing and processing
  * In a perfect world URLs are only ever used here
  */
@@ -48,6 +48,35 @@ function putData(url, json){
             console.error('There was a problem with the fetch operation:', error);
         });
 }
+
+/**
+ * POST call to 'url' with the given json. Returns the response data
+ */
+function postData(url, json){
+
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(json)
+        })
+        .then(response => {
+            if (response.ok) {
+                // Parse the response JSON if successful
+                return response.json();
+            }
+            throw new Error('Network response was not ok');
+        })
+        .then(data => {
+            // Process the response data
+            return data;
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
 
 /**
  * GET call to 'url', returns text on success 
@@ -360,5 +389,19 @@ function getAssignments(courseId){
         .then(data => {
             return JSON.parse(data.assignments);
         })
+}
+
+/**
+ * STUDENT: POSTs a new case to the database
+ */
+function postNewCase(dataToSend){
+    return postData(('/student/post-new-case/'), dataToSend)
+        .then(responseData => {
+            return true;
+        })
+        .catch(error => {
+            console.error('There was a problem responding to the request:', error);
+            return false;
+        });
 }
 

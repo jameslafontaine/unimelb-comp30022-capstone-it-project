@@ -630,8 +630,44 @@ function createAssignmentDropDown(number, courseList){
  * Saves each of the requests added during submission by a student
  */
 function handleCaseSubmission(numRequests) {
+    let requestsData = new Array();
+    for (let i=1; i <= numRequests; i++) {
 
-    for (let i=0; i < numRequests; i++) {
-        // Save case to database
+        requestData = {
+            'courseId': document.getElementById(`courseDropdown${i}`).value,
+            'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
+            'assignmentId': -1,
+            'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
+            'message': document.getElementById(`messageTextBox${i}`).value,
+            'supportingDocuments': -1,
+        }
+        requestsData.push(requestData);
     }
+    postNewCase({'requests': requestsData});
 }
+
+/*
+
+responseJson = {
+        'requests' : [
+            {
+                'courseId': ,
+                'requestType': ,
+                'assignmentId': , //null if not linked to an assignment
+                'requestTitle': ,
+                'message': ,
+                'supportingDocuments': , //i dont actually know what this will look like yet
+            },
+            {
+            'courseId': ,
+                'requestType': ,
+                'assignmentId': ,
+                'requestTitle': ,
+                'message': ,
+                'supportingDocuments': ,
+            },
+        ]
+    }
+
+
+*/

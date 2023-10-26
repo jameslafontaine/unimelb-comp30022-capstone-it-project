@@ -136,17 +136,47 @@ def get_active_courses(request):
 
 # POST REQUESTS
 @csrf_exempt
-def student_new_request(request):
-    '''POST new request'''
+def post_new_case(request):
+    '''
+    request body contains info, takes the following form:
+
+    responseJson = {
+        'requests' : [
+            {
+                'courseId': ,
+                'requestType': ,
+                'assignmentId': , //-1 if not linked to an assignment
+                'requestTitle': ,
+                'message': ,
+                'supportingDocuments': , //i dont actually know what this will look like yet
+            },
+            {
+            'courseId': ,
+                'requestType': ,
+                'assignmentId': ,
+                'requestTitle': ,
+                'message': ,
+                'supportingDocuments': ,
+            },
+        ]
+    }
+    '''
+    print(request)
+
     if request.method == 'POST':
         try:
-            # Parse the JSON data from the request body
-            # e.g. req3 = json.loads(request.body.decode('utf-8'))
-            print("") # make pylint happy
+            data = json.loads(request.body)
+            # do things here
+            # success
+            return JsonResponse(data, status=200)
+            # failure
+            # return JsonResponse({}, status=400)
         except json.JSONDecodeError:
-            return HttpResponseBadRequest("Invalid JSON data")
-        return JsonResponse({"message": "Case created successfully"})
-    return HttpResponseBadRequest("Not a POST request, invalid")
+            # Return a JSON response with an error message if the request body is not valid JSON
+            return JsonResponse({'error': 'Invalid JSON in request body'}, status=400)
+
+    # Return a JSON response with an error message for other HTTP methods
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 # PUT REQUESTS
 @csrf_exempt
