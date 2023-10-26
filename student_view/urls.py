@@ -27,6 +27,7 @@ urlpatterns = [
     path('AAPs/', aaps_view, name='AAPs'),
 
     path('view-req/<int:thread_id>', view_req_view, name='view-req'),
+    path('edit-req/<int:thread_id>', edit_req_view, name='edit-req'),
 
     # GET REQUESTS
     path('active-cases/', get_active_cases, name='get_active_cases'),

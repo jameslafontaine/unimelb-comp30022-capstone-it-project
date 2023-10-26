@@ -217,7 +217,6 @@ function iloadThreadsResolvedFromUser(userId){
         })
 }
 
-
 /**
  * INSTRUCTOR: Gets student details from a threadId
  */
@@ -405,3 +404,9 @@ function postNewCase(dataToSend){
         });
 }
 
+/**
+ * STUDENT: Redirects to the edit request page from a threadId
+ */
+function redirectToEditReq(threadId){
+    window.location.href = '/student/edit-req/' + threadId;
+}

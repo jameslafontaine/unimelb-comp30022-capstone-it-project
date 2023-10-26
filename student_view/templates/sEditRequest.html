@@ -62,6 +62,10 @@
 
     </head>
     <body>
+
+        <!-- div to hold data passed from the view -->
+        <div id="load-thread-id" data-thread-id="{{ thread_id }}"></div>
+
         <div id="webHeaderContainer"></div>
 
         <div class="mainBody" style="width: 90%;">
@@ -99,13 +103,10 @@
         <script>createHeader("student")</script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
 
-        <script>    
-            // List of students current courses
-            var courseList = [
-                'COMP30022',
-                'MAST30027',
-                'MAST30034'
-            ]
+        <script>
+            
+            // read in thread id from the provided data
+            let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
 
             var req1 = {
                 requestId: 987654,
@@ -162,8 +163,6 @@
             editButton.addEventListener('click', function() {
                 saveEdits(req1, prevVersions);
 
-                console.log(req1.creationDate)
-                console.log(req1.message)
                 window.location.href = '/student/';
             });
 

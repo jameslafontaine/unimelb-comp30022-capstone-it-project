@@ -109,7 +109,7 @@
                     <br><br>
                     <div style="text-align: center; width: fit-content; margin: 0 auto;">
                         <div>
-                            <p class="bigButton" id="editButton" onclick="window.location.href='sEditRequest.html'">
+                            <p class="bigButton" id="editButton" onclick=toEditReq()>
                                 Edit
                             </p>
                             <p class="bigButton" onclick="window.location.href='/student/cases'">
@@ -163,23 +163,23 @@
         </script>
         <!-- Student Details Box Population -->
         <script src="{% static 'js/modules/studentDetails.js' %}"></script>
-        <script>
-            student = {
-                firstName: 'Callum',
-                lastName: 'Sharman',
-                id: 1178429,
-                email: 'csharman@student.unimelb.edu.au'
-            }
-        </script>
         <script src="{% static 'js/modules/editRequest.js' %}"></script>
         <!-- Editing related functionality -->
         <script>
             // Only show edit button for active cases
+
             /*
-            if (req1.status != 'Active') {
-                hideEditButton();
-            }
+            loadThread(threadId)
+                .then(thread => {
+                    if ((thread.current_status != 'APPROVED') ||
+                        (thread.current_status != 'REJECTED')) {
+                        hideEditButton();
+                    }
+                })
             */
+            function toEditReq(){
+                redirectToEditReq(threadId);
+            }
         </script>
 
     </body>

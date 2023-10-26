@@ -51,6 +51,13 @@ def view_req_view(request, thread_id):
     return render(request, 'viewRequest.html', {'thread_id': thread_id})
     #return JsonResponse({'error': 'Record not found'}, status=404)
 
+def edit_req_view(request, thread_id):
+    '''Edit requests view'''
+    # check the id exists
+
+    return render(request, 'sEditRequest.html', {'thread_id': thread_id})
+    #return JsonResponse({'error': 'Record not found'}, status=404)
+
 # GET REQUESTS
 # test/example purposes only, obviously not useable, must be filled in by backend
 def get_case(request, case_id):
