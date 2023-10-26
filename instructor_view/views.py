@@ -56,13 +56,14 @@ def view_resolved_view(request, thread_id):
 def subj_settings_view(request, input_id):
     '''View for subject preferences'''
     # Check the ID exists
-    if input_id == subj1['id']:
-        req = json.dumps(subj1)
-        return render(request, 'subjectSettings.html', {'req':req})
-    if input_id == subj2['id']:
-        req = json.dumps(subj2)
-        return render(request, 'subjectSettings.html', {'req':req})
-    return JsonResponse({'error': 'Record not found'}, status=404)
+    req = json.dumps(course31)
+    print(input_id)
+    return render(request, 'subjectSettings.html', {'req':req})
+    # elif input_id == course32['course_id']:
+    #     req = json.dumps(course32)
+    #     return render(request, 'subjectSettings.html', {'req':req})
+    # else:
+    #     return JsonResponse({'error': 'Record not found'}, status=404)
 
 def view_profile_view(request, user_id):
     '''View for student profile'''

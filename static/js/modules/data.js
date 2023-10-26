@@ -329,6 +329,6 @@ function getUserId(type){
 function getCourseAssessments(courseId) {
     return loadData('/get-course-assessments/' + courseId)
         .then(data => {
-            return data
+            return JSON.parse(data.assessments)
         });
 }

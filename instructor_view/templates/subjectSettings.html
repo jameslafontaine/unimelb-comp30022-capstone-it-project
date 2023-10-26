@@ -8,8 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Instructor - Subject Settings</title>
         <!--
-            Author: James La Fontaine, Callum Sharman
-            Date Last Modified: October 18, 2023
+            Author: James La Fontaine, Callum Sharman, Jun Youn
+            Date Last Modified: October 25, 2023
             Description: This is the page on which instructors can modify settings for a subject such as template responses,
             default extensions, maximium extensions, and tutor and subject coordinator permissions
         -->
@@ -54,7 +54,9 @@
         crossorigin="anonymous"></script>
     </head>
     <body>
+
         <div id="webHeaderContainer"></div>
+
         <div class="mainBody">
             <p class="title" id="title"> Subject Settings</p>
             <br>
@@ -68,13 +70,6 @@
             </div>
             <br>
             <span>Default extension length: &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" size="2" placeholder="3">
-                days&nbsp;&nbsp;&nbsp;
-                <button class="standardButton">
-                    Save
-                </button>
-            </span>
-            <br><br>
-            <span>Maximum extension length: <input type="text" size="2" placeholder="10">
                 days&nbsp;&nbsp;&nbsp;
                 <button class="standardButton">
                     Save
@@ -163,46 +158,24 @@
             </table>
             <p></p>
         </div>
+
+        <script src="{% static 'js/modules/data.js' %}"></script>
         <script src="{% static 'js/modules/webHeader.js' %}"></script>
+        <script>createHeader("instructor")</script>
+
         <script>
             // Put subject code at start of title
-            subjectCode = "COMP30022";
-            const myElement = document.getElementById("title").innerHTML =
-            subjectCode + document.getElementById("title").innerHTML;
+            loadCourse(31).then(courseData => {
+                subjectCode = courseData.course_code;
+                document.getElementById("title").innerHTML = subjectCode + document.getElementById("title").innerHTML;
+            })
         </script>
         <script src="{% static 'js/modules/subjectSettings.js' %}"></script>
         <script>
             // Populate assignments dropdown
-            assessmentList = [
-                'Project 1',
-                'Project 2',
-                'Mid Semester Test'
-            ]
-            var extensionSettings = [
-                {
-                    assName: 'Project 1',
-                    defaultExtension: 3,
-                    maxExtension: 10
-                },
-                {
-                    assName: 'Project 2',
-                    defaultExtension: 5,
-                    maxExtension: 7
-                },
-                {
-                    assName: 'Mid Semester Test',
-                    defaultExtension: 1,
-                    maxExtension: 3
-                },
-                {
-                    assName: 'Dummy',
-                    defaultExtension: 2,
-                    maxExtension: 1
-                }
-            ]
-            var requestPerms = [
-            ]
-            populateAssessmentDropdown(assessmentList);
+            getCourseAssessments(31).then(assessmentList => {
+                populateAssessmentDropdown(assessmentList);
+            });
         </script>
     </body>
 </html>
