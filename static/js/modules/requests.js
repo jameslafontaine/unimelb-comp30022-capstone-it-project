@@ -455,13 +455,17 @@ function generateStudentRequest(number, courseList) {
     requestTypeDropdown.style = 'margin-bottom: 5px;'
     requestTypeDropdown.id = `requestTypeDropdown${number}`
 
+    // create an assignment holder to be filled in later if needed
+    const assignment = document.createElement("label");
+    assignment.className = "text";
+    assignment.id = `assignment${number}`;
+
     const requestTypeTextBox = document.createElement("textarea");
     requestTypeTextBox.className = "textBox";
 
     const requestTitle = document.createElement("span");
     requestTitle.className = "text";
     requestTitle.textContent = "Request Title";
-    
     
     const requestTitleTextBox = document.createElement("textarea");
     requestTitleTextBox.className = "textBox";
@@ -502,6 +506,8 @@ function generateStudentRequest(number, courseList) {
     expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(requestTypeDropdown);
     expandableBoxSection.appendChild(document.createElement("br"));
+    expandableBoxSection.appendChild(assignment);
+    expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(requestTitle);
     expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(requestTitleTextBox);
@@ -516,6 +522,13 @@ function generateStudentRequest(number, courseList) {
 
     caseContainer.appendChild(expandableBox);
     caseContainer.appendChild(expandableBoxSection);
+
+    // only done here because the first option will always be extension which needs it
+    createAssignmentDropDown(number, courseList);
+
+    // listen for changes in the request type and add or remove drop down as needed
+    assignmentDropDownListener(number, courseList);
+
 
     lastLineBreak = document.createElement("br")
 
@@ -546,14 +559,115 @@ function generateStudentRequest(number, courseList) {
     });
 
     // Initialise supporting documentation table with upload button
+
+}
+
+/**
+ * Listens for changes in the request type to either add or delete the assignment dropdown
+ */
+function assignmentDropDownListener(number, courseList){
+
+    const requestDropDown = document.getElementById(`requestTypeDropdown${number}`);
+    const assignment = document.getElementById(`assignment${number}`);
+
+    requestDropDown.addEventListener("change", function() {
+        const selectedValue = requestDropDown.value;
+
+        // when the request type is any of these the user must pick the assignment as well
+        if((selectedValue == "Extension") || 
+           (selectedValue == "Remark") || 
+           (selectedValue == "Quiz Code")){
+            createAssignmentDropDown(number, courseList);
+        } 
+        // if the request type is any of the following any assignment dropdown much be removed
+        else if((selectedValue == "General Query") ||
+                  (selectedValue == "Other")){
+            while (assignment.firstChild) {
+                assignment.removeChild(assignment.firstChild);
+            }
+        }
+    });
+}
+
+/**
+ * Creates and add the assignments dropdown
+ */
+function createAssignmentDropDown(number, courseList){
+
+    const assignment = document.getElementById(`assignment${number}`);
+    assignment.textContent = "Assignment"; 
+    const assignmentDropdown = document.createElement("select")
+    assignmentDropdown.style = 'margin-bottom: 5px;'
+    assignmentDropdown.id = `assignmentDropdown${number}`;
+    assignment.appendChild(document.createElement("br"));
+    assignment.appendChild(assignmentDropdown);
+    assignment.appendChild(document.createElement("br"));
+
+
+
+    courseCode = courseList[0]; // use the first course unless it has been changed
+    const courseDropDown = document.getElementById(`courseDropdown${number}`);
+    
+    courseDropDown.addEventListener("change", function() {
+        courseCode = courseDropDown.value;
+    });
+
+    // Populate the dropdown
+    getCourseData(courseCode)
+        .then(course => {
+            getAssignments(course.course_id)
+                .then(assignments => {
+                    assignments.forEach(assignment => {
+                        const option = document.createElement('option');
+                        option.textContent = assignment.assignment_name;
+                        document.getElementById(`assignmentDropdown${number}`).appendChild(option);
+                    })
+                })
+        })
 }
 
 /** 
  * Saves each of the requests added during submission by a student
  */
 function handleCaseSubmission(numRequests) {
+    let requestsData = new Array();
+    for (let i=1; i <= numRequests; i++) {
 
-    for (let i=0; i < numRequests; i++) {
-        // Save case to database
+        requestData = {
+            'courseId': document.getElementById(`courseDropdown${i}`).value,
+            'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
+            'assignmentId': -1,
+            'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
+            'message': document.getElementById(`messageTextBox${i}`).value,
+            'supportingDocuments': -1,
+        }
+        requestsData.push(requestData);
     }
+    postNewCase({'requests': requestsData});
 }
+
+/*
+
+responseJson = {
+        'requests' : [
+            {
+                'courseId': ,
+                'requestType': ,
+                'assignmentId': , //null if not linked to an assignment
+                'requestTitle': ,
+                'message': ,
+                'supportingDocuments': , //i dont actually know what this will look like yet
+            },
+            {
+            'courseId': ,
+                'requestType': ,
+                'assignmentId': ,
+                'requestTitle': ,
+                'message': ,
+                'supportingDocuments': ,
+            },
+        ]
+    }
+
+
+*/

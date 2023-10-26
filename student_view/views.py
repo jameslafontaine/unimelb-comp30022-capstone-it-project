@@ -51,6 +51,13 @@ def view_req_view(request, thread_id):
     return render(request, 'viewRequest.html', {'thread_id': thread_id})
     #return JsonResponse({'error': 'Record not found'}, status=404)
 
+def edit_req_view(request, thread_id):
+    '''Edit requests view'''
+    # check the id exists
+
+    return render(request, 'sEditRequest.html', {'thread_id': thread_id})
+    #return JsonResponse({'error': 'Record not found'}, status=404)
+
 # GET REQUESTS
 # test/example purposes only, obviously not useable, must be filled in by backend
 def get_case(request, case_id):
@@ -126,21 +133,57 @@ def get_all_cases(request):
             'cases': json.dumps([case11,case12])
         })
 
+def get_active_courses(request):
+    '''Gets the active courses of the current user'''
+    return JsonResponse({
+            'courses': json.dumps([course31, course32, course41, course42])
+        })
+
 
 
 # POST REQUESTS
 @csrf_exempt
-def student_new_request(request):
-    '''POST new request'''
+def post_new_case(request):
+    '''
+    request body contains info, takes the following form:
+
+    responseJson = {
+        'requests' : [
+            {
+                'courseId': ,
+                'requestType': ,
+                'assignmentId': , //-1 if not linked to an assignment
+                'requestTitle': ,
+                'message': ,
+                'supportingDocuments': , //i dont actually know what this will look like yet
+            },
+            {
+            'courseId': ,
+                'requestType': ,
+                'assignmentId': ,
+                'requestTitle': ,
+                'message': ,
+                'supportingDocuments': ,
+            },
+        ]
+    }
+    '''
+    print(request)
+
     if request.method == 'POST':
         try:
-            # Parse the JSON data from the request body
-            # e.g. req3 = json.loads(request.body.decode('utf-8'))
-            print("") # make pylint happy
+            data = json.loads(request.body)
+            # do things here
+            # success
+            return JsonResponse(data, status=200)
+            # failure
+            # return JsonResponse({}, status=400)
         except json.JSONDecodeError:
-            return HttpResponseBadRequest("Invalid JSON data")
-        return JsonResponse({"message": "Case created successfully"})
-    return HttpResponseBadRequest("Not a POST request, invalid")
+            # Return a JSON response with an error message if the request body is not valid JSON
+            return JsonResponse({'error': 'Invalid JSON in request body'}, status=400)
+
+    # Return a JSON response with an error message for other HTTP methods
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 # PUT REQUESTS
 @csrf_exempt

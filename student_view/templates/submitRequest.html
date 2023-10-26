@@ -79,12 +79,7 @@
                     </span>   
                 </div>
                 <div class="rightSide">
-                    <p class="text" style="display:inline; position: fixed;">Disclaimer - This portal should be 
-                        used for any questions or requests that may be 
-                        personal or less suited towards existing 
-                        discussion boards. Otherwise, please refer to 
-                        those
-                    </p>
+                    
 
                     <button class="bigButton" id='submitButton' style="position: fixed; margin-top: 60px;">
                         Submit
@@ -98,34 +93,34 @@
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>    
             const MAX_REQUESTS = 16;
-
-            // List of students current courses
-            var courseList = [
-                'COMP30022',
-                'MAST30027',
-                'MAST30034'
-            ]
-
             var numRequests = 1;
 
-            generateStudentRequest(numRequests, courseList)
+            // List of students current course codes
+            const courseCodes = []
 
-            const addButton = document.getElementById('addButton');            
-            const removeButton = document.getElementById('removeButton');
-
-            // Add a new request when the add request button is clicked
-            addButton.addEventListener('click', function() {
-                numRequests += 1;
-                generateStudentRequest(numRequests, courseList)
-                if (numRequests == MAX_REQUESTS) {
-                    addButton.style.display = 'none';   ; 
-                } else if (numRequests == 0) {
-                    removeButton.style.display = 'none'; 
-                } else if (numRequests > 0 & numRequests < MAX_REQUESTS) {
-                    removeButton.style.display = 'inline';
-                    addButton.style.display = 'inline';  
-                }
-            });
+            getActiveCourses()
+                .then(courses => {
+                    courses.forEach(item => {
+                        courseCodes.push(item.course_code);
+                    })
+                    generateStudentRequest(numRequests, courseCodes)
+                    const addButton = document.getElementById('addButton');            
+                    const removeButton = document.getElementById('removeButton');
+                    
+                    // Add a new request when the add request button is clicked
+                    addButton.addEventListener('click', function() {
+                        numRequests += 1;
+                        generateStudentRequest(numRequests, courseCodes)
+                        if (numRequests == MAX_REQUESTS) {
+                            addButton.style.display = 'none';   ; 
+                        } else if (numRequests == 0) {
+                            removeButton.style.display = 'none'; 
+                        } else if (numRequests > 0 & numRequests < MAX_REQUESTS) {
+                            removeButton.style.display = 'inline';
+                            addButton.style.display = 'inline';  
+                        }
+                    });
+                })
             
             // Remove a request when the remove request button is clicked
             removeButton.addEventListener('click', function() {
@@ -154,9 +149,6 @@
 
             // Handle supporting documentation tables
             
-
-
-
         </script>
     </body>
 </html>

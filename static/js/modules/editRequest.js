@@ -1,6 +1,6 @@
 /** 
- * Author: James La Fontaine
- * Date Last Modified: October 5, 2023
+ * Author: James La Fontaine, Callum Sharman
+ * Date Last Modified: October 26, 2023
  * Description: handles the students edit request page
  */
 

@@ -72,3 +72,20 @@ def get_course_assessments(request, course_id):
     return JsonResponse({
         'assessments': json.dumps(['Project 1', 'Project 2', 'Mid Semester Test', 'Meow my guy'])
     })
+
+def get_course_data(request, course_code):
+    print(course_code)
+    if(course_code == 'COMP30022'):
+        return JsonResponse(course31)
+    elif(course_code == 'COMP30023'):
+        return JsonResponse(course32)
+    elif(course_code == 'COMP30019'):
+        return JsonResponse(course41)
+    elif(course_code == 'COMP30026'):
+        return JsonResponse(course42)
+    
+def get_assignments(request, course_id):
+    print(course_id)
+    return JsonResponse({
+        'assignments': json.dumps([assign1, assign2, assign3, assign4, assign5])
+    })
