@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m^(crd7s#6sn0%(ak-c%r$qs_(jqg^_m^ke_e9sa#!=g6i#)bt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'instructor_view',
     'student_view',
     'login',
+    'data_endpoints',
 ]
 
 MIDDLEWARE = [

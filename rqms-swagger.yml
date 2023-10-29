@@ -1,0 +1,636 @@
+openapi: '3.0.2'
+info:
+  title: Request and Query Management System
+  version: '1.0'
+servers:
+  - url: http://localhost:8000/
+paths:
+  /api/data/assessments/:
+    get:
+      description: Can do ?assignid, ?courseid or ?courseid?names
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+                examples:
+                  '?assignid':
+                    value:
+                      assignment_id: 1
+                      course_id: 1
+                      assignment_name: 'Project 1'
+                      assignment_type: 'submission'
+                      assignment_weightage: 15
+                      start_date: '2000:01:01 00:00:00'
+                      end_date: '2000:01:01 00:00:00'
+                  '?courseid':
+                    value:
+                      assessments:
+                        - assignment_id: 1
+                          course_id: 2001
+                          assignment_name: 'Project 1'
+                          assignment_type: 'submission'
+                          assignment_weightage: 15
+                          start_date: '2000:01:01 00:00:00'
+                          end_date: '2000:01:01 00:00:00' 
+                        - assignment_id: 2
+                          course_id: 2001
+                          assignment_name: 'Project 2'
+                          assignment_type: 'submission'
+                          assignment_weightage: 15
+                          start_date: '2000:01:01 00:00:00'
+                          end_date: '2000:01:01 00:00:00' 
+                        - assignment_id: 3
+                          course_id: 2001
+                          assignment_name: 'Mid Semester Test'
+                          assignment_type: 'submission'
+                          assignment_weightage: 20
+                          start_date: '2000:01:01 00:00:00'
+                          end_date: '2000:01:01 00:00:00' 
+                  '?courseid?names':
+                    value:
+                      assessments:
+                        - 'Project 1'
+                        - 'Project 2'
+                        - 'Mid Semester Test'
+      parameters:
+        - name: assignid
+          in: query
+          description: Specify Assignment ID
+          schema:
+            type: integer
+        - name: courseid
+          in: query
+          description: Get all assessments for courseid
+          schema:
+            type: integer
+        - name: names
+          in: query
+          description: Get only assignment names if true
+          schema:
+            type: boolean
+  /api/data/cases/:
+    get:
+      parameters:
+        - name: userid
+          in: query
+          description: Creator of case being looked up
+          schema:
+            type: integer
+        - name: caseid
+          in: query
+          description: Case being looked up
+          schema:
+            type: integer
+        - name: threads
+          in: query
+          description: Get all threads within a case
+          schema:
+            type: boolean
+      description: Accepts ?userid, ?caseid and ?caseid?threads as parameters
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              examples:
+                '?userid':
+                  value:
+                    cases:
+                      - case_id: 1
+                        user_id: 1
+                      - case_id: 2
+                        user_id: 1
+                '?caseid':
+                  value:
+                    case:
+                      case_id: 1
+                      user_id: 1
+                '?caseid?threads':
+                  value:
+                    threads:
+                      - thread_id: 2
+                        case_id: 1
+                        course_id: 2
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: extension
+                        complex_case: false
+                        current_status: REJECTED
+                        assignment_id: 3
+                      - thread_id: 1
+                        case_id: 1
+                        course_id: 1
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: quizcode
+                        complex_case: false
+                        current_status: REJECTED
+                        assignment_id: 1
+  /api/data/cases/new:
+    post:
+      description: Create a new case
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostNewCaseRequest'
+      responses:
+        '201':
+          description: "Case created successfully"
+  /api/data/courses/:
+    get:
+      parameters:
+        - name: userid
+          in: query
+          schema:
+            type: integer
+        - name: courseid
+          in: query
+          schema:
+            type: integer
+        - name: preferences
+          in: query
+          schema:
+            type: boolean
+      description: Accepts ?userid, ?courseid, ?courseid?preferences
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              examples:
+                '?userid':
+                  value:
+                    courses:
+                      - course_id: 1
+                        course_name: 'IT Project'
+                        course_code: 'COMP30022'
+                      - course_id: 2
+                        course_name: 'Modern Applied Statistics'
+                        course_code: 'MAST30025'
+                '?courseid':
+                  value:
+                    course:
+                      course_id: 1
+                      course_name: 'IT Project'
+                      course_code: 'COMP30022'
+                '?courseid?preferences':
+                  value:
+                    coursepreferences:
+                      coursepreference_id: 1
+                      course_id: 1
+                      global_extension_length: 3
+                      general_tutor: false
+                      extension_tutor: true
+                      quiz_tutor: true
+                      remark_tutor: true
+                      other_tutor: false
+                      general_scoord: true
+                      extension_scoord: true
+                      quiz_scoord: true
+                      remark_scoord: false
+                      other_scoord: false
+                      general_reject: ''
+                      extension_approve: ''
+                      extension_reject: ''
+                      quiz_approve: ''
+                      quiz_reject: 'lmao'
+                      remark_approve: ''
+                      remark_reject: ''
+  /api/data/courses/setpreferences:
+    put:
+      description: Set Course Preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoursePreferences'
+      responses:
+        '201':
+          description: Course preferences successfully updated
+  /api/data/requests:
+    get:
+      description: ?userid or ?requestid
+      parameters:
+        - name: userid
+          in: query
+          schema:
+            type: integer
+        - name: requestid
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              examples:
+                '?userid':
+                  value:
+                    requests:
+                      - request_id: 2
+                        thread_id: 2
+                        date_created: '2000:01:01 00:00:00'
+                        request_content: 'the dog ate my homework.'
+                        instructor_notes: 'oh no'
+                      - request_id: 1
+                        thread_id: 1
+                        date_created: '2000:01:01 00:00:00'
+                        request_content: 'i am crying for help.'
+                        instructor_notes: 'stop crying'
+                '?requestid':
+                  value:
+                    request:
+                      request_id: 1
+                      thread_id: 1
+                      date_created: '2000:01:01 00:00:00'
+                      request_content: 'i am crying for help.'
+                      instructor_notes: 'stop crying'
+  /api/data/requests/respond:
+    put:
+      description: Respond to a request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                instructor_notes:
+                  type: string
+                status:
+                  $ref: '#/components/schemas/CurrentStatus'
+                extended_by:
+                  type: integer  
+            examples:
+              'query / other':
+                value:
+                  instructor_notes: 'no!'
+                  status: REJECTED
+              'extension / quizcode / remark':
+                value:
+                  instructor_notes: ':o'
+                  status: APPROVED
+                  extended_by: 4
+      responses:
+        '201':
+          description: Successfully responded to the request
+  /api/data/thread/:
+    get:
+      parameters:
+        - name: threadid
+          description: Thread ID
+          in: query
+          schema:
+            type: integer
+        - name: status
+          description: Sort by thread status
+          in: query
+          schema:
+            type: string
+            enum:
+              - APPROVED
+              - PENDING
+              - REJECTED
+      description: Accepts ?threadid or ?userid?status 
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              examples:
+                '?threadid':
+                  value:
+                    createdby: 1111111
+                '?userid?status':
+                  value:
+                    threads:
+                      - thread_id: 2
+                        case_id: 1
+                        course_id: 2
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: extension
+                        complex_case: false
+                        current_status: REJECTED
+                        assignment_id: 3
+                      - thread_id: 1
+                        case_id: 1
+                        course_id: 1
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: quizcode
+                        complex_case: false
+                        current_status: REJECTED
+                        assignment_id: 1
+  /api/data/thread/{thread_id}/:
+    get:
+      parameters:
+        - name: checkstatus
+          description: Checks status of given thread
+          in: query
+          schema:
+            type: boolean
+        
+      description: Accepts no params, ?checkstatus
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              examples:
+                'No params':
+                  value:
+                    threadinfo:
+                      thread:
+                        thread_id: 1
+                        case_id: 1
+                        course_id: 1
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: quizcode
+                        complex_case: false
+                        current_status: REJECTED
+                        assignment_id: 1
+                      requests:
+                        - request_id: 2
+                          thread_id: 1
+                          date_created: '2000:01:01 00:00:00'
+                          request_content: 'please do not reject this please please'
+                          instructor_notes: 'this is peak clownery'
+                        - request_id: 1
+                          thread_id: 1
+                          date_created: '2000:01:01 00:00:00'
+                          request_content: 'i am sick, dont have med certificate'
+                      coursepreferences:
+                        coursepreference_id: 1
+                        course_id: 1
+                        global_extension_length: 3
+                        general_tutor: false
+                        extension_tutor: true
+                        quiz_tutor: true
+                        remark_tutor: true
+                        other_tutor: false
+                        general_scoord: true
+                        extension_scoord: true
+                        quiz_scoord: true
+                        remark_scoord: false
+                        other_scoord: false
+                        general_reject: ''
+                        extension_approve: ''
+                        extension_reject: ''
+                        quiz_approve: ''
+                        quiz_reject: 'lmao'
+                        remark_approve: ''
+                        remark_reject: ''
+                '?checkstatus':
+                  value:
+                    status: PENDING
+  /api/data/thread/complex:
+    put:
+      description: Mark a thread as complex
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkThreadAsComplex'
+      responses:
+        '201':
+          description: Successfully marked/unmarked a thread as complex
+  /api/data/user/{user_id}/:
+    get:
+      parameters:
+        - name: aaps
+          description: Must be blank if ?courses=\<notempty\>
+          in: query
+          schema:
+            type: integer
+        - name: courses
+          in: query
+          description: Must be blank if ?aaps=\<notempty\>
+          schema:
+            type: integer
+      description: Get all AAPs or courses of a user
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              examples:
+                'No param':
+                  value:
+                    user_id: 1
+                    name: 'Callum Sharman'
+                    first_name: 'Callum'
+                    last_name: 'Sharman'
+                    email: '12345@gmail.com'
+                    email_preference: false
+                    darkmode_preference: false
+                'Only AAP':
+                  value:
+                    aaps:
+                      - aap1
+                      - aap2
+                'Only Courses':
+                  value:
+                    courses:
+                      - course_id: 1
+                        course_name: 'IT Project'
+                        course_code: 'COMP30022'
+                      - course_id: 2
+                        course_name: 'Modern Applied Statistics'
+                        course_code: 'MAST30025'
+  /api/data/user/{user_id}/aap:
+    post:
+      responses:
+        '201':
+          description: Successfully added AAP(s)
+components:
+  schemas:
+    Assignment:
+      type: object
+      properties:
+        assignment_id: 
+          type: integer
+        course_id:
+          type: integer
+        assignment_name:
+          type: string
+        assigment_type:
+          $ref: '#/components/schemas/AssignmentType'
+        assignment_weightage:
+          type: integer
+        start_date:
+          type: string
+        end_date:
+          type: string
+    AssignmentExtensionLength:
+      type: object
+      properties:
+        coursepreference_id:
+          type: integer
+        assignment_id: 
+          type: integer
+        extension_length:
+          type: integer
+    AssignmentType: 
+      type: string
+      enum:
+        - assignments
+        - discussion_topic
+        - assignment_visibility
+        - submission
+        - score_statistics
+    Case:
+      type: object
+      properties:
+        case_id:
+          type: integer
+        user_id:
+          type: integer
+    CoursePreferences:
+      type: object
+      properties:
+        coursepreference_id:
+          type: integer
+        course_id:
+          type: integer
+        global_extension_length:
+          type: integer
+        general_tutor:
+          type: boolean
+        extension_tutor:
+          type: boolean
+        quiz_tutor:
+          type: boolean
+        remark_tutor:
+          type: boolean
+        other_tutor:
+          type: boolean
+        general_scoord:
+          type: boolean
+        extension_scoord:
+          type: boolean
+        quiz_scoord:
+          type: boolean
+        remark_scoord:
+          type: boolean
+        other_scoord:
+          type: boolean
+        general_reject:
+          type: string
+        extension_approve:
+          type: string
+        extension_reject:
+          type: string
+        quiz_approve:
+          type: string
+        quiz_reject:
+          type: string
+        remark_approve:
+          type: string
+        remark_reject:
+          type: string
+    Course:
+      type: object
+      properties:
+        course_id: 
+          type: integer
+        course_name:
+          type: string
+        course_code:
+          type: string
+    CurrentStatus:
+      type: string
+      enum:
+        - APPROVED
+        - PENDING
+        - REJECTED 
+    Enrollment:
+      type: object
+      properties:
+        enrollment_id:
+          type: integer
+        course_id:
+          type: integer
+        user_id:
+          type: integer
+        enrollment_role:
+          $ref: '#/components/schemas/EnrollmentRole'
+    EnrollmentRole:
+      type: string
+      enum:
+        - STUDENT
+        - TUTOR
+        - SCOORD
+    MarkThreadAsComplex:
+      type: object
+      properties:
+        thread_id:
+          type: integer
+        complex_case:
+          type: boolean
+    PostNewCaseRequest:
+      type: object
+      properties:
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/Request'
+    Request:
+      type: object
+      properties:
+        request_id:
+          type: integer
+        thread_id:
+          type: integer
+        date_created:
+          type: string
+        request_content:
+          type: string
+        instructor_notes:
+          type: string
+    RequestType:
+      type: string
+      enum:
+        - QUERY
+        - EXTENSION
+        - QUIZCODE
+        - REMARK 
+        - OTHER
+    Thread:
+      type: object
+      properties:
+        thread_id:
+          type: integer
+        case_id:
+          type: integer
+        course_id:
+          type: integer
+        date_updated:
+          type: string
+        request_type:
+          $ref: '#/components/schemas/RequestType'
+        complex_case:
+          type: boolean
+        current_status:
+          $ref: '#/components/schemas/CurrentStatus'
+        assignment_id:
+          type: integer
+    User:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        name:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        email_preference:
+          type: boolean
+        darkmode_preference:
+          type: boolean  
