@@ -4,6 +4,7 @@ All endpoints in data_endpoints
 
 # from django.shortcuts import render
 from django.http import HttpResponseBadRequest, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def validate_headers(request):
     '''
@@ -506,6 +507,7 @@ def get_user_endpoint(request, user_id):
 
     return HttpResponseBadRequest('Invalid request, check input again.')
 
+@csrf_exempt
 def post_new_case(request):
     '''
     POST /api/data/cases/new/
@@ -524,6 +526,7 @@ def post_new_case(request):
     '''
     pass
 
+@csrf_exempt
 def post_aap(request, user_id):
     '''
     POST /api/data/user/{user_id}/aap/
@@ -531,6 +534,7 @@ def post_aap(request, user_id):
     '''
     pass
 
+@csrf_exempt
 def put_preferences(request):
     '''
     PUT /api/data/courses/setpreferences/
@@ -560,6 +564,7 @@ def put_preferences(request):
     '''
     pass
 
+@csrf_exempt
 def put_req_response(request):
     '''
     PUT /api/data/requests/respond/
@@ -577,6 +582,7 @@ def put_req_response(request):
     '''
     pass
 
+@csrf_exempt
 def set_complex(request):
     '''
     PUT /api/data/thread/complex
