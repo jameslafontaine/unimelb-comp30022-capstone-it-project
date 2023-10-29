@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'instructor_view',
     'student_view',
     'login',
+    'data_endpoints',
 ]
 
 MIDDLEWARE = [

@@ -24,6 +24,7 @@ urlpatterns = [
     path('', login_view, name='login'),
     path('instructor/', include('instructor_view.urls')),
     path('student/', include('student_view.urls')),
+    path('api/data/', include('data_endpoints.urls')),
 
 
     # GET REQUESTS (shared between all apps)
