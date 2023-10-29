@@ -3,6 +3,7 @@ All endpoints in data_endpoints
 """
 
 # from django.shortcuts import render
+import json
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -513,24 +514,48 @@ def post_new_case(request):
     POST /api/data/cases/new/
     Request body takes this format:
     {
-    "requests": [
-            {
-                "request_id": 0,
-                "thread_id": 0,
-                "date_created": "string",
-                "request_content": "string",
-                "instructor_notes": "string"
-            }
-        ]
+        "requests": [
+                {
+                    "request_id": 0,
+                    "thread_id": 0,
+                    "date_created": "string",
+                    "request_content": "string",
+                    "instructor_notes": "string"
+                }
+            ]
     }
     '''
-    pass
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        integer_fields = ['request_id', 'thread_id']
+        string_fields = ['date_created', 'request_content', 'instructor_notes']
+        all_fields = integer_fields + string_fields
+        if 'requests' not in data or not isinstance(data['requests'], list):
+            return HttpResponseBadRequest("Request body does not have correct fields")
+        for item in data['requests']:
+            if not set(item.keys()) == set(all_fields):
+                return HttpResponseBadRequest("Request body does not have correct fields")
+            else:
+                for field in integer_fields:
+                    if not isinstance(item[field], int):
+                        return HttpResponseBadRequest("Request body does not have correct fields")
+                for field in string_fields:
+                    if not isinstance(item[field], str):
+                        return HttpResponseBadRequest("Request body does not have correct fields")
+        # Create a new case
+        # For each request in request["requests"]
+        # Create a new thread
+        # Attach request
+        return JsonResponse({
+            "message": "Case created successfully"
+        }, status = 201)
+    else:
+        return HttpResponseBadRequest('Invalid request. Check input or request type')
 
 @csrf_exempt
 def post_aap(request, user_id):
     '''
     POST /api/data/user/{user_id}/aap/
-    
     '''
     pass
 
@@ -543,16 +568,16 @@ def put_preferences(request):
         "coursepreference_id": 0,
         "course_id": 0,
         "global_extension_length": 0,
-        "general_tutor": true,
-        "extension_tutor": true,
-        "quiz_tutor": true,
-        "remark_tutor": true,
-        "other_tutor": true,
-        "general_scoord": true,
-        "extension_scoord": true,
-        "quiz_scoord": true,
-        "remark_scoord": true,
-        "other_scoord": true,
+        "general_tutor": 1,
+        "extension_tutor": 1,
+        "quiz_tutor": 1,
+        "remark_tutor": 1,
+        "other_tutor": 1,
+        "general_scoord": 1,
+        "extension_scoord": 1,
+        "quiz_scoord": 1,
+        "remark_scoord": 1,
+        "other_scoord": 1,
         "general_reject": "string",
         "extension_approve": "string",
         "extension_reject": "string",
@@ -562,7 +587,29 @@ def put_preferences(request):
         "remark_reject": "string"
     }
     '''
-    pass
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        integer_fields = ["coursepreference_id", "course_id", "global_extension_length",
+                          "general_tutor", "extension_tutor", "quiz_tutor", "remark_tutor",
+                          "other_tutor", "general_scoord", "extension_scoord", "quiz_scoord",
+                          "remark_scoord", "other_scoord"]
+        string_fields = ["general_reject", "extension_approve", "extension_reject",
+                         "quiz_approve", "quiz_reject", "remark_approve", "remark_reject"]
+        all_fields = integer_fields + string_fields
+        if not all_fields == data.keys():
+            return HttpResponseBadRequest("Request body does not have correct fields")
+        for field in integer_fields:
+            if not isinstance(data[field], int):
+                return HttpResponseBadRequest("Request body does not have correct fields")
+        for field in string_fields:
+            if not isinstance(data[field], str):
+                return HttpResponseBadRequest("Request body does not have correct fields")
+        # Update course preferences table
+        return JsonResponse({
+            "message": "Course preferences updates successfully"
+        }, status = 201)
+    else:
+        return HttpResponseBadRequest('Invalid request. Check input or request type')
 
 @csrf_exempt
 def put_req_response(request):
@@ -580,7 +627,10 @@ def put_req_response(request):
         "extended_by": 4
     }
     '''
-    pass
+    if request.method == 'PUT':
+        pass
+    else:
+        return HttpResponseBadRequest('Invalid request. Check input or request type')
 
 @csrf_exempt
 def set_complex(request):
@@ -589,7 +639,10 @@ def set_complex(request):
     Request body should take form:
     {
         "thread_id": 0,
-        "complex_case": true
+        "complex_case": 1
     }
     '''
-    pass
+    if request.method == 'PUT':
+        pass
+    else:
+        return HttpResponseBadRequest('Invalid request. Check input or request type')
