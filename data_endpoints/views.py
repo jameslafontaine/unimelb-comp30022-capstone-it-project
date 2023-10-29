@@ -505,5 +505,85 @@ def get_user_endpoint(request, user_id):
                     return JsonResponse(result)
 
     return HttpResponseBadRequest('Invalid request, check input again.')
-    
 
+def post_new_case(request):
+    '''
+    POST /api/data/cases/new/
+    Request body takes this format:
+    {
+    "requests": [
+            {
+                "request_id": 0,
+                "thread_id": 0,
+                "date_created": "string",
+                "request_content": "string",
+                "instructor_notes": "string"
+            }
+        ]
+    }
+    '''
+    pass
+
+def post_aap(request, user_id):
+    '''
+    POST /api/data/user/{user_id}/aap/
+    
+    '''
+    pass
+
+def put_preferences(request):
+    '''
+    PUT /api/data/courses/setpreferences/
+    Request body takes this format:
+    {
+        "coursepreference_id": 0,
+        "course_id": 0,
+        "global_extension_length": 0,
+        "general_tutor": true,
+        "extension_tutor": true,
+        "quiz_tutor": true,
+        "remark_tutor": true,
+        "other_tutor": true,
+        "general_scoord": true,
+        "extension_scoord": true,
+        "quiz_scoord": true,
+        "remark_scoord": true,
+        "other_scoord": true,
+        "general_reject": "string",
+        "extension_approve": "string",
+        "extension_reject": "string",
+        "quiz_approve": "string",
+        "quiz_reject": "string",
+        "remark_approve": "string",
+        "remark_reject": "string"
+    }
+    '''
+    pass
+
+def put_req_response(request):
+    '''
+    PUT /api/data/requests/respond/
+    For query/other:
+    {
+        "instructor_notes": "no!",
+        "status": "REJECTED"
+    }
+    For extension/quizcode/remark:
+    {
+        "instructor_notes": ":o",
+        "status": "APPROVED",
+        "extended_by": 4
+    }
+    '''
+    pass
+
+def set_complex(request):
+    '''
+    PUT /api/data/thread/complex
+    Request body should take form:
+    {
+        "thread_id": 0,
+        "complex_case": true
+    }
+    '''
+    pass
