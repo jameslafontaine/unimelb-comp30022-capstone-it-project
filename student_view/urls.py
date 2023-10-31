@@ -17,14 +17,11 @@ urlpatterns = [
     path('edit-req/<int:thread_id>', edit_req_view, name='edit-req'),
 
     # GET REQUESTS
+    path('get-user-id/', get_user_id, name='get_id'),
     path('active-cases/', get_active_cases, name='get_active_cases'),
     path('active-cases/<int:user_id>/', get_active_cases, name='get_active_cases'),
-    path('get-user-id/', get_user_id, name='get_id'),
     path('get-all-cases/', get_all_cases, name='get_all_cases'),
     path('get-active-courses/', get_active_courses, name='get_active_courses'),
-
-    # POST REQUESTS
-    path('post-new-case/', post_new_case, name='post_new_case'),
 
     # PUT REQUESTS
     path('set-user-id/<int:input_id>', set_user_id, name='set_user_id'),

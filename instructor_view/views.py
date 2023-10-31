@@ -90,26 +90,6 @@ def get_threads_resolved(request, course_id):
             'threads': json.dumps([thread13])
         })
 
-def get_student_details(request, thread_id):
-    '''Gets student details from a request_id'''
-    print(request) # pylint
-    return JsonResponse({'student': json.dumps(usr1)})
-
-
-# POST REQUESTS
-@csrf_exempt
-def instructor_add_aap(request):
-    '''POST an aap as an Instructor'''
-    if request.method == 'POST':
-        try:
-            # Parse the JSON data from the request body
-            # e.g. aap = json.loads(request.body.decode('utf-8'))
-            print(USER_ID) # happy Pylint
-        except json.JSONDecodeError:
-            return HttpResponseBadRequest("Invalid JSON data")
-        return JsonResponse({"message": "Case created successfully"})
-    return HttpResponseBadRequest("Invalid Request Type")
-
 # PUT REQUESTS
 @csrf_exempt
 def set_user_id(request, input_id):
@@ -119,51 +99,4 @@ def set_user_id(request, input_id):
         USER_ID = input_id
         print(input_id) # Make pylint happy
         return JsonResponse({"message": "id successfully set"})
-    return HttpResponseBadRequest("Invalid Request Type")
-
-@csrf_exempt
-def request_response(request, thread_id):
-    '''Set request response'''
-    print(thread_id) # make pylint happy
-    '''
-    request body contains info, takes the following form for:
-        extension
-            responseJson = {
-                'instructorNotes' : '',
-                'status' : 'Rejected',
-                'extended by' : 0,
-            }
-        query
-            reponseJson = {
-                'instructorNotes' : '',
-                'status' : 'Answered',
-            }
-        other
-            ?
-    '''
-
-    # check the id exists and all that jazz
-    if request.method == 'PUT':
-        try:
-            data = json.loads(request.body)
-            # do things here
-            # success
-            return JsonResponse(data, status=200)
-            # failure
-            # return JsonResponse({}, status=400)
-        except json.JSONDecodeError:
-            # Return a JSON response with an error message if the request body is not valid JSON
-            return JsonResponse({'error': 'Invalid JSON in request body'}, status=400)
-
-    # Return a JSON response with an error message for other HTTP methods
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
-
-@csrf_exempt
-def change_settings(request):
-    '''Change settings'''
-    # check the id exists and all that jazz
-    if request.method == 'PUT':
-        # read the header to see what settings have been changed
-        print("") # make pylint happy
-        return JsonResponse({"message": "Case created successfully"})
     return HttpResponseBadRequest("Invalid Request Type")

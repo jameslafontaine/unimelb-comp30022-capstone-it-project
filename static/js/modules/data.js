@@ -221,9 +221,9 @@ function iloadThreadsResolvedFromUser(userId){
  * INSTRUCTOR: Gets student details from a threadId
  */
 function iloadStudentDetails(threadId){
-    return loadData('/instructor/get-student-details/' + threadId)
+    return loadData('/api/data/thread/?threadid=' + threadId)
         .then(data => {
-            return JSON.parse(data.student);
+            return data.student;
         })
 }
 
@@ -291,7 +291,10 @@ function getLatestRequest(thread_id) {
  * INSTRUCTOR: Respond to a request, in the request specify response, notes, etc.
  */
 function respond(threadId, response){
-    return putData(('/instructor/request-response/' + threadId), response)
+    return putData('/api/data/requests/respond/', {
+        "thread_id": threadId,
+        "response": response
+    })
         .then(responseData => {
             return true;
         })
@@ -325,9 +328,9 @@ function loadUserDetails(userId){
  * GENERIC: Returns a given users aaps
  */
 function loadUserAAPs(userId){
-    return loadData('/get-user-aaps/' + userId)
+    return loadData('/api/data/user/' + userId + '?aaps=true')
         .then(data => {
-            return JSON.parse(data.aaps);
+            return data.aaps;
         })
 }
 
@@ -375,7 +378,7 @@ function getCourseAssessments(courseId) {
 /**
  * GENERIC: GET course data from a course code
  */
-function getCourseData(courseCode){
+function getCourseData(courseCode)
     return loadData('/get-course-data/' + courseCode)
         .then(data => {
             return data;
@@ -396,8 +399,8 @@ function getAssignments(courseId){
  * STUDENT: POSTs a new case to the database
  */
 function postNewCase(dataToSend){
-    return postData(('/student/post-new-case/'), dataToSend)
-        .then(responseData => {
+    return postData(('/api/data/requests/respond/'), dataToSend)
+        .then(() => {
             return true;
         })
         .catch(error => {

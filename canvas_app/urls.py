@@ -27,6 +27,5 @@ urlpatterns = [
     path('api/data/', include('data_endpoints.urls')),
 
     # GET REQUESTS (shared between all apps)
-    path('get-user-aaps/<int:user_id>', get_user_aaps, name='get_user_aaps'),
     path('get-course-data/<str:course_code>', get_course_data, name='get_course_data'),
 ]
