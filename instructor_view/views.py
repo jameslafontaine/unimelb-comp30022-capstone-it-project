@@ -26,27 +26,16 @@ def instructor_web_header_view(request):
     ''' take the id and edit header with initial data '''
     if USER_ID == 3:
         usr = json.dumps(usr3)
-        return render(request, 'iWebHeader.html', {'usr': usr})
     if USER_ID == 4:
         usr = json.dumps(usr4)
-        return render(request, 'iWebHeader.html', {'usr': usr})
-    # whoops maybe id doesnt exist
-    return HttpResponseBadRequest("Invalid Request Type")
+    return render(request, 'iWebHeader.html', {'usr': usr})
 
 def review_req_view(request, thread_id):
     ''' check the id exists '''
     return render(request, 'reviewRequest.html', {'thread_id': thread_id})
 
 def view_reqs_view(request, id):
-    courseId = id
-    if(courseId == 31):
-        return render(request, 'viewRequests.html', {'course': json.dumps(course31)})
-    if(courseId == 32):
-        return render(request, 'viewRequests.html', {'course': json.dumps(course32)})
-    if(courseId == 41):
-        return render(request, 'viewRequests.html', {'course': json.dumps(course41)})
-    if(courseId == 42):
-        return render(request, 'viewRequests.html', {'course': json.dumps(course42)})
+    return render(request, 'viewRequests.html', {'course': json.dumps(course31)})
 
 def view_resolved_view(request, thread_id):
     '''View resolved requests'''
@@ -73,39 +62,6 @@ def view_profile_view(request, user_id):
 
 # GET REQUESTS
 # test/example purposes only, obviously not useable, must be filled in by backend
-def get_courses(request, user_id):
-    '''GET request for courses'''
-    if(user_id == 3):
-        return JsonResponse({
-            'courses': json.dumps([course31, course32])
-        })
-    elif(user_id == 4):
-        return JsonResponse({
-            'courses': json.dumps([course41, course42])
-        })
-    return not_found_view(request)
-
-def get_request_status(request, request_id):
-    '''GET request for request status'''
-    if request_id == 1:
-        return JsonResponse({'status': 'balls'})
-    # id not found
-    return not_found_view(request)
-
-def get_request(request, request_id):
-    '''GET a request'''
-    if request_id == 1:
-        return JsonResponse(req1)
-    # id not found
-    return not_found_view(request)
-
-def get_old_versions(request, request_id):
-    '''GET old requests of request'''
-    if request_id == 1:
-        return JsonResponse({'request_ids':json.dumps([1,2,3])})
-    # id not found
-    return not_found_view(request)
-
 def get_student(request, student_id):
     '''GET a student by id'''
     if student_id == 3:
@@ -113,42 +69,10 @@ def get_student(request, student_id):
     # id not found
     return not_found_view(request)
 
-def get_subject_settings(request, subject_id):
-    '''GET all settings for a subject'''
-    if subject_id == 1:
-        return JsonResponse(subj_settings)
-    # id not found
-    return not_found_view(request)
-
-def get_request_history(request, student_id):
-    '''GET the history of requests'''
-    if student_id == 1:
-        return JsonResponse({
-            'requests':json.dumps([req1, req2])
-        })
-    # id not found
-    return not_found_view(request)
-
 def get_user_id(request):
     '''Get the ID of the user'''
     print(request) # pylint
     return JsonResponse({'id': USER_ID})
-
-def get_threads(request, course_id):
-    '''Get the threads belonging to a course'''
-    print(request) # pylint
-    if((course_id == 31)):
-        return JsonResponse({
-            'threads': json.dumps([thread11])
-        })
-    elif((course_id == 32)):
-        return JsonResponse({
-            'threads': json.dumps([thread12])
-        })
-    elif((course_id == 41)):
-        return JsonResponse({
-            'threads': json.dumps([thread13])
-        })
 
 def get_threads_pending(request, course_id):
     ''' Gets the pending threads belonging to a course '''
@@ -166,36 +90,10 @@ def get_threads_resolved(request, course_id):
             'threads': json.dumps([thread13])
         })
 
-def get_threads_pending_from_user(request, user_id):
-    ''' Gets the pending threads belonging to a user '''
-
-    # just pretending here that they are specific to a course haha
-    return JsonResponse({
-            'threads': json.dumps([thread11, thread12])
-        })
-
-def get_threads_resolved_from_user(request, user_id):
-    ''' Gets the resolved (not pending) threads belonging to a user '''
-
-    # just pretending here that they are specific to a course haha
-    return JsonResponse({
-            'threads': json.dumps([thread13])
-        })
-
 def get_student_details(request, thread_id):
     '''Gets student details from a request_id'''
     print(request) # pylint
     return JsonResponse({'student': json.dumps(usr1)})
-
-def get_pref_from_thread(request, thread_id):
-    '''Gets a course preferences from a thread id'''
-    print(request) # pylint
-    if(thread_id == 11):
-        return JsonResponse(preferences31)
-    elif(thread_id == 12):
-        return JsonResponse(preferences32)
-    elif(thread_id == 13):
-        return JsonResponse(preferences41)
 
 
 # POST REQUESTS
@@ -213,20 +111,6 @@ def instructor_add_aap(request):
     return HttpResponseBadRequest("Invalid Request Type")
 
 # PUT REQUESTS
-@csrf_exempt
-def make_complex(request, thread_id):
-    '''Make a request complex'''
-    print(request) # Pylint happy
-    if request.method == 'PUT':
-        # check thread id, if complex, set to non-complex
-        # else make complex
-        #success
-        return JsonResponse({}, status=200)
-        #failure
-        #return JsonResponse({}, status=400)
-    #failure
-    return JsonResponse({}, status=400)
-
 @csrf_exempt
 def set_user_id(request, input_id):
     '''Set a user id'''

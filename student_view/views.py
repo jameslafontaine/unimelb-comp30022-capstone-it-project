@@ -60,12 +60,6 @@ def edit_req_view(request, thread_id):
 
 # GET REQUESTS
 # test/example purposes only, obviously not useable, must be filled in by backend
-def get_case(request, case_id):
-    '''GET a case'''
-    if case_id == 12:
-        return JsonResponse(student_case_1_2)
-    return student_not_found_view(request)
-
 def get_active_cases(request):
     '''GET active cases'''
 
@@ -79,53 +73,10 @@ def get_active_cases(request):
         })
     return student_not_found_view(request)
 
-def get_requests_from_case(request, case_id):
-    '''GET requests from case'''
-    if case_id == 11:
-        return JsonResponse({
-            'requests': json.dumps([req311, req312])
-        })
-    if case_id == 12:
-        return JsonResponse({
-            'requests': json.dumps([req321, req322])
-        })
-    if case_id == 21:
-        return JsonResponse({
-            'requests': json.dumps([req311, req312])
-        })
-    if case_id == 22:
-        return JsonResponse({
-            'requests': json.dumps([req321, req322])
-        })
-    return student_not_found_view(request)
-
-def get_request(request, request_id):
-    '''GET a request'''
-    if request_id == 1:
-        return JsonResponse(student_request_1)
-    return student_not_found_view(request)
-
-def get_old_versions(request, request_id):
-    '''GET old versions'''
-    if request_id == 1:
-        return JsonResponse({
-            'oldVersionIds' : json.dumps([1,2])})
-    return student_not_found_view(request)
-
 def get_user_id(request):
     '''Get user ID'''
     print(request) # Make PyLint happy
     return JsonResponse({'id': USER_ID})
-
-def get_threads(request, case_id):
-    if(case_id == 11):
-        return JsonResponse({
-            'threads': json.dumps([thread11])
-        })
-    elif(case_id == 12):
-        return JsonResponse({
-            'threads': json.dumps([thread12, thread13])
-        })
 
 def get_all_cases(request):
     '''Gets all of the users cases'''

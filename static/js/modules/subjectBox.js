@@ -29,22 +29,19 @@ function getInstructorId(){
 			console.error('Error:', error);
 		});
 }
-
-
 	
 // Calls the api and makes a list of the subjects (courses)
 function getSubjects(){
-	url = '/instructor/courses/' + usrId;
+	url = '/api/data/courses/?userid=' + usrId;
 	return fetch(url)
         .then(response => response.json())
         .then(data => {
-            subjects = JSON.parse(data.courses);
+            subjects = data.courses;
         })
         .catch(error => {
             console.error('Error:', error);
         });
 }
-
 
 // Function to create and populate an expandable subject box
 function generateSubjectBox(subject) {
