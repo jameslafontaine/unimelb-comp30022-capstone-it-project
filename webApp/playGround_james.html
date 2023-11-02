@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/header.css">
+        <link rel="stylesheet" href="css/tables.css">
+    </head>
+    <body>
+        <div class="header">
+            <!-- menu -->
+            <div class="dropDown">
+                <div class="dropDownBtn">
+                    <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
+                </div>
+                <div class="dropDownMenu">
+                    <div class="dDSection" onclick="window.location.href='home.html'">
+                        <p class="dDSectionText">Home</p>
+                    </div>
+                    <div class="dDSection" onclick="window.location.href='viewRequests.html'">
+                        <p class="dDSectionText">View all requests</p>
+                    </div>
+                </div>
+            </div>
+
+            <img src="images/uomLogo.JPG" style="height: 38px;">
+            <div class="headerText">Signed in as:_____</div>
+
+            <!-- settings -->
+            <div class="dropDown settings">
+                <div class="dropDownBtn" style="display: flex;">
+                    <img class="settingsBtn" src="images/settingsIcon.png" style="align-self: center;">
+                </div>
+                <div class="dropDownMenu inwards">
+                    <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
+                        <p class="dDSectionText">Email notifications</p>
+                        <input type="checkbox" style="width: 17px;height: 17px;">
+                    </div>
+                    <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
+                        <p class="dDSectionText">Dark mode</p>
+                        <input type="checkbox" style="width: 17px;height: 17px;">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="mainBody">
+            <p class="title">COMP30022 Requests & Queries</p>
+            <!-- <p class="subTitle">subTitle</p>
+            <p class="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                 Cras molestie nunc in urna dignissim auctor. Aenean ullamcorper nec 
+                 nisl dictum aliquam. Mauris convallis eu urna id dictum. Nulla eu 
+                 tellus at mi volutpat volutpat. Quisque venenatis eget massa nec tincidunt. 
+                 Pellentesque scelerisque ac erat nec convallis. Mauris aliquet sed enim vel
+                 dictum. Nulla eu est ac mauris efficitur volutpat nec et ipsum. Ut ut metus 
+                 vitae mauris pharetra semper ut quis turpis. Sed efficitur dolor mi, quis 
+                 laoreet sem commodo vitae. Duis vel nibh sed metus finibus interdum vitae 
+                 et justo. Vivamus sit amet rutrum tortor.</p> -->
+
+            <p></p>
+            
+            <div class="expandableBox">
+                <div class="expandableBoxContents">
+                    Awaiting action
+                    <span class="expandButton" style="font-size:20px;">
+                        -
+                    </span>
+                </div>
+            </div>
+            <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(6, 1fr);">
+                <!--row1-->
+                <span class="tableHeading">Reserved</span>
+                <span class="tableHeading">Date</span>
+                <span class="tableHeading">Student Name</span>
+                <span class="tableHeading">Request Type</span>
+                <span class="tableHeading">Status</span>
+                <span class="tableHeading"></span>
+                <!--row2-->
+                <span class="tableEntry"><span style="font-size:300%;color:yellow;text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span></span>
+                <span class="tableEntry">29/08/2023</span>
+                <span class="tableEntry">Callum<br>  Sharman</span>
+                <span class="tableEntry">Extension</span>
+                <span class="tableEntry">Pending</span>
+                <span class="tableEntry">
+                    <button class="standardButton" onclick="window.location.href='reviewRequest.html'">
+                        Review
+                    </button>
+                </span>
+            </div>
+            
+            <p></p>
+
+            <div class="expandableBox">
+                <div class="expandableBoxContents">
+                    Resolved
+                    <span class="expandButton" style="font-size:20px;">
+                        -
+                    </span>
+                </div>
+            </div>
+            <div class="tableSubmitted" style="width: 100%; display: grid; grid-template-columns: repeat(6, 1fr);">
+                <!--row1-->
+                <span class="tableHeading">Reserved</span>
+                <span class="tableHeading">Date</span>
+                <span class="tableHeading">Student Name</span>
+                <span class="tableHeading">Request Type</span>
+                <span class="tableHeading">Status</span>
+                <span class="tableHeading"></span>
+                <!--row2-->
+                <span class="tableEntry"><span style="font-size:300%;">&star;</span></span>
+                <span class="tableEntry">20/08/2023</span>
+                <span class="tableEntry">Jun<br>  Youn</span>
+                <span class="tableEntry">Extension</span>
+                <span class="tableEntry">Resolved</span>
+                <span class="tableEntry">
+                    <button class="standardButton" onclick="window.location.href='viewResolved.html'">
+                        View details
+                    </button>
+                </span>
+                <!--row3-->
+                <span class="tableEntry"><span style="font-size:300%;color:yellow;text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span></span>
+                <span class="tableEntry">12/08/2023</span>
+                <span class="tableEntry">James<br> La Fontaine</span>
+                <span class="tableEntry">General Query</span>
+                <span class="tableEntry">Resolved</span>
+                <span class="tableEntry">
+                    <button class="standardButton">
+                        View details
+                    </button>
+                </span>
+            </div>
+        </div>
+        <script src="js/iWebHeader.js"></script>
+        <script src="subjectBox.js"></script>
+    </body>
+</html>
