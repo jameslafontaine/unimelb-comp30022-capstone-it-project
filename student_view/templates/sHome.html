@@ -72,57 +72,10 @@
         <script>createHeader("student")</script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>
-            activeCaseList = [
-                [
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-
-                ],
-                [
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    }
-                ]
-            ]
 
             sloadActiveCasesData()
                 .then(cases => {
-                    generateStudentCases(cases);
+                    generateStudentCases(cases)
                 })
 
         </script>

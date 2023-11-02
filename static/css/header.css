@@ -59,6 +59,7 @@
 }
 .dDSection:hover{
     background-color: rgb(0, 21, 99);
+    transition: 0.1s;
 }
 .dropDownMenu.inwards{
     right:0;

@@ -98,5 +98,7 @@ function generateSubjectBox(subject) {
 	// Append the subject box to the container
 	document.getElementById('subjectBoxContainer').appendChild(standardBox );
 	document.getElementById('subjectBoxContainer').appendChild(document.createElement('br'));
+
+	fixStyling();
 };
   
