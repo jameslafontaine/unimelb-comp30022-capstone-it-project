@@ -184,7 +184,7 @@ def get_courses_endpoint(request):
     if len(request.GET) not in [1, 2]:
         return HttpResponseBadRequest('Invalid number of parameters.')
 
-    if request.GET.get('userid'):
+    if len(request.GET) == 1 and request.GET.get('userid'):
         if check_param_not_integer(request.GET.get('userid')):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:

@@ -613,17 +613,22 @@ function createAssignmentDropDown(number, courseList){
     });
 
     // Populate the dropdown
-    getCourseData(courseCode)
-        .then(course => {
-            getAssignments(course.course_id)
-                .then(assignments => {
-                    assignments.forEach(assignment => {
-                        const option = document.createElement('option');
-                        option.textContent = assignment.assignment_name;
-                        document.getElementById(`assignmentDropdown${number}`).appendChild(option);
-                    })
-                })
-        })
+    getCourseData()
+        .then(courses => {
+            for (let course of courses) {
+                if (courseCode == course.course_code) {
+                    getAssignments(course.course_id)
+                        .then(assignments => {
+                            assignments.forEach(assignment => {
+                                const option = document.createElement('option');
+                                option.textContent = assignment.assignment_name;
+                                document.getElementById(`assignmentDropdown${number}`).appendChild(option);
+                            });
+                        });
+                    break;
+                }
+            }
+        });
 }
 
 /** 

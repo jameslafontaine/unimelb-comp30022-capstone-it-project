@@ -79,22 +79,6 @@ function postData(url, json){
 
 
 /**
- * GET call to 'url', returns text on success 
- * Used for situations where HTML is being retrieved
- */
-function loadTextData(url){
-
-    return fetch(url)
-        .then(response => response.text())
-        .then(data => {
-            return data;
-        })
-        .catch(error => {
-			console.error('Error:', error);
-		});
-}
-
-/**
  * INSTRUCTOR: Loads in requests, given a course from the DB, returns an array full of request JSONs
  */
 function iloadThreadData(courseId){
@@ -108,9 +92,9 @@ function iloadThreadData(courseId){
  * STUDENT: Loads in active cases from the DB, returns an array full of case JSONs
  */
 function sloadActiveCasesData(){
-    return loadData('/student/active-cases')
+    return loadData('/api/data/cases/?userid=' + getGlobalAppHeadersValue('user_id'))
         .then(data => {
-            return JSON.parse(data.cases);
+            return data.cases;
         })
 }
 
@@ -305,16 +289,6 @@ function respond(threadId, response){
 }
 
 /**
- * STUDENT: Returns all of the users cases
- */
-function getAllCases(){
-    return loadData('/student/get-all-cases/')
-        .then(data => {
-            return JSON.parse(data.cases);
-        })
-}
-
-/**
  * GENERIC: Returns user details from a user id
  */
 function loadUserDetails(userId){
@@ -335,37 +309,6 @@ function loadUserAAPs(userId){
 }
 
 /**
- * GENERIC: this will need to be changed upon canvas integration
- * Returns the logged in users id
- */
-function getUserId(type){
-    if(type == 'instructor'){
-        return loadData('/instructor/get-user-id/')
-        .then(data => {
-            return data.id;
-        })
-    }
-    else if(type == 'student'){
-        return loadData('/student/get-user-id/')
-        .then(data => {
-            return data.id;
-        })
-    }
-    else{
-        return "nerd, you done fucked up";
-    }
-}
-
-/**
- * STUDENT: returns active courses enrolled in
- */
-function getActiveCourses(){
-    return loadData('/student/get-active-courses/')
-        .then(data => {
-            return JSON.parse(data.courses);
-        })
-}
-/**
  * GENERIC: GET all assessments for a course
  */
 function getCourseAssessments(courseId) {
@@ -378,10 +321,10 @@ function getCourseAssessments(courseId) {
 /**
  * GENERIC: GET course data from a course code
  */
-function getCourseData(courseCode)
-    return loadData('/get-course-data/' + courseCode)
+function getCourseData() {
+    return loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'))
         .then(data => {
-            return data;
+            return data.courses;
         })
 }
 

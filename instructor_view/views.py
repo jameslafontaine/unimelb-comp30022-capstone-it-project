@@ -12,8 +12,6 @@ from django.views.decorators.csrf import csrf_exempt
 # as this will be deleted when fully attached, i wont bother doing the imports the long way
 from canvas_app.tests import *
 
-USER_ID = -1 # set to -1 default to detect issues
-
 def not_found_view(request):
     '''View not found'''
     return render(request, 'notFound404.html', {})
@@ -24,11 +22,7 @@ def home_view(request):
 
 def instructor_web_header_view(request):
     ''' take the id and edit header with initial data '''
-    if USER_ID == 3:
-        usr = json.dumps(usr3)
-    if USER_ID == 4:
-        usr = json.dumps(usr4)
-    return render(request, 'iWebHeader.html', {'usr': usr})
+    return render(request, 'iWebHeader.html', {})
 
 def review_req_view(request, thread_id):
     ''' check the id exists '''
@@ -65,14 +59,17 @@ def view_profile_view(request, user_id):
 def get_student(request, student_id):
     '''GET a student by id'''
     if student_id == 3:
-        return JsonResponse(usr3)
+        return JsonResponse({
+            'user_id': 3,
+            'name' : 'Ryan Goh',
+            'first_name': 'Ryan',
+            'last_name': 'Goh',
+            'email': 'insertEmailHereLol@student.unimelb.edu.au',
+            'email_preference': 1,
+            'darkmode_preference': 1,
+        })
     # id not found
     return not_found_view(request)
-
-def get_user_id(request):
-    '''Get the ID of the user'''
-    print(request) # pylint
-    return JsonResponse({'id': USER_ID})
 
 def get_threads_pending(request, course_id):
     ''' Gets the pending threads belonging to a course '''
@@ -89,14 +86,3 @@ def get_threads_resolved(request, course_id):
     return JsonResponse({
             'threads': json.dumps([thread13])
         })
-
-# PUT REQUESTS
-@csrf_exempt
-def set_user_id(request, input_id):
-    '''Set a user id'''
-    if request.method == 'PUT':
-        global USER_ID
-        USER_ID = input_id
-        print(input_id) # Make pylint happy
-        return JsonResponse({"message": "id successfully set"})
-    return HttpResponseBadRequest("Invalid Request Type")

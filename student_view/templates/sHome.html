@@ -67,64 +67,16 @@
 
             </div>
         </div>
-        <script src="{% static 'js/modules/data.js' %}"></script>
+        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
         <script src="{% static 'js/modules/webHeader.js' %}"></script>
-        <script>createHeader("student")</script>
+        <script src="{% static 'js/modules/data.js' %}"></script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>
-            activeCaseList = [
-                [
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-
-                ],
-                [
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    }
-                ]
-            ]
-
+            createHeader("student");
             sloadActiveCasesData()
                 .then(cases => {
                     generateStudentCases(cases);
                 })
-
         </script>
     </body>
 </html>

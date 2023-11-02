@@ -25,7 +25,4 @@ urlpatterns = [
     path('instructor/', include('instructor_view.urls')),
     path('student/', include('student_view.urls')),
     path('api/data/', include('data_endpoints.urls')),
-
-    # GET REQUESTS (shared between all apps)
-    path('get-course-data/<str:course_code>', get_course_data, name='get_course_data'),
 ]

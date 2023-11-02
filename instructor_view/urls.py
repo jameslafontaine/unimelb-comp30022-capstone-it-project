@@ -16,10 +16,7 @@ urlpatterns = [
     path('view-profile/<int:user_id>/', view_profile_view, name='view-profile'),
 
     # GET REQUESTS
-    path('get-user-id/', get_user_id, name='get_id'),
     path('get-threads-pending/<int:course_id>', get_threads_pending, name='get_threads_pending'),
     path('get-threads-resolved/<int:course_id>', get_threads_resolved, name='get_threads_resolved'),
 
-    # PUT REQUESTS
-    path('set-user-id/<int:input_id>', set_user_id, name='set_user_id'),
 ]

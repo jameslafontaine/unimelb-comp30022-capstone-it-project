@@ -4,36 +4,31 @@
  * Description: Handles the headers for both instructor and student
  */
 
-// Fill in the relevant information for the "Signed in as:" within the header
-function populateSignIn() {
-	let headerText = document.querySelector('.headerText');
-
-	var usr = JSON.parse(document.getElementById('load-header-data').getAttribute('data-usr'));
-
-	headerText.innerHTML = "Signed in as: " + usr.first_name + " " + usr.last_name;
-
-};
 /**
  * Depending on whether instructor or student (string value) 
  * loads in and fills out the appropriate _webHeader.html file
  */
 function createHeader(instOrStudent) {
-	let url;
+	let url = (instOrStudent == "student") ? '/student/sWebHeader' : '/instructor/iWebHeader';
 
-	if(instOrStudent == "instructor") url = '/instructor/iWebHeader'
-	else if(instOrStudent == "student") url = '/student/sWebHeader'
-	else{
-		console.error("ERROR: incorrect student/instructor value given in 'createHeader'")
-		return;
-	}
-
-	loadTextData(url)
-		.then(data =>{
-
-			// Insert the loaded header into the headerContainer
+	fetch(url, {
+		method: 'GET',
+		headers: {
+			'Content-Type': getGlobalAppHeadersValue('Content-Type'),
+			'user_id': getGlobalAppHeadersValue('user_id')
+		}
+	})
+		.then(response => response.text())
+		.then(data => {
 			document.getElementById('webHeaderContainer').innerHTML = data;
+			let headerText = document.querySelector('.headerText');
+			loadUserDetails(getGlobalAppHeadersValue('user_id'))
+				.then(usr => {
+					headerText.innerHTML = "Signed in as: " + usr.first_name + " " + usr.last_name;
+				});
+        })
+        .catch(error => {
+			console.error('Error:', error);
+		});
 
-			// Call populateSignIn function to populate header text
-			populateSignIn();
-		})
 }
