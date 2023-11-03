@@ -5,19 +5,20 @@ All endpoints in data_endpoints
 # from django.shortcuts import render
 import json, requests
 import mysql.connector
+import os
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, time
 
 # Create a connection
 # Replace these values with your MySQL server details
-connection = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="-", # INSERT PASSWORD HERE
-    database="db"
-)
 
+connection = mysql.connector.connect(
+    host="db",
+    port="3306",
+    user="root",
+    password="admin"
+)
 
 def validate_headers(request):
     '''
@@ -661,7 +662,19 @@ def post_aap(request, user_id):
     '''
     POST /api/data/user/{user_id}/aap/
     '''
-    pass
+    #change this
+    request_id = 1
+    file_name = 'test\\testUploadAAP.txt'
+    file_type = 'AAP'
+    file_path = os.path.join(os.getcwd(), file_name)
+    with open(file_path, 'rb') as file:
+        file_data = file.read()
+    cursor = connection.cursor()
+    insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
+    cursor.execute(insert_query, (file_data, file_name, user_id, request_id, file_type))
+    connection.commit()
+    return JsonResponse({"message": "Uploaded successfully"}, status = 201)
+
 
 @csrf_exempt
 def put_preferences(request):
@@ -711,6 +724,66 @@ def put_preferences(request):
             if not isinstance(data[field], str):
                 return HttpResponseBadRequest("Request body does not have correct fields")
         # Update course preferences table
+        
+        # Create a cursor to interact with the database
+        cursor = connection.cursor()
+
+        # Extract data from the JSON
+        coursepreference_id = data["coursepreference_id"]
+        course_id = data["course_id"]
+        global_extension_length = data["global_extension_length"]
+        general_tutor = data["general_tutor"]
+        extension_tutor = data["extension_tutor"]
+        quiz_tutor = data["quiz_tutor"]
+        remark_tutor = data["remark_tutor"]
+        other_tutor = data["other_tutor"]
+        general_scoord = data["general_scoord"]
+        extension_scoord = data["extension_scoord"]
+        quiz_scoord = data["quiz_scoord"]
+        remark_scoord = data["remark_scoord"]
+        other_scoord = data["other_scoord"]
+        general_reject = data["general_reject"]
+        extension_approve = data["extension_approve"]
+        extension_reject = data["extension_reject"]
+        quiz_approve = data["quiz_approve"]
+        quiz_reject = data["quiz_reject"]
+        remark_approve = data["remark_approve"]
+        remark_reject = data["remark_reject"]
+
+        # Update the 'CoursePreferences' table in the database
+        cursor.execute("""
+            UPDATE CoursePreferences
+            SET
+                global_extension_length = %s,
+                general_tutor = %s,
+                extension_tutor = %s,
+                quiz_tutor = %s,
+                remark_tutor = %s,
+                other_tutor = %s,
+                general_scoord = %s,
+                extension_scoord = %s,
+                quiz_scoord = %s,
+                remark_scoord = %s,
+                other_scoord = %s,
+                general_reject = %s,
+                extension_approve = %s,
+                extension_reject = %s,
+                quiz_approve = %s,
+                quiz_reject = %s,
+                remark_approve = %s,
+                remark_reject = %s
+            WHERE
+                coursepreference_id = %s AND course_id = %s
+        """, (
+            global_extension_length, general_tutor, extension_tutor, quiz_tutor, remark_tutor, other_tutor,
+            general_scoord, extension_scoord, quiz_scoord, remark_scoord, other_scoord,
+            general_reject, extension_approve, extension_reject, quiz_approve, quiz_reject,
+            remark_approve, remark_reject, coursepreference_id, course_id
+        ))
+
+        # Commit the changes
+        connection.commit()
+        print("CoursePreferences table updated successfully")
         return JsonResponse({
             "message": "Course preferences updates successfully"
         }, status = 201)
@@ -723,18 +796,60 @@ def put_req_response(request):
     PUT /api/data/requests/respond/
     For query/other:
     {
-        "instructor_notes": "no!",
-        "status": "REJECTED"
+        "request_id":1
+        "instructor_notes": ":o",
+        "status": "APPROVED"
     }
     For extension/quizcode/remark:
     {
+        "request_id":1
+        "assignment_id":1
         "instructor_notes": ":o",
         "status": "APPROVED",
         "extended_by": 4
     }
     '''
     if request.method == 'PUT':
-        pass
+        data = json.loads(request.body)
+        all_fields = ["request_id","instructor_notes","status"]
+        extension_fields = ["request_id","assignment_id","instructor_notes","status","extended_by"]
+        data_keys = list(data.keys())
+        
+        print(data_keys)
+        if not ((all_fields == data_keys) or (extension_fields == data_keys)):
+            return HttpResponseBadRequest("Request body does not have correct fields")
+        # Update course preferences table
+
+        # Create a cursor to interact with the database
+        cursor = connection.cursor()
+
+        # Extract data from the JSON
+        instructor_notes = data["instructor_notes"]
+        status = data["status"]
+        request_id= data["request_id"]
+        
+        #check if json has assignment_id
+        if "assignment_id" in data:
+            assignment_id = data["assignment_id"]
+            extended_by = data["extended_by"]
+
+            #update canvas API
+
+
+        # Update the 'CoursePreferences' table in the database
+        cursor.execute("""
+            UPDATE db.Thread AS t
+            JOIN db.Request AS r ON t.thread_id = r.thread_id
+            SET t.current_status = %s,
+                r.instructor_notes = %s
+            WHERE r.request_id = %s
+        """, (
+            status, instructor_notes, request_id
+        ))
+
+        # Commit the changes
+        connection.commit()
+        return JsonResponse({"message": "Updated successfully"}, status = 201)
     else:
         return HttpResponseBadRequest('Invalid request. Check input or request type')
 
@@ -753,29 +868,28 @@ def set_complex(request):
         # Create a cursor to interact with the database
         cursor = connection.cursor()
         data = json.loads(request.body)
-        print(data)
+        
         # Check the current value of 'complex_case' for the given 'request_id'
-        '''
-        cursor.execute(f"SELECT complex_case FROM Thread WHERE request_id = {request_id}")
-        current_complex_case = cursor.fetchone()[0]
-
+        
+        cursor.execute(f"SELECT complex_case FROM Thread WHERE thread_id = {data['thread_id']}")
+        current_complex_case = cursor.fetchall()[0][0]
+        print(current_complex_case)
         # Toggle the 'complex_case' value (0 to 1 or 1 to 0)
         new_complex_case = 1 if current_complex_case == 0 else 0
 
         # Update the 'complex_case' value in the database
-        cursor.execute(f"UPDATE Thread SET complex_case = {new_complex_case} WHERE request_id = {request_id}")
+        cursor.execute(f"UPDATE Thread SET complex_case = {new_complex_case} WHERE thread_id = {data['thread_id']}")
 
         # Commit the changes
         connection.commit()
 
-        print(f"Complex_case for request_id {request_id} updated to {new_complex_case}")
+        print(f"Complex_case for thread_id {data['thread_id']} updated to {new_complex_case}")
         return JsonResponse({
             "message": "Updated successfully"
         }, status = 201)
-        '''
-
-    except mysql.connector.Error as error:
         
+
+    except mysql.connector.Error as error: 
         return HttpResponseBadRequest('Invalid request. Check input or request type')
 
 
@@ -801,8 +915,8 @@ from django.test import RequestFactory
 from django.conf import settings
 
 # Create a request factory
-request_factory = RequestFactory()
-settings.configure()
+#request_factory = RequestFactory()
+settings.configure()  #this messes up django
 
 
 # Create a mock HTTP request
@@ -890,8 +1004,8 @@ def test_put_preferences():
 
     # Define the request data and headers
     request_data = {
-        "coursepreference_id": 0,
-        "course_id": 0,
+        "coursepreference_id": 1,
+        "course_id": 7677734,
         "global_extension_length": 0,
         "general_tutor": 1,
         "extension_tutor": 1,
@@ -931,7 +1045,7 @@ def test_complex():
 
     # Define the request data and headers
     request_data = {
-        "thread_id": 0,
+        "thread_id": 1,
         "complex_case": True
     }
     request._body = json.dumps(request_data).encode('utf-8')
@@ -941,8 +1055,80 @@ def test_complex():
     response = set_complex(request)
 
     # Check the response, e.g., response.status_code, response.content, etc.
+    print(response)
     print(response.status_code)
     print(response.content)
 
 # Call the test function
 #test_complex()
+
+def test_request_response():
+    # Create a mock request object
+    request = HttpRequest()
+    request.method = 'PUT'
+
+    # Define the request data and headers
+
+    #For extension/quizcode/remark:
+    
+    request_data = {
+        "request_id":1,
+        "assignment_id":1,
+        "instructor_notes": ":o",
+        "status": "APPROVED",
+        "extended_by": 4
+    }
+    #request_data = {
+    #    "request_id":1,
+    #    "instructor_notes": "no!",
+    #    "status": "REJECTED"
+    #}
+    request._body = json.dumps(request_data).encode('utf-8')
+    request.META['HTTP_CONTENT_TYPE'] = 'application/json'
+
+    # Call the put_preferences function
+    response = put_req_response(request)
+
+    # Check the response, e.g., response.status_code, response.content, etc.
+    print(response)
+    print(response.status_code)
+    print(response.content)
+
+# Call the test function
+#test_request_response()
+
+
+def test_post_case():
+    # Create a mock request object
+    request = HttpRequest()
+    request.method = 'POST'
+
+    # Define the request data and headers
+
+    #For extension/quizcode/remark:
+    
+    request_data = {
+   "requests": [
+            {
+            "request_id": 0,
+            "thread_id": 0,
+            "date_created": "string",
+            "request_content": "string",
+            "instructor_notes": "string"
+            }
+        ]
+    }
+    request._body = json.dumps(request_data).encode('utf-8')
+    request.META['HTTP_CONTENT_TYPE'] = 'application/json'
+
+    # Call the put_preferences function
+    response = post_new_case(request)
+
+    # Check the response, e.g., response.status_code, response.content, etc.
+    print(response)
+    print(response.status_code)
+    print(response.content)
+
+
+#test_post_case()
+post_aap("req", 108998192)
