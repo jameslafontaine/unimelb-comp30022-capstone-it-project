@@ -51,7 +51,7 @@ table {
 th, td {
     padding: 12px;
     text-align: center;
-    border: 1px solid #ccc;
+    border: 1px solid #000000;
     margin: 0; /* Remove margin */
     width: 15%;
 }
@@ -69,20 +69,20 @@ th:last-child::after {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 3px; /* Width of the border */
+    width: 0px; /* Width of the border */
     background-color: black;
 }
 
 /* Fix border alignment relating to left side of first header  */
 th:first-child::before {
-    left: -2px;
+    left: 0px;
 }
 
 /* Fix border alignment relating to right side of last header  */
 th:last-child::after {
-    right: -2px;
+    right: 0px;
 }
 
 th:not(:last-child) {
-    border-right: 2px solid white; /* Add white lines between columns */
+    border-right: 1px solid rgb(0, 0, 0); /* Add white lines between columns */
 }
