@@ -36,7 +36,7 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE TABLE IF NOT EXISTS `db`.`Course` (
   `course_id` INT NOT NULL,
   `course_name` VARCHAR(100) NOT NULL,
-  `course_code` VARCHAR(15) NOT NULL,
+  `course_code` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`course_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
@@ -68,8 +68,6 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE TABLE IF NOT EXISTS `db`.`Case` (
   `case_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
-  `date_created` DATE NOT NULL,
-  `date_updated` DATE NOT NULL,
   PRIMARY KEY (`case_id`, `user_id`),
   INDEX `fk_case_users1_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `fk_case_user`
@@ -90,6 +88,7 @@ CREATE TABLE IF NOT EXISTS `db`.`Thread` (
   `complex_case` BIT(1) NOT NULL,
   `current_status` VARCHAR(8) NOT NULL DEFAULT 'Pending',
   `assignment_id` INT NULL,
+  `date_updated` DATE NOT NULL, -- Add the date_updated column here
   PRIMARY KEY (`thread_id`, `case_id`, `course_id`),
   INDEX `fk_thread_case1_idx` (`assignment_id` ASC) VISIBLE,
   INDEX `fk_thread_case2_idx` (`case_id` ASC) VISIBLE,
@@ -106,9 +105,11 @@ CREATE TABLE IF NOT EXISTS `db`.`Thread` (
     FOREIGN KEY (`course_id`)
     REFERENCES `db`.`Course` (`course_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON UPDATE NO ACTION
+)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
+
 
 
 -- -----------------------------------------------------
@@ -119,15 +120,18 @@ CREATE TABLE IF NOT EXISTS `db`.`Request` (
   `thread_id` INT NOT NULL,
   `request_content` VARCHAR(1000) NOT NULL,
   `instructor_notes` VARCHAR(1000) NULL,
+  `date_created` DATE,  -- Add the date_created column with DATE data type here
   PRIMARY KEY (`request_id`, `thread_id`),
   INDEX `fk_thread_idx` (`thread_id` ASC) VISIBLE,
   CONSTRAINT `fk_request_thread`
     FOREIGN KEY (`thread_id`)
     REFERENCES `db`.`Thread` (`thread_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON UPDATE NO ACTION
+)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
+
 
 
 -- -----------------------------------------------------
