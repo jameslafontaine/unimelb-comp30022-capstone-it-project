@@ -3,9 +3,21 @@ All endpoints in data_endpoints
 """
 
 # from django.shortcuts import render
-import json
+import json, requests
+import mysql.connector
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime, time
+
+# Create a connection
+# Replace these values with your MySQL server details
+connection = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="-", # INSERT PASSWORD HERE
+    database="db"
+)
+
 
 def validate_headers(request):
     '''
@@ -36,57 +48,74 @@ def get_assessments_endpoint(request):
         if check_param_not_integer(request.GET.get('assignid')):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:
-            # SELECT * FROM 'Assignment' WHERE 'Assignment'.assignment_id == request.GET.get('assignid')
-            # Example result 
-            result = {
-                "assignment_id": 1,
-                "course_id": 1,
-                "assignment_name": "Project 1",
-                "assignment_type": "submission",
-                "assignment_weightage": 15,
-                "start_date": "2000:01:01 00:00:00",
-                "end_date": "2000:01:01 00:00:00"
-            }
-            # set result variable as whatever SQL statement returns
-            return JsonResponse(result)
+            cursor = connection.cursor(dictionary=True)
+
+            # Execute a query to fetch the assignment data
+            query = "SELECT * FROM Assignment WHERE assignment_id = %s"
+            cursor.execute(query, (request.GET.get('assignid'),))
+
+            # Fetch the result
+            assignment_data = cursor.fetchone()
+
+            if assignment_data:
+                # Check if due_date is None (null) and handle it
+                if assignment_data["due_date"] is None:
+                    due_date_str = "N/A"  # Or any other value you prefer
+                else:
+                    due_date_str = assignment_data["due_date"].strftime("%Y:%m:%d %H:%M:%S")
+
+                # Format the data into the desired JSON format
+                json_data = {
+                    "assignment_id": assignment_data["assignment_id"],
+                    "course_id": assignment_data["course_id"],
+                    "assignment_name": assignment_data["assignment_name"],
+                    "assignment_type": assignment_data["assignment_type"],
+                    "assignment_weightage": assignment_data["assignment_weightage"],
+                    "start_date": assignment_data["start_date"].strftime("%Y:%m:%d %H:%M:%S"),
+                    "end_date": due_date_str  # Use the formatted due_date or "N/A"
+                }
+
+                return JsonResponse(json_data)
+
+            else:
+                return None  # Assignment not found
     
     if not request.GET.get('assignid') and request.GET.get('courseid'):
         if check_param_not_integer(request.GET.get('courseid')):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:
-            # SELECT * FROM 'Assignment' WHERE 'Assignment'.course_id == int(request.GET.get('courseid'))
-            # Example result
-            result = {
-                "assessments": [
-                    {
-                        "assignment_id": 1,
-                        "course_id": 2001,
-                        "assignment_name": "Project 1",
-                        "assignment_type": "submission",
-                        "assignment_weightage": 15,
-                        "start_date": "2000:01:01 00:00:00",
-                        "end_date": "2000:01:01 00:00:00"
-                    },
-                    {
-                        "assignment_id": 2,
-                        "course_id": 2001,
-                        "assignment_name": "Project 2",
-                        "assignment_type": "submission",
-                        "assignment_weightage": 15,
-                        "start_date": "2000:01:01 00:00:00",
-                        "end_date": "2000:01:01 00:00:00"
-                    },
-                    {
-                        "assignment_id": 3,
-                        "course_id": 2001,
-                        "assignment_name": "Mid Semester Test",
-                        "assignment_type": "submission",
-                        "assignment_weightage": 20,
-                        "start_date": "2000:01:01 00:00:00",
-                        "end_date": "2000:01:01 00:00:00"
-                    }
-                ]
-            } 
+            cursor = connection.cursor(dictionary=True)
+
+            # Execute a query to fetch assignments for the given course_id
+            query = "SELECT * FROM Assignment WHERE course_id = %s"
+            cursor.execute(query, (request.GET.get('courseid'),))
+
+            assignments = []
+
+            for assignment_data in cursor:
+                # Check if start_date or end_date is None and provide a default value
+                if assignment_data["start_date"] is None:
+                    start_date_str = "N/A"  # Or any other value you prefer
+                else:
+                    start_date_str = assignment_data["start_date"].strftime("%Y:%m:%d %H:%M:%S")
+
+                if assignment_data["due_date"] is None:
+                    end_date_str = "N/A"  # Or any other value you prefer
+                else:
+                    end_date_str = assignment_data["due_date"].strftime("%Y:%m:%d %H:%M:%S")
+
+                assignment = {
+                    "assignment_id": assignment_data["assignment_id"],
+                    "course_id": assignment_data["course_id"],
+                    "assignment_name": assignment_data["assignment_name"],
+                    "assignment_type": assignment_data["assignment_type"],
+                    "assignment_weightage": assignment_data["assignment_weightage"],
+                    "start_date": start_date_str,
+                    "end_date": end_date_str
+                }
+
+                assignments.append(assignment)
+                result = {"assessments": assignments}
             if not request.GET.get('names') and len(request.GET) == 1:
                 return JsonResponse(result)
             elif len(request.GET) == 2 and request.GET.get('names') and request.GET.get('names').lower() == 'true':
@@ -96,6 +125,8 @@ def get_assessments_endpoint(request):
                 for assessment in result["assessments"]:
                     namesonly["assessments"].append(assessment["assignment_name"])
                 return JsonResponse(namesonly)
+
+
     
     return HttpResponseBadRequest('Invalid request, check input again.')
 
@@ -114,60 +145,83 @@ def get_cases_endpoint(request):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else: 
             # SELECT * FROM 'Case' WHERE 'Case'.user_id == int(request.GET.get('userid'))
-            result = {
-                "cases": [
-                    {
-                        "case_id": 1,
-                        "user_id": 1
-                    },
-                    {
-                        "case_id": 2,
-                        "user_id": 1
-                    }
-                ]
-            }
-            return JsonResponse(result)
+            cursor = connection.cursor()
 
+            # Execute a query to fetch case_id values for the given user_id
+            query = "SELECT case_id FROM `Case` WHERE user_id = %s"
+            cursor.execute(query, (request.GET.get('userid'),))
+
+            case_ids = [row[0] for row in cursor]
+
+            cases = [{"case_id": case_id, "user_id": request.GET.get('userid')} for case_id in case_ids]
+
+            json_data = {"cases": cases}
+            return JsonResponse(json_data)
+    
     if not request.GET.get('userid') and request.GET.get('caseid'):
         if check_param_not_integer(request.GET.get('caseid')):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:
             if len(request.GET) == 1:
-                # SELECT * FROM 'Case' WHERE 'Case'.case_id == int(request.GET.get('caseid'))
-                result = {
-                    "case": {
-                        "case_id": 1,
-                        "user_id": 1
-                    }
-                }
-                return JsonResponse(result)
-            if len(request.GET) == 2 and request.GET.get('threads').lower() == 'true':
-                # SELECT * FROM 'Thread' WHERE 'Thread'.case_id == int(request.GET.get('threads'))
-                result = {
-                    "threads": [
-                        {
-                            "thread_id": 2,
-                            "case_id": 1,
-                            "course_id": 2,
-                            "date_updated": "2000:01:01 00:00:00",
-                            "request_type": "extension",
-                            "complex_case": 0,
-                            "current_status": "REJECTED",
-                            "assignment_id": 3
-                        },
-                        {
-                            "thread_id": 1,
-                            "case_id": 1,
-                            "course_id": 1,
-                            "date_updated": "2000:01:01 00:00:00",
-                            "request_type": "quizcode",
-                            "complex_case": 0,
-                            "current_status": "REJECTED",
-                            "assignment_id": 1
+                cursor = connection.cursor(dictionary=True)
+
+                # Execute a query to fetch case data for the given case_id
+                query = "SELECT * FROM `Case` WHERE case_id = %s"
+                cursor.execute(query, (request.GET.get('caseid'),))
+
+                case_data = cursor.fetchone()
+
+                if case_data:
+                    json_data = {
+                        "case": {
+                            "case_id": case_data["case_id"],
+                            "user_id": case_data["user_id"]
                         }
-                    ]
-                }
-                return JsonResponse(result)
+                    }
+
+                    return JsonResponse(json_data)
+
+                else:
+                    return None  # Case not found
+            if len(request.GET) == 2 and request.GET.get('threads').lower() == 'true':
+                cursor = connection.cursor()
+
+                # Execute a query to fetch threads for the given case_id
+                query = "SELECT * FROM Thread WHERE case_id = %s"
+                cursor.execute(query, (request.GET.get('caseid'),))
+
+                threads = []
+
+                for thread_data in cursor:
+                    # Check if date_updated or assignment_id is None and provide default values
+                    if thread_data[3] is None:  # Using integer index for date_updated
+                        date_updated_str = "N/A"  # Or any other value you prefer
+                    else:
+                        print(thread_data)
+                        datetime_with_time = datetime.combine(thread_data[7], time(0, 0, 0))
+                        # Format the datetime
+                        formatted_datetime = datetime_with_time.strftime("%Y:%m:%d %H:%M:%S")
+
+                    if thread_data[6] is None:  # Using integer index for assignment_id
+                        assignment_id = "N/A"  # Or any other value you prefer
+                    else:
+                        assignment_id = thread_data[6]
+
+                    thread = {
+                        "thread_id": thread_data[0],  # Using integer indices
+                        "case_id": thread_data[1],
+                        "course_id": thread_data[2],
+                        "date_updated": formatted_datetime,
+                        "request_type": thread_data[3],
+                        "complex_case": thread_data[4],
+                        "current_status": thread_data[5],
+                        "assignment_id": assignment_id
+                    }
+
+                    threads.append(thread)
+
+                json_data = {"threads": threads}
+                return JsonResponse(json_data)
 
     return HttpResponseBadRequest('Invalid request, check input again.')
 
@@ -188,22 +242,27 @@ def get_courses_endpoint(request):
         if check_param_not_integer(request.GET.get('userid')):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:
-            # Do some fancy join magic here i forgot probably involves enrollmenttable as well
-            result = {
-                "courses": [
-                    {
-                        "course_id": 1,
-                        "course_name": "IT Project",
-                        "course_code": "COMP30022"
-                    },
-                    {
-                        "course_id": 2,
-                        "course_name": "Modern Applied Statistics",
-                        "course_code": "MAST30025"
-                    }
-                ]
-            }
-            return JsonResponse(result)
+            cursor = connection.cursor(dictionary=True)
+
+            # Execute a query to fetch the courses for the given user_id
+            query = "SELECT c.course_id, c.course_name, c.course_code FROM Course c " \
+                    "INNER JOIN Enrollment e ON c.course_id = e.course_id " \
+                    "WHERE e.user_id = %s"
+            cursor.execute(query, (request.GET.get('userid'),))
+
+            courses = []
+
+            for course_data in cursor:
+                course = {
+                    "course_id": course_data["course_id"],
+                    "course_name": course_data["course_name"],
+                    "course_code": course_data["course_code"]
+                }
+
+                courses.append(course)
+
+            json_data = {"courses": courses}
+            return JsonResponse(json_data)
 
     if not request.GET.get('userid') and request.GET.get('courseid'):
         if check_param_not_integer(request.GET.get('courseid')):
@@ -211,41 +270,67 @@ def get_courses_endpoint(request):
         else:
             if len(request.GET) == 1:
                 # SELECT * FROM COURSE WHERE 'Course'.course_Id == int(request.GET.get('courseid'))
-                result  = {
+                cursor = connection.cursor(dictionary=True)
+
+                # Execute a query to fetch course information for the given course_id
+                query = "SELECT course_id, course_name, course_code FROM Course WHERE course_id = %s"
+                cursor.execute(query, (request.GET.get('courseid'),))
+
+                course_data = cursor.fetchone()
+
+                if course_data:
+                    course_info = {
                         "course": {
-                            "course_id": 1,
-                            "course_name": "IT Project",
-                            "course_code": "COMP30022"
+                            "course_id": course_data["course_id"],
+                            "course_name": course_data["course_name"],
+                            "course_code": course_data["course_code"]
                         }
-                }
-                return JsonResponse(result)
-            if len(request.GET) == 2 and request.GET.get('preferences') and request.GET.get('preferences').lower() == 'true':
-                # SELECT * FROM CoursePreferences WHERE 'CoursePreferences'.course_id == int(request.GET.get('courseid'))
-                result = {
-                    "coursepreferences": {
-                        "coursepreference_id": 1,
-                        "course_id": 1,
-                        "global_extension_length": 3,
-                        "general_tutor": 0,
-                        "extension_tutor": 1,
-                        "quiz_tutor": 1,
-                        "remark_tutor": 1,
-                        "other_tutor": 0,
-                        "general_scoord": 1,
-                        "extension_scoord": 1,
-                        "quiz_scoord": 1,
-                        "remark_scoord": 0,
-                        "other_scoord": 0,
-                        "general_reject": "",
-                        "extension_approve": "",
-                        "extension_reject": "",
-                        "quiz_approve": "",
-                        "quiz_reject": "lmao",
-                        "remark_approve": "",
-                        "remark_reject": ""
                     }
-                }
-                return JsonResponse(result)
+
+                    return JsonResponse(course_info)
+
+                else:
+                    return None
+    
+            if len(request.GET) == 2 and request.GET.get('preferences') and request.GET.get('preferences').lower() == 'true':
+                cursor = connection.cursor(dictionary=True)
+
+                # Execute a query to fetch course preferences for the given course_id
+                query = "SELECT * FROM CoursePreferences WHERE course_id = %s"
+                cursor.execute(query, (request.GET.get('courseid'),))
+
+                course_preferences_data = cursor.fetchone()
+
+                if course_preferences_data:
+                    course_preferences = {
+                        "coursepreferences": {
+                            "coursepreference_id": course_preferences_data["coursepreference_id"],
+                            "course_id": course_preferences_data["course_id"],
+                            "global_extension_length": course_preferences_data["global_extension_length"],
+                            "general_tutor": course_preferences_data["general_tutor"],
+                            "extension_tutor": course_preferences_data["extension_tutor"],
+                            "quiz_tutor": course_preferences_data["quiz_tutor"],
+                            "remark_tutor": course_preferences_data["remark_tutor"],
+                            "other_tutor": course_preferences_data["other_tutor"],
+                            "general_scoord": course_preferences_data["general_scoord"],
+                            "extension_scoord": course_preferences_data["extension_scoord"],
+                            "quiz_scoord": course_preferences_data["quiz_scoord"],
+                            "remark_scoord": course_preferences_data["remark_scoord"],
+                            "other_scoord": course_preferences_data["other_scoord"],
+                            "general_reject": course_preferences_data["general_reject"],
+                            "extension_approve": course_preferences_data["extension_approve"],
+                            "extension_reject": course_preferences_data["extension_reject"],
+                            "quiz_approve": course_preferences_data["quiz_approve"],
+                            "quiz_reject": course_preferences_data["quiz_reject"],
+                            "remark_approve": course_preferences_data["remark_approve"],
+                            "remark_reject": course_preferences_data["remark_reject"]
+                        }
+                    }
+                    return JsonResponse(course_preferences)
+
+                else:
+                    return None
+
     
     return HttpResponseBadRequest('Invalid request, check input again.')
 
@@ -268,40 +353,60 @@ def get_requests_endpoint(request):
             else:
                 # Return request history of a user. 
                 # Consult Callum on this, unsure if we actually need more data on this
-                result = {
-                    "requests": [
-                        {
-                            "request_id": 2,
-                            "thread_id": 2,
-                            "date_created": "2000:01:01 00:00:00",
-                            "request_content": "the dog ate my homework.",
-                            "instructor_notes": "oh no"
-                        },
-                        {
-                            "request_id": 1,
-                            "thread_id": 1,
-                            "date_created": "2000:01:01 00:00:00",
-                            "request_content": "i am crying for help.",
-                            "instructor_notes": "stop crying"
-                        }
-                    ]
-                } 
-                return JsonResponse(result)
+                cursor = connection.cursor(dictionary=True)
+
+                # Execute a query to fetch requests information for the given student_id
+                query = "SELECT r.request_id, r.thread_id, r.date_created, r.request_content, r.instructor_notes " \
+                        "FROM Request r " \
+                        "INNER JOIN Thread t ON r.thread_id = t.thread_id " \
+                        "INNER JOIN `Case` c ON t.case_id = c.case_id " \
+                        "WHERE c.user_id = %s"
+                cursor.execute(query, (request.GET.get('userid'),))
+
+                requests = []
+
+                for request_data in cursor:
+                    request = {
+                        "request_id": request_data["request_id"],
+                        "thread_id": request_data["thread_id"],
+                        "date_created": request_data["date_created"].strftime("%Y:%m:%d %H:%M:%S"),
+                        "request_content": request_data["request_content"],
+                        "instructor_notes": request_data["instructor_notes"]
+                    }
+
+                    requests.append(request)
+
+                json_data = {"requests": requests}
+                return JsonResponse(json_data)
 
         if request.GET.get('requestid'):
             if check_param_not_integer(request.GET.get('requestid')):
                 return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
             else:
-                # SELECT * FROM 'Requets' WHERE 'Request'.request_id == int(request.GET.get('requestid'))
-                result = {
-                    "request": {
-                        "request_id": 1,
-                        "thread_id": 1,
-                        "date_created": "2000:01:01 00:00:00",
-                        "request_content": "i am crying for help.",
-                        "instructor_notes": "stop crying"
+                cursor = connection.cursor(dictionary=True)
+
+                # Query the Request table to retrieve the information for the specified request_id
+                query = "SELECT * FROM Request WHERE request_id = %s"
+                cursor.execute(query, (request.GET.get('requestid'),))
+
+                # Fetch the result
+                request_data = cursor.fetchone()
+
+                if request_data:
+                    # Convert the date to the desired format
+                    formatted_date = request_data['date_created'].strftime("%Y:%m:%d %H:%M:%S")
+
+                    # Create the result dictionary
+                    result = {
+                        "request": {
+                            "request_id": request_data['request_id'],
+                            "thread_id": request_data['thread_id'],
+                            "date_created": formatted_date,
+                            "request_content": request_data['request_content'],
+                            "instructor_notes": request_data['instructor_notes']
+                        }
                     }
-                }
+
                 return JsonResponse(result)
 
     return HttpResponseBadRequest('Invalid request, check input again.')
@@ -323,11 +428,19 @@ def get_threads_user_endpoint(request):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:
             # Some join of 'Thread' and 'Case' on case_id
-            # SELECT user_id FROM (join) WHERE (join).thread_id == int(request.GET.get('threadid'))
-            result = {
-                "created_by": 1111111
+            cursor = connection.cursor(dictionary=True)
+            query = """
+            SELECT `Case`.user_id
+            FROM `Case`
+            INNER JOIN Thread ON Thread.case_id = `Case`.case_id
+            WHERE Thread.thread_id = %s
+            """
+            cursor.execute(query, (request.GET.get('threadid'),))
+            user_id = cursor.fetchone()
+            response = {
+                "created_by": user_id
             }
-            return JsonResponse(result)
+            return JsonResponse(response)
     
     if len(request.GET) in [1, 2] and request.GET.get('userid') and request.GET.get('status'):
         if check_param_not_integer(request.GET.get('userid')):
@@ -337,31 +450,28 @@ def get_threads_user_endpoint(request):
         else:
             # Some join of 'Thread' and 'Case' on case_id
             # result["thread"]["current_status"] == request.GET.get('checkstatus')
-            result = {
-                "threads": [
-                    {
-                        "thread_id": 2,
-                        "case_id": 1,
-                        "course_id": 2,
-                        "date_updated": "2000:01:01 00:00:00",
-                        "request_type": "extension",
-                        "complex_case": 0,
-                        "current_status": "REJECTED",
-                        "assignment_id": 3
-                    },
-                    {
-                        "thread_id": 1,
-                        "case_id": 1,
-                        "course_id": 1,
-                        "date_updated": "2000:01:01 00:00:00",
-                        "request_type": "quizcode",
-                        "complex_case": 0,
-                        "current_status": "REJECTED",
-                        "assignment_id": 1
-                    }
-                ]
-            }
-            return JsonResponse(result)
+            threads = []
+            cursor = connection.cursor(dictionary=True)
+            # SQL query to retrieve threads based on user_id and status
+            query = "SELECT T.thread_id, T.case_id, T.course_id, T.date_updated, T.request_type, T.complex_case, T.current_status, T.assignment_id " \
+                    "FROM Thread AS T " \
+                    "JOIN `Case` AS C ON T.case_id = C.case_id " \
+                    "WHERE C.user_id = %s AND T.current_status = %s"
+            
+            # Execute the query with user_id and status as parameters
+            cursor.execute(query, (request.GET.get('userid'), request.GET.get('status')))
+
+            # Fetch all the results
+            results = cursor.fetchall()
+            for row in results:
+            # Format the date_updated field to "2000:01:01 00:00:00"
+                row['date_updated'] = row['date_updated'].strftime("%Y:%m:%d %H:%M:%S")
+                threads.append(row)
+
+            for row in results:
+                threads.append(row)
+            json_result = {"threads": threads}
+            return JsonResponse(json_result)
      
     return HttpResponseBadRequest('Invalid request, check input again.')
 
@@ -373,7 +483,6 @@ def get_threads_endpoint(request, thread_id):
         - ?checkstatus
     '''
     validate_headers(request)
-    print(thread_id) # DELETE THIS COMMENT LATER !!!
     
     if len(request.GET) not in range(0, 3):
         return HttpResponseBadRequest('Invalid request, check input again.')
@@ -385,58 +494,37 @@ def get_threads_endpoint(request, thread_id):
             # Compare it to the function input thread_id
             # SELECT * FROM 'Thread' WHERE 'Thread'.thread_id == thread_id
             # SELECT * FROM 'Request' WHERE 'Request'.thread_id == thread_id
-            # SELECT * FROM 'CoursePreference' WHERE (some JOIN magic)
-            result = {
-                "threadinfo": {
-                    "thread": {
-                        "thread_id": 1,
-                        "case_id": 1,
-                        "course_id": 1,
-                        "date_updated": "2000:01:01 00:00:00",
-                        "request_type": "quizcode",
-                        "complex_case": 0,
-                        "current_status": "REJECTED",
-                        "assignment_id": 1
-                    },
-                    "requests": [
-                        {
-                            "request_id": 2,
-                            "thread_id": 1,
-                            "date_created": "2000:01:01 00:00:00",
-                            "request_content": "please do not reject this please please",
-                            "instructor_notes": "this is peak clownery"
-                        },
-                        {
-                            "request_id": 1,
-                            "thread_id": 1,
-                            "date_created": "2000:01:01 00:00:00",
-                            "request_content": "i am sick, dont have med certificate"
-                        }
-                    ],
-                    "coursepreferences": {
-                        "coursepreference_id": 1,
-                        "course_id": 1,
-                        "global_extension_length": 3,
-                        "general_tutor": 0,
-                        "extension_tutor": 1,
-                        "quiz_tutor": 1,
-                        "remark_tutor": 1,
-                        "other_tutor": 0,
-                        "general_scoord": 1,
-                        "extension_scoord": 1,
-                        "quiz_scoord": 1,
-                        "remark_scoord": 0,
-                        "other_scoord": 0,
-                        "general_reject": "",
-                        "extension_approve": "",
-                        "extension_reject": "",
-                        "quiz_approve": "",
-                        "quiz_reject": "lmao",
-                        "remark_approve": "",
-                        "remark_reject": ""
+            cursor = connection.cursor(dictionary=True)
+
+            # Query the Thread table
+            thread_query = f"SELECT * FROM Thread WHERE thread_id = {thread_id}"
+            cursor.execute(thread_query)
+            thread_info = cursor.fetchone()
+
+            if thread_info:
+                # Query the Request table
+                request_query = f"SELECT * FROM Request WHERE thread_id = {thread_id}"
+                cursor.execute(request_query)
+                requests = cursor.fetchall()
+
+                # Query the CoursePreferences table
+                coursepreference_query = "SELECT * FROM CoursePreferences WHERE course_id = %s"
+                cursor.execute(coursepreference_query, (thread_info['course_id'],))
+                coursepreferences = cursor.fetchone()
+
+                # Format the datetime fields
+                thread_info['date_updated'] = thread_info['date_updated'].strftime('%Y:%m:%d %H:%M:%S') if thread_info['date_updated'] else None
+                for request_db in requests:
+                    request_db['date_created'] = request_db['date_created'].strftime('%Y:%m:%d %H:%M:%S') if request_db['date_created'] else None
+
+                # Create the JSON structure
+                result = {
+                    "threadinfo": {
+                        "thread": thread_info,
+                        "requests": requests,
+                        "coursepreferences": coursepreferences,
                     }
                 }
-            }
             if not request.GET:
                 return JsonResponse(result)
             else:
@@ -457,53 +545,69 @@ def get_user_endpoint(request, user_id):
         return HttpResponseBadRequest('Invalid request, check input again.')
     else:
         if not request.GET:
-            print(user_id) # delete comment when SQL is implemented
-            # SELECT * FROM 'User' where 'User'.user_id == user_id (function input)
-            result = {
-                "user_id": 1,
-                "name": "Callum Sharman",
-                "first_name": "Callum",
-                "last_name": "Sharman",
-                "email": "12345@gmail.com",
-                "email_preference": 0,
-                "darkmode_preference": 0
-            }
-            return JsonResponse(result)
+            cursor = connection.cursor(dictionary=True)
+            # Query the User table
+            user_query = f"SELECT * FROM User WHERE user_id = {user_id}"
+            cursor.execute(user_query)
+            user_data = cursor.fetchone()
+
+            if user_data:
+                # Create the JSON structure
+                result = {
+                    "user_id": user_data['user_id'],
+                    "name": user_data['name'],
+                    "first_name": user_data['first_name'],
+                    "last_name": user_data['last_name'],
+                    "email": user_data['email'],
+                    "email_preference": user_data['email_preference'],
+                    "darkmode_preference": user_data['darkmode_preference']
+                }
+                return JsonResponse(result)
+            else:
+                return None
         if len(request.GET) == 1:
             if request.GET.get('aaps'):
                 if request.GET.get('aaps').lower() != 'true':
                     return HttpResponseBadRequest('Invalid request, check input again.')
                 else:
-                    # SELECT * FROM 'File' WHERE 'File'.user_id == user_id (FUNCTION INPUT) 
-                    #                        AND 'File'.request_id == NULL
-                    # Just return the files idk hwo this will work yet ? :D
-                    result = {
-                        "aaps": [
-                            "aap1",
-                            "aap2"
-                        ]
-                    }
+                    cursor = connection.cursor()
+
+                    # Query the File table to get aap files for the user
+                    aap_query = f"SELECT file_name FROM File WHERE user_id = {user_id} AND file_type = 'aap'"
+                    cursor.execute(aap_query)
+                    aap_data = cursor.fetchall()
+
+                    # Create a list of aap file names
+                    aap_list = [aap['file_name'] for aap in aap_data]
+
+                    # Create the JSON structure
+                    result = {"aaps": aap_list}
                     return JsonResponse(result)
             if request.GET.get('courseid'):
                 if check_param_not_integer(request.GET.get('courseid')):
                     return HttpResponseBadRequest('Invalid request, check input again.')
                 else:
-                    # Some join magic between course, enrollment and user
-                    # SELECT * FROM 'Course'
-                    result = {
-                        "courses": [
-                            {
-                                "course_id": 1,
-                                "course_name": "IT Project",
-                                "course_code": "COMP30022"
-                            },
-                            {
-                                "course_id": 2,
-                                "course_name": "Modern Applied Statistics",
-                                "course_code": "MAST30025"
-                            }
-                        ]
-                    }
+                    cursor = connection.cursor(dictionary=True)
+
+                    # Query the Enrollment table to get enrolled courses for the user
+                    courses_query = f"SELECT Course.course_id, course_name, course_code FROM Course " \
+                                    f"INNER JOIN Enrollment ON Course.course_id = Enrollment.course_id " \
+                                    f"WHERE user_id = {user_id}"
+                    cursor.execute(courses_query)
+                    courses_data = cursor.fetchall()
+
+                    # Create a list of course dictionaries
+                    course_list = []
+                    for course in courses_data:
+                        course_info = {
+                            "course_id": course['course_id'],
+                            "course_name": course['course_name'],
+                            "course_code": course['course_code']
+                        }
+                        course_list.append(course_info)
+
+                    # Create the JSON structure
+                    result = {"courses": course_list}
                     return JsonResponse(result)
 
     return HttpResponseBadRequest('Invalid request, check input again.')
@@ -595,8 +699,10 @@ def put_preferences(request):
                           "remark_scoord", "other_scoord"]
         string_fields = ["general_reject", "extension_approve", "extension_reject",
                          "quiz_approve", "quiz_reject", "remark_approve", "remark_reject"]
+        
         all_fields = integer_fields + string_fields
-        if not all_fields == data.keys():
+        data_keys = list(data.keys())
+        if not all_fields == data_keys:
             return HttpResponseBadRequest("Request body does not have correct fields")
         for field in integer_fields:
             if not isinstance(data[field], int):
@@ -642,7 +748,201 @@ def set_complex(request):
         "complex_case": 1
     }
     '''
-    if request.method == 'PUT':
-        pass
-    else:
+    
+    try:
+        # Create a cursor to interact with the database
+        cursor = connection.cursor()
+        data = json.loads(request.body)
+        print(data)
+        # Check the current value of 'complex_case' for the given 'request_id'
+        '''
+        cursor.execute(f"SELECT complex_case FROM Thread WHERE request_id = {request_id}")
+        current_complex_case = cursor.fetchone()[0]
+
+        # Toggle the 'complex_case' value (0 to 1 or 1 to 0)
+        new_complex_case = 1 if current_complex_case == 0 else 0
+
+        # Update the 'complex_case' value in the database
+        cursor.execute(f"UPDATE Thread SET complex_case = {new_complex_case} WHERE request_id = {request_id}")
+
+        # Commit the changes
+        connection.commit()
+
+        print(f"Complex_case for request_id {request_id} updated to {new_complex_case}")
+        return JsonResponse({
+            "message": "Updated successfully"
+        }, status = 201)
+        '''
+
+    except mysql.connector.Error as error:
+        
         return HttpResponseBadRequest('Invalid request. Check input or request type')
+
+
+
+
+##################################################################testing block###########################
+'''import requests
+
+url = 'http://localhost:8000/api/data/cases/?userid=1'
+response = requests.get(url)
+
+if response.status_code == 200:
+    data = response.json()
+    # The 'data' variable now contains the information for assignment 1
+    print(data)
+else:
+    print(f"Failed to retrieve data. Status code: {response.status_code}")
+'''
+#################################################################################################
+from django.http import QueryDict
+from django.http import HttpRequest
+from django.test import RequestFactory
+from django.conf import settings
+
+# Create a request factory
+request_factory = RequestFactory()
+settings.configure()
+
+
+# Create a mock HTTP request
+#request = request_factory.get('/api/data/assessments/', {'courseid': 7727409})
+#request = request_factory.get('/api/data/assessments/', {'courseid': '1', 'names': 'true'})
+#request = request_factory.get('/api/data/thread/', {'userid':109194991, 'status':'pending'})
+
+#request = request_factory.get('/api/data/thread/1/', {'checkstatus': 'true'})
+#request = request_factory.get('/api/data/user/1/', {'aaps': 'true'})
+#request = request_factory.get('/api/data/user/1/')
+#response = get_user_endpoint(request, 109194991)
+#response = get_assessments_endpoint(request)
+# Process the response
+#data = response.content  # This will contain the JSON response
+#print(response.content)
+
+
+
+'''
+def call_set_preferences():
+
+    request_data = {
+        "coursepreference_id": 0,
+        "course_id": 0,
+        "global_extension_length": 0,
+        "general_tutor": 1,
+        "extension_tutor": 1,
+        "quiz_tutor": 1,
+        "remark_tutor": 1,
+        "other_tutor": 1,
+        "general_scoord": 1,
+        "extension_scoord": 1,
+        "quiz_scoord": 1,
+        "remark_scoord": 1,
+        "other_scoord": 1,
+        "general_reject": "string",
+        "extension_approve": "string",
+        "extension_reject": "string",
+        "quiz_approve": "string",
+        "quiz_reject": "string",
+        "remark_approve": "string",
+        "remark_reject": "string"
+    }
+
+
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        response = requests.put('http://localhost:8000/api/data/courses/setpreferences/', data=json.dumps(request_data), headers=headers)
+        print(response.content)
+        if response.status_code == 200:
+            response_data = response.json()
+            print(response_data)
+        else:
+            print(f"Failed to update preferences. Status code: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+
+
+def call_set_request():
+
+    request_data = {
+        "instructor_notes": "no!",
+        "status": "REJECTED"
+    }
+
+
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        response = requests.put('http://localhost:8000/api/data/requests/respond/', data=json.dumps(request_data), headers=headers)
+        if response.status_code == 200:
+            response_data = response.json()
+            print(response_data)
+        else:
+            print(f"Failed to update request. Status code: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+
+'''
+def test_put_preferences():
+    # Create a mock request object
+    request = HttpRequest()
+    request.method = 'PUT'
+
+    # Define the request data and headers
+    request_data = {
+        "coursepreference_id": 0,
+        "course_id": 0,
+        "global_extension_length": 0,
+        "general_tutor": 1,
+        "extension_tutor": 1,
+        "quiz_tutor": 1,
+        "remark_tutor": 1,
+        "other_tutor": 1,
+        "general_scoord": 1,
+        "extension_scoord": 1,
+        "quiz_scoord": 1,
+        "remark_scoord": 1,
+        "other_scoord": 1,
+        "general_reject": "string",
+        "extension_approve": "string",
+        "extension_reject": "string",
+        "quiz_approve": "string",
+        "quiz_reject": "string",
+        "remark_approve": "string",
+        "remark_reject": "string"
+    }
+    request._body = json.dumps(request_data).encode('utf-8')
+    request.META['HTTP_CONTENT_TYPE'] = 'application/json'
+
+    # Call the put_preferences function
+    response = put_preferences(request)
+
+    # Check the response, e.g., response.status_code, response.content, etc.
+    print(response.status_code)
+    print(response.content)
+
+# Call the test function
+#test_put_preferences()
+
+def test_complex():
+    # Create a mock request object
+    request = HttpRequest()
+    request.method = 'PUT'
+
+    # Define the request data and headers
+    request_data = {
+        "thread_id": 0,
+        "complex_case": True
+    }
+    request._body = json.dumps(request_data).encode('utf-8')
+    request.META['HTTP_CONTENT_TYPE'] = 'application/json'
+
+    # Call the put_preferences function
+    response = set_complex(request)
+
+    # Check the response, e.g., response.status_code, response.content, etc.
+    print(response.status_code)
+    print(response.content)
+
+# Call the test function
+#test_complex()
