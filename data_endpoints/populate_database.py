@@ -11,7 +11,7 @@ def createThreads(request, user_ID):
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="queenastrid1", # INSERT PASSWORD HERE
+        password="-", # INSERT PASSWORD HERE
         database="db"
     )
 
