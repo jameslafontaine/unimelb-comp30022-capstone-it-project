@@ -298,7 +298,12 @@ paths:
               - APPROVED
               - PENDING
               - REJECTED
-      description: Accepts ?threadid or ?userid?status 
+        - name: courseid
+          description: Course ID
+          in: query
+          schema:
+            type: integer
+      description: Accepts ?threadid, ?userid?status or ?courseid
       responses:
         '200':
           description: Successful response
@@ -314,6 +319,25 @@ paths:
                     email: 1111111@222222222222222.3333
                     email_preference: 0
                     darkmode_preference: 0
+                '?courseid':
+                  value: 
+                    threads:
+                      - thread_id: 2
+                        case_id: 2
+                        course_id: 1
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: extension
+                        complex_case: false
+                        current_status: PENDING
+                        assignment_id: 3
+                      - thread_id: 1
+                        case_id: 1
+                        course_id: 1
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: quizcode
+                        complex_case: false
+                        current_status: REJECTED
+                        assignment_id: 1
                 '?userid?status':
                   value:
                     threads:

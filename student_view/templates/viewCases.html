@@ -64,9 +64,9 @@
         <script src="{% static 'js/modules/requests.js' %}"></script>
 
         <script>
-            getAllCases()
-                .then(cases => {
-                    generateStudentCases(cases)
+            loadData('/api/data/cases?userid=' + getGlobalAppHeadersValue('user_id'))
+                .then(data => {
+                    generateStudentCases(data.cases);
                 })
         </script>
     </body>

@@ -311,6 +311,7 @@ def get_threads_user_endpoint(request):
     GET /api/data/thread/
     Valid parameter combinations:
         - ?threadid
+        - ?courseid
         - ?userid&status
     '''
     validate_headers(request)
@@ -333,6 +334,47 @@ def get_threads_user_endpoint(request):
                 'darkmode_preference': 1,
             }
             return JsonResponse({"student": result})
+    
+    if len(request.GET) == 1 and request.GET.get('courseid'):
+        if check_param_not_integer(request.GET.get('courseid')):
+            return HttpResponseBadRequest("Invalid request, parameter must be an integer")
+        else:
+            # Return all threads belonging to a Course ID
+            result = {
+                "threads": [
+                    {
+                        'thread_id': 11,
+                        'case_id': 11,
+                        'course_id': 31,
+                        'date_updated': "11-09-2023",
+                        'request_type':'Extension', 
+                        'complex_case':1,
+                        'current_status':'PENDING',
+                        'assignment_id': 1,
+                    },
+                    {
+                        'thread_id': 12,
+                        'case_id': 12,
+                        'course_id': 31,
+                        'date_updated': "01-19-2023",
+                        'request_type':'Query',
+                        'complex_case':0,
+                        'current_status':'PENDING',
+                        'assignment_id':2,
+                    },
+                    {
+                        'thread_id': 13,
+                        'case_id': 12,
+                        'course_id': 31,
+                        'date_updated': "01-19-2023",
+                        'request_type':'Other',
+                        'complex_case':1,
+                        'current_status':'REJECTED',
+                        'assignment_id':3,
+                    }
+                ]
+            }
+            return JsonResponse(result)
     
     if len(request.GET) in [1, 2] and request.GET.get('userid') and request.GET.get('status'):
         if check_param_not_integer(request.GET.get('userid')):

@@ -4,9 +4,6 @@
  * Description: handles the loading/creating of subject boxes
  */
 
-// These will be retrieved from an instructor in the database
-let subjects = new Array();
-
 function loadSubjectBoxData(){
 	return fetch('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'))
 		.then(response => response.json())

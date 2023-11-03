@@ -22,7 +22,7 @@
 
     <script>
         let globalAppHeaders = new Headers();
-        globalAppHeaders.append('Content-Type', 'application/json');
+        globalAppHeaders.append(CONTENT_TYPE, 'application/json');
         globalAppHeaders.append('user_id', '');
         sessionStorage.setItem('globalAppHeaders', JSON.stringify(Object.fromEntries(globalAppHeaders.entries())));
 

@@ -6,93 +6,21 @@
  */
 
 /**
- * GET call to 'url', returns a JSON on success 
- * (if array make sure to JSON.parse() the data needed from the string outside).
- */
-function loadData(url){
-
-    return fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            return data;
-        })
-        .catch(error => {
-			console.error('Error:', error);
-		});
-}
-
-/**
- * PUT call to 'url' with the given json. Returns the response data
- */
-function putData(url, json){
-
-    return fetch(url, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(json)
-        })
-        .then(response => {
-            if (response.ok) {
-                // Parse the response JSON if successful
-                return response.json();
-            }
-            throw new Error('Network response was not ok');
-        })
-        .then(data => {
-            // Process the response data
-            return data;
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-}
-
-/**
- * POST call to 'url' with the given json. Returns the response data
- */
-function postData(url, json){
-
-    return fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(json)
-        })
-        .then(response => {
-            if (response.ok) {
-                // Parse the response JSON if successful
-                return response.json();
-            }
-            throw new Error('Network response was not ok');
-        })
-        .then(data => {
-            // Process the response data
-            return data;
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-}
-
-
-/**
  * INSTRUCTOR: Loads in requests, given a course from the DB, returns an array full of request JSONs
  */
 function iloadThreadData(courseId){
-    return loadData('/instructor/requests/' + courseId)
+    return loadData('/instructor/requests/' + courseId, {})
         .then(data =>{
             return JSON.parse(data.requests)
         })
 }
 
+
 /**
  * STUDENT: Loads in active cases from the DB, returns an array full of case JSONs
  */
 function sloadActiveCasesData(){
-    return loadData('/api/data/cases/?userid=' + getGlobalAppHeadersValue('user_id'))
+    return loadData('/api/data/cases/?userid=' + getGlobalAppHeadersValue('user_id'), {})
         .then(data => {
             return data.cases;
         })
@@ -102,7 +30,7 @@ function sloadActiveCasesData(){
  * STUDENT: Loads in threads from case id from the DB, returns an array full of case JSONs
  */
 function sloadThreadsData(caseId){
-    return loadData('/api/data/cases/?caseid=' + caseId + '&threads=true')
+    return loadData('/api/data/cases/?caseid=' + caseId + '&threads=true', {})
         .then(data => {
             return data.threads;
         })
@@ -113,7 +41,7 @@ function sloadThreadsData(caseId){
  * GENERIC: Loads in requests from thread id from the DB, returns an array full of case JSONs
  */
 function loadRequestsData(threadId){
-    return loadData('/api/data/thread/' + threadId)
+    return loadData('/api/data/thread/' + threadId, {})
         .then(data => {
             return data.threadinfo.requests;
         })
@@ -124,7 +52,7 @@ function loadRequestsData(threadId){
  * GENERIC: Loads in a thread from thread id from the DB, returns JSON
  */
 function loadThread(threadId){
-    return loadData('/api/data/thread/' + threadId)
+    return loadData('/api/data/thread/' + threadId, {})
         .then(data => {
             return data.threadinfo.thread;
         })
@@ -134,7 +62,7 @@ function loadThread(threadId){
  * GENERIC: Loads in a course from course id from the DB, returns JSON
  */
 function loadCourse(courseId){
-    return loadData('/api/data/courses/?courseid=' + courseId)
+    return loadData('/api/data/courses/?courseid=' + courseId, {})
         .then(data => {
             return data.course;
         })
@@ -144,7 +72,7 @@ function loadCourse(courseId){
  * GENERIC: Loads in an assignment from assignment id from the DB, returns JSON
  */
 function loadAssignment(assignId){
-    return loadData('/api/data/assessments/?assignid=' + assignId)
+    return loadData('/api/data/assessments/?assignid=' + assignId, {})
         .then(data => {
             return data;
         })
@@ -165,9 +93,9 @@ function getPreviousVersions(threadId){
  * INSTRUCTOR: Gets a list of all requests "awaiting action" from a courseId
  */
 function iloadThreadsPending(courseId){
-    return loadData('/instructor/get-threads-pending/' + courseId)
+    return loadData('/api/data/thread/?courseid=' + courseId, {})
         .then(data => {
-            return JSON.parse(data.threads);
+            return data.threads.filter(thread => (thread.course_id == courseId) && (thread.current_status == "PENDING") );
         })
 }
 
@@ -175,9 +103,9 @@ function iloadThreadsPending(courseId){
  * INSTRUCTOR: Gets a list of all "resolved" requests from a courseId
  */
 function iloadThreadsResolved(courseId){
-    return loadData('/instructor/get-threads-resolved/' + courseId)
+    return loadData('/api/data/thread/?courseid=' + courseId, {})
         .then(data => {
-            return JSON.parse(data.threads);
+            return data.threads.filter(thread => (thread.course_id == courseId) && ((thread.current_status == "APPROVED") || (thread.current_status == "REJECTED")));
         })
 }
 
@@ -185,7 +113,7 @@ function iloadThreadsResolved(courseId){
  * INSTRUCTOR: Gets a list of all requests "awaiting action" from a userId
  */
 function iloadThreadsPendingFromUser(userId){
-    return loadData('/api/data/thread/?userid=' + userId + '&status=pending')
+    return loadData('/api/data/thread/?userid=' + userId + '&status=pending', {})
         .then(data => {
             return data.threads;
         })
@@ -195,7 +123,7 @@ function iloadThreadsPendingFromUser(userId){
  * INSTRUCTOR: Gets a list of all "resolved" requests from a userId
  */
 function iloadThreadsResolvedFromUser(userId){
-    return loadData('/api/data/thread/?userid=' + userId + '&status=resolved')
+    return loadData('/api/data/thread/?userid=' + userId + '&status=resolved', {})
         .then(data => {
             return data.threads;
         })
@@ -205,7 +133,7 @@ function iloadThreadsResolvedFromUser(userId){
  * INSTRUCTOR: Gets student details from a threadId
  */
 function iloadStudentDetails(threadId){
-    return loadData('/api/data/thread/?threadid=' + threadId)
+    return loadData('/api/data/thread/?threadid=' + threadId, {})
         .then(data => {
             return data.student;
         })
@@ -239,7 +167,7 @@ function redirectToViewReqs(courseId){
  * INSTRUCTOR: Get course preferences from threadId
  */
 function iloadCoursePreferenceFromThread(threadId){
-    return loadData('/api/data/thread/' + threadId)
+    return loadData('/api/data/thread/' + threadId, {})
         .then(data => {
             return data.threadinfo.coursepreferences;
         })
@@ -292,7 +220,7 @@ function respond(threadId, response){
  * GENERIC: Returns user details from a user id
  */
 function loadUserDetails(userId){
-    return loadData('/api/data/user/' + userId)
+    return loadData('/api/data/user/' + userId, {})
         .then(data => {
             return data;
         })
@@ -302,7 +230,7 @@ function loadUserDetails(userId){
  * GENERIC: Returns a given users aaps
  */
 function loadUserAAPs(userId){
-    return loadData('/api/data/user/' + userId + '?aaps=true')
+    return loadData('/api/data/user/' + userId + '?aaps=true', {})
         .then(data => {
             return data.aaps;
         })
@@ -312,7 +240,7 @@ function loadUserAAPs(userId){
  * GENERIC: GET all assessments for a course
  */
 function getCourseAssessments(courseId) {
-    return loadData('/api/data/assessments/?courseid=' + courseId + '&names=true')
+    return loadData('/api/data/assessments/?courseid=' + courseId + '&names=true', {})
         .then(data => {
             return data.assessments;
         });
@@ -322,7 +250,7 @@ function getCourseAssessments(courseId) {
  * GENERIC: GET course data from a course code
  */
 function getCourseData() {
-    return loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'))
+    return loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
         .then(data => {
             return data.courses;
         })
@@ -332,7 +260,7 @@ function getCourseData() {
  * GENERIC: get assignments from a courseId
  */
 function getAssignments(courseId){
-    return loadData('/api/data/assessments/?courseid=' + courseId)
+    return loadData('/api/data/assessments/?courseid=' + courseId, {})
         .then(data => {
             return data.assessments;
         })

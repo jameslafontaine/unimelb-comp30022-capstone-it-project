@@ -14,9 +14,4 @@ urlpatterns = [
     path('view-resolved/<int:thread_id>/', view_resolved_view, name='view-resolved'),
     path('subject-settings/<int:input_id>/', subj_settings_view, name='subject-settings'),
     path('view-profile/<int:user_id>/', view_profile_view, name='view-profile'),
-
-    # GET REQUESTS
-    path('get-threads-pending/<int:course_id>', get_threads_pending, name='get_threads_pending'),
-    path('get-threads-resolved/<int:course_id>', get_threads_resolved, name='get_threads_resolved'),
-
 ]
