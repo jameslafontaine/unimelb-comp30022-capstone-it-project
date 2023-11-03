@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor - Home Page</title>
+    
+    <link rel="stylesheet" href="../css/general.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/tables.css">
+</head>
+    <body>
+
+        <!-- Include the header using JavaScript -->
+        <div id="webHeaderContainer"></div>
+
+        <div class="mainBody">
+            <p class="title">Your Subjects</p>
+
+            <p></p>
+            <p class="text">View requests and queries for the subjects you're teaching. Subject coordinators can 
+                customise settings such as default extensions, template responses, and who can deal with particular types of cases for each subject they coordinate.
+            </p>
+
+            <br>
+
+            <div id="subjectBoxContainer">
+                <!-- Subject boxes will be added here dynamically -->
+            </div>
+        </div>
+        <script src="../js/modules/iWebHeader.js"></script>
+        <script src="../js/modules/subjectBox.js"></script>
+        <script>
+            // Iterate through the JSON data and create/populate expandable boxes
+            subjects.forEach(subject => {
+                generateSubjectBox(subject);
+            });
+        </script>
+    </body>
+</html>

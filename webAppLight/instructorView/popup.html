@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <div id="approvePopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Approve Request
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesA" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <span class="text" style="margin:10px">Current Deadline</span>
+                    <span class="text" style="margin:10px">Default Extension</span>
+                    <br>
+                    <textarea class="textBox" id="currentDeadline" style="margin-right: 30px; margin-top: 10px; width:20%; height:20px; resize:none; text-align:center" readonly></textarea>
+                    <textarea class="textBox" id="defaultExtension" style="margin-left: 30px; margin-top: 10px; width:20%; height:20px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <div style="text-align:center">
+                    <br><br>
+                    <label for="extensionOverride">Override Extension:</label>
+                    <select id="extensionOverrideA">
+                    </select>
+                    <span class="text" style="font-weight:normal">day(s)</span>
+                </div>
+                </div>
+                <br><br>
+                <div style="text-align:center">
+                    <p class="text">Student Selected Assessment</p>
+                    <textarea class="textBox" id="selectedAssessmentA" style="margin: 10px; width:20%; height:20px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <label for="assessmentOverride">Override Assessment:</label>
+                    <select class="assessmentOverride" id="assessmentOverrideA">
+                    </select>
+                </div>
+                <br><br>
+                <div class="popupButton" id="popupApproveButton">Approve Request</div>
+                <br>
+            </div>
+        </div>
+    </div>
+    
+    <div id="rejectPopup" class="popupBox">
+        <div class="popupContent">
+            <div class="popupHeaderBox">
+                <span class="popupHeaderContents">Reject Request
+                    <button class="closePopup" style="justify-self:end">X</button>
+                </span>
+            </div>
+            <div class="popupBody">
+                <br>
+                <div style="text-align:center">
+                    <p class="text">Instructor Notes</p>
+                    <textarea class="textBox" id="instructorNotesR" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
+                </div>
+                <br>
+                
+                <div style="text-align:center">
+                    <p class="text">Student Selected Assessment</p>
+                    <textarea class="textBox" id="selectedAssessmentR" style="margin: 10px; width:20%; height:20px; resize:none; text-align:center" readonly>Project 1</textarea>
+                </div>
+                <br>
+                <div style="text-align:center">
+                    <label for="assessmentOverride">Override Assessment:</label>
+                    <select class="assessmentOverride" id="assessmentOverrideR">
+                    </select>
+                </div>
+                <br><br>
+                <div class="popupButton" id="popupRejectButton">Reject Request</div>
+                <br>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
