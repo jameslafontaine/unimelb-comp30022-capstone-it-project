@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Meta -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Instructor - View Resolved</title>
+
+	<!--
+    Author: James La Fontaine
+    Date Last Modified: September 28, 2023
+    Description: This is the page on which instructors can view an old request which is no longer active
+    -->
+
+	<!-- CSS stylesheets -->
+    <style>
+        .pageAsATable {
+            display: grid;
+            grid-template-columns: 70% 1fr;
+        }
+    </style>
+
+	<link rel="stylesheet" href="../css/general.css">
+	<link rel="stylesheet" href="../css/header.css">
+	<link rel="stylesheet" href="../css/tables.css">
+
+
+
+	<!-- Include Bootstrap CSS and JavaScript, and its dependencies such as Popper. Also include jQuery JavaScript -->
+
+	<!-- Bootstrap CSS and JavaScript provided by Bootstrap. Visit https://getbootstrap.com/ for more information. -->
+	<!-- jQuery and Popper JavaScript provided by jQuery and PopperJS. Visit https://jquery.com/ and https://popperjs.com/ for more information. -->
+	<link 
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+	rel="stylesheet" 
+	integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
+	crossorigin="anonymous">
+
+	<!-- JS scripts -->
+	<script type="text/javascript"
+	src="https://code.jquery.com/jquery-3.7.1.min.js"
+	integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+	crossorigin="anonymous"></script>
+	<script type="text/javascript"
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" 
+	integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" 
+	crossorigin="anonymous" 
+	referrerpolicy="no-referrer"></script>
+	<script type="text/javascript" 
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+	integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
+	crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="webHeaderContainer"></div>
+
+    <div class="mainBody" style="width: 90%;">
+        <div class="pageAsATable">
+            <div class="leftSide">
+                <p class="title" id="requestNum"></p>
+                <p class="title" id="versionNum" style="font-size:25px"></p>
+                <p class="text" id="dates"></p>
+                <br>
+                <p class="text">Course</p>
+                <textarea class="textBox" id="course" style="height:30px; resize:none" readonly></textarea>
+
+                <p class="text">Assessment</p>
+                <textarea class="textBox" id="assessment" style="height:30px; resize:none" readonly></textarea>
+
+                <p class="text">Request Type</p>
+                <textarea class="textBox" id="requestType" style="height:30px; resize:none" readonly></textarea>
+
+                <p class="text">Request Title</p>
+                <textarea class="textBox" id="requestTitle" style="height:30px; resize:none" readonly></textarea>
+
+                <p class="text">Message</p>
+                <textarea class="textBox" id="message" style="height:120px; resize:none" readonly>
+                </textarea>
+
+                <p class="text">Status</p>
+                <textarea class="textBox" id="status" style="height:30px; resize:none" readonly></textarea>
+                
+                <p class="text">Instructor Notes</p>
+                <textarea class="textBox" id="notes" style="height:120px; resize:none" readonly></textarea>
+
+                <p></p>
+
+                <p class="text">Supporting Documents</p>
+                <div id="suppDocContainer">
+                    <table>
+                        <!-- Supporting documentation will be dynamically added here -->
+                    </table>
+                </div>
+
+                <br><br>
+
+                <p class="title" style="font-size:24px">Request History</p>
+
+                <div id="requestHistoryContainer">
+                    <!-- Request history will be added here dynamically -->
+                </div>
+                
+            </div>
+
+            <div class="rightSide" style="text-align: center;">
+                <br><br>
+                <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
+                <div style="display: inline-block; text-align: center;">
+                    <p class="standardBox" style="width: 300px; height: 200px;">
+                        <span class="text" id="studentName"></span>
+                        <span class="text" id="studentId"></span>
+                        <span class="text" id="studentEmail" style="font-size: 14px;"></span>
+                        <span>
+                            <button class="standardButton" onclick="window.location.href='iViewProfile.html'">
+                                View Profile
+                            </button>
+                        </span>
+                    </p>
+                </div>
+                <br><br><br><br><br><br>
+                <div style="text-align: center; width: fit-content; margin: 0 auto;">
+                    <div>
+                        <p class="bigButton" onclick="window.location.href='iViewRequests.html'">
+                            Back
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src = "../js/modules/iWebHeader.js"></script>
+    <script src="../js/modules/requests.js"></script>
+    <script>
+        const req2 = {
+            requestId: 987654,
+            creationDate: '10/10/2012',
+            resolveDate: '15/10/2012',
+            reserved: false,
+            course: 'COMP30022 - IT Project',
+            assessment: 'Project 1',
+            requestType: 'Extension',
+            requestTitle: 'Project 1 Extension Request',
+            message: 'I am sick ;\'( why must misfortune happen to me',
+            status: 'Rejected',
+            instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
+        };
+
+        const suppDocs = [
+            {
+                name: 'iamsick.pdf',
+                size: '20 TB'
+            },
+            {
+                name: 'bible.pdf',
+                size: '40 MB'
+            },
+            {
+                name: 'medcert.pdf',
+                size: '3 MB'
+            }
+        ]
+
+        const prevVersions = [
+            {
+                date: "2011/09/24",
+                message: "The power has died!! :(",
+                documents: [
+                    { name: "iamsick.pdf", size: "20 TB" },
+                    { name: "bible.pdf", size: "40 MB" }
+                ]
+            },
+            {
+                date: "2011/09/23",
+                message: "Haven't thought of an excuse yet.",
+                documents: [
+                    { name: "bible.pdf", size: "40 MB" }
+                ]
+            }
+        ];
+        
+
+        // Fill information relating to the current request from the database
+        fillCurrentRequestInformation(req2, prevVersions.length + 1, 'Instructor');
+
+        // Generate the supporting documentation for the current version of request
+        generateSuppDocTable(suppDocs, '');
+
+        // Generate version boxes for all request prevVersions in the data
+        for (let i = 0; i < prevVersions.length; i++) {
+            generateVersionBox(prevVersions[i], prevVersions.length - i)
+        }
+
+    </script>
+    <!-- Student Details Box Population -->
+    <script src="../js/modules/studentDetails.js"></script>
+    <script>
+        student = {
+            firstName: 'Callum',
+            lastName: 'Sharman',
+            id: 1178429,
+            email: 'csharman@student.unimelb.edu.au'
+        }
+    
+        fillStudentDetailsBox(student);
+    </script>
+</body>
+</html>
