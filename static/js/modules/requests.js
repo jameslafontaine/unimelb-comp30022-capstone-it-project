@@ -349,6 +349,7 @@ function generateStudentCases(cases) {
         
         // wait for the requests to load in and then continue
         sloadThreadsData(cases[i].case_id)
+            .then(threads => {                
 
                 // Make the table headers
 
