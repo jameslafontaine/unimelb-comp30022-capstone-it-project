@@ -400,7 +400,7 @@ function generateStudentCases(cases) {
                     viewDetailsButton.className = 'standardButton';
                     viewDetailsButton.innerText = 'View Details';
                     viewDetailsButton.onclick = function () {
-                        window.location.href = '/student/view-req/' + request.thread_id;
+                        window.location.href = '/student/view-req/' + thread.thread_id;
                     }
                     viewDetailsCell.appendChild(viewDetailsButton);
                     expandableBoxSection.appendChild(table);

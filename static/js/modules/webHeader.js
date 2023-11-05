@@ -34,8 +34,9 @@ function createHeader(instOrStudent) {
       checkAndChangePrefs();
     }).catch(error => {
 			console.error('Error:', error);
-		});
+	});
 
+	fixStyling();
 }
 
 /**
