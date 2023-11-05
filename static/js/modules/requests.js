@@ -28,6 +28,7 @@ function generateRequestTable(threads, type) {
             const emptyHeader = document.createElement('th');
             emptyHeader.textContent = '';
             headerRow.appendChild(emptyHeader);
+            fixStyling();
         })
 	
     // Create table data rows
@@ -75,6 +76,7 @@ function generateRequestTable(threads, type) {
                     };
                 }
                 reviewCell.appendChild(requestButton);
+                fixStyling();
             })
     })
 	
@@ -180,10 +182,12 @@ function generateSuppDocTable(requestList, number) {
 			// Need to add functionality to download the file somehow
         }
 		downloadCell.appendChild(downloadButton);
+        fixStyling();
 	});
 	
 	// Append the table to the container
 	tableContainer.appendChild(table);
+    fixStyling();
 };
 
 /** 
@@ -250,6 +254,8 @@ function generateVersionBox(version, number) {
     container.appendChild(expandableBox);
     container.appendChild(expandableBoxSection);
     container.appendChild(document.createElement("br"));
+
+    fixStyling();
     
     //generateSuppDocTable(version.documents, number);
     //container.appendChild(document.createElement("br"));
@@ -389,6 +395,7 @@ function generateStudentCases(cases) {
                                 window.location.href = '/student/view-req/' + request.thread_id;
                             }
                             viewDetailsCell.appendChild(viewDetailsButton);
+                            fixStyling();
                         });
                         // Append the table to the expandable box
                         expandableBoxSection.appendChild(table);
@@ -558,6 +565,8 @@ function generateStudentRequest(number, courseList) {
         document.getElementById(`requestTypeDropdown${number}`).appendChild(option);
     });
 
+    fixStyling();
+
     // Initialise supporting documentation table with upload button
 
 }
@@ -622,6 +631,7 @@ function createAssignmentDropDown(number, courseList){
                         option.textContent = assignment.assignment_name;
                         document.getElementById(`assignmentDropdown${number}`).appendChild(option);
                     })
+                    fixStyling();
                 })
         })
 }
