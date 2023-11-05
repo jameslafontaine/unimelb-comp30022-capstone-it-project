@@ -184,7 +184,7 @@ def get_courses_endpoint(request):
     if len(request.GET) not in [1, 2]:
         return HttpResponseBadRequest('Invalid number of parameters.')
 
-    if request.GET.get('userid'):
+    if len(request.GET) == 1 and request.GET.get('userid'):
         if check_param_not_integer(request.GET.get('userid')):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:
@@ -311,6 +311,7 @@ def get_threads_user_endpoint(request):
     GET /api/data/thread/
     Valid parameter combinations:
         - ?threadid
+        - ?courseid
         - ?userid&status
     '''
     validate_headers(request)
@@ -322,10 +323,56 @@ def get_threads_user_endpoint(request):
         if check_param_not_integer(request.GET.get('threadid')):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:
-            # Some join of 'Thread' and 'Case' on case_id
-            # SELECT user_id FROM (join) WHERE (join).thread_id == int(request.GET.get('threadid'))
+            # Return the user database table of the user who created thread_id
             result = {
-                "created_by": 1111111
+                'user_id': 2,
+                'name': 'James La Fontaine',
+                'first_name': 'James',
+                'last_name': 'La Fontaine',
+                'email': 'bingbong@student.unimelb.edu.au',
+                'email_preference': 1,
+                'darkmode_preference': 1,
+            }
+            return JsonResponse({"student": result})
+    
+    if len(request.GET) == 1 and request.GET.get('courseid'):
+        if check_param_not_integer(request.GET.get('courseid')):
+            return HttpResponseBadRequest("Invalid request, parameter must be an integer")
+        else:
+            # Return all threads belonging to a Course ID
+            result = {
+                "threads": [
+                    {
+                        'thread_id': 11,
+                        'case_id': 11,
+                        'course_id': 31,
+                        'date_updated': "11-09-2023",
+                        'request_type':'Extension', 
+                        'complex_case':1,
+                        'current_status':'PENDING',
+                        'assignment_id': 1,
+                    },
+                    {
+                        'thread_id': 12,
+                        'case_id': 12,
+                        'course_id': 31,
+                        'date_updated': "01-19-2023",
+                        'request_type':'Query',
+                        'complex_case':0,
+                        'current_status':'PENDING',
+                        'assignment_id':2,
+                    },
+                    {
+                        'thread_id': 13,
+                        'case_id': 12,
+                        'course_id': 31,
+                        'date_updated': "01-19-2023",
+                        'request_type':'Other',
+                        'complex_case':1,
+                        'current_status':'REJECTED',
+                        'assignment_id':3,
+                    }
+                ]
             }
             return JsonResponse(result)
     
@@ -479,8 +526,34 @@ def get_user_endpoint(request, user_id):
                     # Just return the files idk hwo this will work yet ? :D
                     result = {
                         "aaps": [
-                            "aap1",
-                            "aap2"
+                            {
+                                'file_id': 1,
+                                'file_name': 'medical condition',
+                                'file_type': 'pdf',
+                                'user_id': 1,
+                                'request_id': 'nullll',
+                            },
+                            {
+                                'file_id': 2,
+                                'file_name': 'another medical condition',
+                                'file_type': 'pdf',
+                                'user_id': 1,
+                                'request_id': 'nullll',
+                            },
+                            {
+                                'file_id': 3,
+                                'file_name': 'chronic dumbass syndrome',
+                                'file_type': 'pdf',
+                                'user_id': 1,
+                                'request_id': 'nullll',
+                            },
+                            {
+                                'file_id': 4,
+                                'file_name': 'another aap',
+                                'file_type': 'pdf',
+                                'user_id': 1,
+                                'request_id': 'nullll',
+                            }
                         ]
                     }
                     return JsonResponse(result)
@@ -514,6 +587,7 @@ def post_new_case(request):
     POST /api/data/cases/new/
     Request body takes this format:
     {
+        "thread_id": 1
         "requests": [
                 {
                     "request_id": 0,

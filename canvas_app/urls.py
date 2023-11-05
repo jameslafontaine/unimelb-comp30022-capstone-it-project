@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from login.views import login_view
-from .views import * 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,17 +24,4 @@ urlpatterns = [
     path('instructor/', include('instructor_view.urls')),
     path('student/', include('student_view.urls')),
     path('api/data/', include('data_endpoints.urls')),
-
-
-    # GET REQUESTS (shared between all apps)
-    path('get-thread/<int:thread_id>', get_thread, name='get_thread'),
-    path('get-course/<int:course_id>', get_course, name='get_course'),
-    path('get-assignment/<int:assign_id>', get_assignment, name='get_assignment'),
-    path('requests-from-thread/<int:thread_id>/', get_requests_from_thread,
-         name='get_requests_from_thread'),
-    path('get-user-details/<int:user_id>', get_user_details, name='get_user_details'),
-    path('get-user-aaps/<int:user_id>', get_user_aaps, name='get_user_aaps'),
-    path('get-course-assessments/<int:course_id>', get_course_assessments, name='get_course_assessments'),
-    path('get-course-data/<str:course_code>', get_course_data, name='get_course_data'),
-    path('get-assignments/<str:course_id>', get_assignments, name='get_assignments'),
 ]
