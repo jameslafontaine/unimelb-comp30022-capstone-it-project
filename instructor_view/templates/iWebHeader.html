@@ -27,17 +27,9 @@
         
         <div class="header">
             <!-- menu -->
-            <div class="dropDown">
-                <div class="dropDownBtn">
-                    <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
-                </div>
-                <div class="dropDownMenu">
-                    <div class="dDSection" onclick="window.location.href = '/instructor/'">
-                        <p class="dDSectionText">Home</p>
-                    </div>
-                    <div class="dDSection" onclick="window.location.href = '/instructor/view-reqs'">
-                        <p class="dDSectionText">View all requests</p>
-                    </div>
+            <div class="dropDown home">
+                <div class="dropDownBtn" style="display: flex; width:30px">
+                    <img class="homeBtn" src="{% static 'img/homeIcon.png' %}" style="align-self: center;" onclick="window.location.href='/instructor/'">
                 </div>
             </div>
         

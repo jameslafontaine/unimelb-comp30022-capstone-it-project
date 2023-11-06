@@ -19,6 +19,11 @@
     margin-left: auto; 
     margin-right: 20px;
 }
+.homeBtn{
+    height: 30px;
+    margin-left: auto; 
+    margin-right: 20px;
+}
 .dropDown{
     position: relative;
     display: inline-block;
@@ -78,6 +83,9 @@
     border:solid;
     border-radius: 15px;
     border-width: 0px;
+}
+.dropDown.home:hover{
+    border-radius: 1px;
 }
 .custom-control{
     display: flex;
