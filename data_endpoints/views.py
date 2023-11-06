@@ -448,7 +448,6 @@ def get_user_endpoint(request, user_id):
     '''
     GET /api/data/user/{user_id}/
     Valid parameter combinations:
-        - ?aaps
         - ?courseid
     '''
     validate_headers(request)
@@ -469,44 +468,52 @@ def get_user_endpoint(request, user_id):
                 "darkmode_preference": 0
             }
             return JsonResponse(result)
-        if len(request.GET) == 1:
-            if request.GET.get('aaps'):
-                if request.GET.get('aaps').lower() != 'true':
-                    return HttpResponseBadRequest('Invalid request, check input again.')
-                else:
-                    # SELECT * FROM 'File' WHERE 'File'.user_id == user_id (FUNCTION INPUT) 
-                    #                        AND 'File'.request_id == NULL
-                    # Just return the files idk hwo this will work yet ? :D
-                    result = {
-                        "aaps": [
-                            "aap1",
-                            "aap2"
-                        ]
-                    }
-                    return JsonResponse(result)
-            if request.GET.get('courseid'):
-                if check_param_not_integer(request.GET.get('courseid')):
-                    return HttpResponseBadRequest('Invalid request, check input again.')
-                else:
-                    # Some join magic between course, enrollment and user
-                    # SELECT * FROM 'Course'
-                    result = {
-                        "courses": [
-                            {
-                                "course_id": 1,
-                                "course_name": "IT Project",
-                                "course_code": "COMP30022"
-                            },
-                            {
-                                "course_id": 2,
-                                "course_name": "Modern Applied Statistics",
-                                "course_code": "MAST30025"
-                            }
-                        ]
-                    }
-                    return JsonResponse(result)
+        if len(request.GET) == 1 and request.GET.get('courseid'):
+            if check_param_not_integer(request.GET.get('courseid')):
+                return HttpResponseBadRequest('Invalid request, check input again.')
+            else:
+                # Some join magic between course, enrollment and user
+                # SELECT * FROM 'Course'
+                result = {
+                    "courses": [
+                        {
+                            "course_id": 1,
+                            "course_name": "IT Project",
+                            "course_code": "COMP30022"
+                        },
+                        {
+                            "course_id": 2,
+                            "course_name": "Modern Applied Statistics",
+                            "course_code": "MAST30025"
+                        }
+                    ]
+                }
+                return JsonResponse(result)
 
     return HttpResponseBadRequest('Invalid request, check input again.')
+
+def get_files_endpoint(request, user_id):
+    '''
+    GET /api/data/files/{user_id}/
+    Valid parameter combinations:
+        - No params
+        - ?aaps
+        - ?requestid
+    '''
+    if len(request.GET) == 0:
+        # Test
+        pass
+    elif len(request.GET) == 1:
+        if request.GET.get('aaps').lower() == 'true':
+            # Get all files that are AAPs
+            pass
+        if request.GET.get('requestid'):
+            if check_param_not_integer(request.GET.get('courseid')):
+                return HttpResponseBadRequest('Invalid request, check input again.')
+            # Get all files under request ID
+            pass
+    else:
+        return HttpResponseBadRequest('Invalid request, check input again.')
 
 @csrf_exempt
 def post_new_case(request):
@@ -553,11 +560,16 @@ def post_new_case(request):
         return HttpResponseBadRequest('Invalid request. Check input or request type')
 
 @csrf_exempt
-def post_aap(request, user_id):
+def post_file(request):
     '''
-    POST /api/data/user/{user_id}/aap/
+    POST /api/data/files/upload/
+    Check API for request body
     '''
-    pass
+    # Some request body validation code idk
+    for filename, file in request.FILES.iteritems():
+        request.FILES[filename].name #name of file
+        request.FILES[filename].content_type # experiment with this one
+        request.FILES[filename].read() # reads file
 
 @csrf_exempt
 def put_preferences(request):
