@@ -85,4 +85,5 @@ function generateAAPTable(aapData) {
 	
 	// Append the table to the container
 	tableContainer.appendChild(table);
+	fixStyling();
 }

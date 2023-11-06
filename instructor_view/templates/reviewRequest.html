@@ -87,7 +87,7 @@
                     </div>
                     <div style="text-align:center">
                         <br><br>
-                        <label for="extensionOverride">Override Extension:</label>
+                        <label for="extensionOverride" class="text">Override Extension:</label>
                         <select id="extensionOverrideAExt">
                         </select>
                         <span class="text" style="font-weight:normal">day(s)</span>
@@ -349,8 +349,10 @@
                 </div>
             </div>
         </div>
+        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
         <script src="{% static 'js/modules/data.js' %}"></script>
         <script src="{% static 'js/modules/webHeader.js' %}"></script>
+        <script src="{% static 'js/modules/styleMode.js' %}"></script>
         <script>createHeader("instructor")</script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script src="{% static 'js/modules/buttons.js' %}"></script>

@@ -89,8 +89,10 @@
         </div>
 
         {% comment %} <script type="module" src="{% static 'js/modules/fileUtils.js' %}"></script> {% endcomment %}
+        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
         <script src="{% static 'js/modules/data.js' %}"></script>
         <script src="{% static 'js/modules/webHeader.js' %}"></script>
+        <script src="{% static 'js/modules/styleMode.js' %}"></script>
         <script>createHeader("student")</script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>    
@@ -100,7 +102,7 @@
             // List of students current course codes
             const courseCodes = []
 
-            getActiveCourses()
+            getCourseData()
                 .then(courses => {
                     courses.forEach(item => {
                         courseCodes.push(item.course_code);
