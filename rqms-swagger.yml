@@ -267,13 +267,17 @@ paths:
             examples:
               'query / other':
                 value:
-                  instructor_notes: 'no!'
-                  status: REJECTED
+                  thread_id: 1
+                  response:
+                    instructor_notes: 'no!'
+                    status: REJECTED
               'extension / quizcode / remark':
                 value:
-                  instructor_notes: ':o'
-                  status: APPROVED
-                  extended_by: 4
+                  thread_id: 1
+                  response:
+                    instructor_notes: ':o'
+                    status: APPROVED
+                    extended_by: 4
       responses:
         '201':
           description: Successfully responded to the request
@@ -294,7 +298,12 @@ paths:
               - APPROVED
               - PENDING
               - REJECTED
-      description: Accepts ?threadid or ?userid?status 
+        - name: courseid
+          description: Course ID
+          in: query
+          schema:
+            type: integer
+      description: Accepts ?threadid, ?userid?status or ?courseid
       responses:
         '200':
           description: Successful response
@@ -303,7 +312,32 @@ paths:
               examples:
                 '?threadid':
                   value:
-                    createdby: 1111111
+                    user_id: 1
+                    name: James La Fontaine
+                    first_name: m
+                    last_name: a
+                    email: 1111111@222222222222222.3333
+                    email_preference: 0
+                    darkmode_preference: 0
+                '?courseid':
+                  value: 
+                    threads:
+                      - thread_id: 2
+                        case_id: 2
+                        course_id: 1
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: extension
+                        complex_case: false
+                        current_status: PENDING
+                        assignment_id: 3
+                      - thread_id: 1
+                        case_id: 1
+                        course_id: 1
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: quizcode
+                        complex_case: false
+                        current_status: REJECTED
+                        assignment_id: 1
                 '?userid?status':
                   value:
                     threads:
@@ -405,7 +439,7 @@ paths:
           description: Get all courses user_id is enrolled in
           schema:
             type: integer
-      description: Get all AAPs or courses of a user
+      description: Only 1 parameter can be active at once.
       responses:
         '200':
           description: Successful response
