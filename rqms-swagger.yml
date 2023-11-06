@@ -267,13 +267,17 @@ paths:
             examples:
               'query / other':
                 value:
-                  instructor_notes: 'no!'
-                  status: REJECTED
+                  thread_id: 1
+                  response:
+                    instructor_notes: 'no!'
+                    status: REJECTED
               'extension / quizcode / remark':
                 value:
-                  instructor_notes: ':o'
-                  status: APPROVED
-                  extended_by: 4
+                  thread_id: 1
+                  response:
+                    instructor_notes: ':o'
+                    status: APPROVED
+                    extended_by: 4
       responses:
         '201':
           description: Successfully responded to the request
@@ -294,7 +298,12 @@ paths:
               - APPROVED
               - PENDING
               - REJECTED
-      description: Accepts ?threadid or ?userid?status 
+        - name: courseid
+          description: Course ID
+          in: query
+          schema:
+            type: integer
+      description: Accepts ?threadid, ?userid?status or ?courseid
       responses:
         '200':
           description: Successful response
@@ -303,7 +312,32 @@ paths:
               examples:
                 '?threadid':
                   value:
-                    createdby: 1111111
+                    user_id: 1
+                    name: James La Fontaine
+                    first_name: m
+                    last_name: a
+                    email: 1111111@222222222222222.3333
+                    email_preference: 0
+                    darkmode_preference: 0
+                '?courseid':
+                  value: 
+                    threads:
+                      - thread_id: 2
+                        case_id: 2
+                        course_id: 1
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: extension
+                        complex_case: false
+                        current_status: PENDING
+                        assignment_id: 3
+                      - thread_id: 1
+                        case_id: 1
+                        course_id: 1
+                        date_updated: '2000:01:01 00:00:00'
+                        request_type: quizcode
+                        complex_case: false
+                        current_status: REJECTED
+                        assignment_id: 1
                 '?userid?status':
                   value:
                     threads:
@@ -400,17 +434,12 @@ paths:
   /api/data/user/{user_id}/:
     get:
       parameters:
-        - name: aaps
-          description: Must be blank if ?courses=\<notempty\>
-          in: query
-          schema:
-            type: integer
         - name: courses
           in: query
-          description: Must be blank if ?aaps=\<notempty\>
+          description: Get all courses user_id is enrolled in
           schema:
             type: integer
-      description: Get all AAPs or courses of a user
+      description: Only 1 parameter can be active at once.
       responses:
         '200':
           description: Successful response
@@ -426,12 +455,7 @@ paths:
                     email: '12345@gmail.com'
                     email_preference: false
                     darkmode_preference: false
-                'Only AAP':
-                  value:
-                    aaps:
-                      - aap1
-                      - aap2
-                'Only Courses':
+                '?courses':
                   value:
                     courses:
                       - course_id: 1
@@ -440,11 +464,56 @@ paths:
                       - course_id: 2
                         course_name: 'Modern Applied Statistics'
                         course_code: 'MAST30025'
-  /api/data/user/{user_id}/aap:
+  /api/data/files/{user_id}:
+    get:
+      parameters:
+        - name: aaps
+          description: Get all AAPs under user_id
+          in: query
+          schema:
+            type: boolean
+        - name: requestid
+          description: Get all files under a request_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Accepts no params, ?aaps, or ?requestid'
+          content:
+            application/json:
+              examples:
+                'No param':
+                  value:
+                    field_1: 1
+                '?aaps':
+                  value:
+                    field_1: 1
+                '?requestid':
+                  value:
+                    field_1: 1
+  /api/data/files/upload:
     post:
+      description: Upload a file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                request_id:
+                  type: integer
+                fileName:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
       responses:
         '201':
-          description: Successfully added AAP(s)
+          description: 'Successfully POSTed a file to this endpoint'
 components:
   schemas:
     Assignment:
@@ -573,10 +642,14 @@ components:
     PostNewCaseRequest:
       type: object
       properties:
-        requests:
-          type: array
-          items:
-            $ref: '#/components/schemas/Request'
+        course_id:
+          type: integer
+        request_type:
+          $ref: '#/components/schemas/RequestType'
+        assignment_id:
+          type: integer
+        request_content:
+          type: string
     Request:
       type: object
       properties:

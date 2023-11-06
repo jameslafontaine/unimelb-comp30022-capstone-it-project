@@ -67,28 +67,23 @@
 
         </div>
         
+        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
         <script src="{% static 'js/modules/data.js' %}"></script>
         <script src="{% static 'js/modules/webHeader.js' %}"></script>
         <script src="{% static 'js/modules/styleMode.js' %}"></script>
-        <script>
-            createHeader("instructor")
-        </script>
         <script src="{% static 'js/modules/subjectBox.js' %}"></script>
 
         <script>
-            // load all page data first
+            createHeader('instructor');
             loadSubjectBoxData()
-                .then(() => {
+                .then(subjects => {
                     // Iterate through the JSON data and create/populate expandable boxes
-                    if (Array.isArray(subjects)) {
-                        subjects.forEach(subject => {
-                            generateSubjectBox(subject);
-                        });
-                    } 
-                    else {
-                        console.log('Subjects is not an array or is empty.');
-                    } 
-                })
+                    subjects.forEach(subject => {
+                        generateSubjectBox(subject);
+                    });
+                });
         </script>
+
     </body>
+
 </html>

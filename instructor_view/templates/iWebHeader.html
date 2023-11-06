@@ -22,10 +22,9 @@
         
     </head>
     <body>
-        
-        <!-- div to hold data passed from the view -->
-        <div id="load-header-data" data-usr="{{ usr }}"></div>
 
+        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
+        
         <div class="header">
             <!-- menu -->
             <div class="dropDown">
@@ -33,18 +32,17 @@
                     <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
                 </div>
                 <div class="dropDownMenu">
-                    <div class="dDSection" onclick="window.location.href='/instructor'">
+                    <div class="dDSection" onclick="window.location.href = '/instructor/'">
                         <p class="dDSectionText">Home</p>
                     </div>
-                    <div class="dDSection" onclick="window.location.href='/instructor/view-reqs'">
+                    <div class="dDSection" onclick="window.location.href = '/instructor/view-reqs'">
                         <p class="dDSectionText">View all requests</p>
                     </div>
                 </div>
             </div>
         
             <img src="{% static 'img/uomLogo.JPG' %}" style="height: 38px;">
-            <div class="headerText" id="headerText">Signed in as: ________
-            </div>
+            <div class="headerText" id="headerText">Signed in as:</div>
         
             <!-- settings -->
             <div class="dropDown settings">

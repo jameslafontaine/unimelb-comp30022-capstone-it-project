@@ -91,6 +91,7 @@
             </div>
             
         </div>
+        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
         <script src="{% static 'js/modules/data.js' %}"></script>
         <script src="{% static 'js/modules/webHeader.js' %}"></script>
         <script src="{% static 'js/modules/styleMode.js' %}"></script>
@@ -103,7 +104,7 @@
             subjectCode = course.course_code;
             
             // Get the title by its ID
-            const myElement = document.getElementById("title").innerHTML = 
+            const myElement = document.getElementById("title").innerHTML
             subjectCode + document.getElementById("title").innerHTML;
 
             iloadThreadsPending(course.course_id)
