@@ -4,6 +4,11 @@
  * Description: Handles all functionality surrounding requests
  */
 
+//import { setupDownloadButton } from "./fileUtils.js";
+//import { setupUploadButton } from "./fileUtils.js"; 
+
+// Can't get these imports to work so had to put functions in this file
+
 /** 
  * Generates an interactive table of all active and resolved requests for the currently selected course
  */
@@ -81,6 +86,7 @@ function generateRequestTable(threads, type) {
 	// Append the table to the container
 	tableContainer.appendChild(table);
 };
+
 
 /** 
  * Fills in the appropriate information required for the current version of a request on the review request and view resolved pages
@@ -489,13 +495,30 @@ function generateStudentRequest(number, courseList) {
 
     const uploadButton = document.createElement('button');
     uploadButton.className = 'standardButton';
-    uploadButton.id = `upload${number}`
+    uploadButton.id = `uploadBtn${number}`;
     uploadButton.innerText = 'Upload';
-    uploadButton.onclick = function () {
-        // NEED TO ADD UPLOAD FUNCTIONALITY
-    }
 
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = `fileInput${number}`;
+    fileInput.style.display = 'none'; // Hide the file input element
+
+    const fileContainer = document.createElement('div');
+    fileContainer.id = `fileContainer${number}`;
+
+    supDocContainer.appendChild(fileContainer)
+
+    supDocContainer.appendChild(fileInput);
+
+    // Append the upload button to the document body 
     supDocContainer.appendChild(uploadButton);
+
+
+    // // Event listener for the upload button
+    // uploadButton.onclick = function () {
+    //     // Programmatically trigger a click event on the file input element
+    //     fileInput.click();
+    // };
     
     // Append the new elements into the HTML
     expandableBoxSection.appendChild(course);
@@ -558,7 +581,11 @@ function generateStudentRequest(number, courseList) {
         document.getElementById(`requestTypeDropdown${number}`).appendChild(option);
     });
 
-    // Initialise supporting documentation table with upload button
+    // Setup upload button and make sure the files uploaded are displayed correctly and are allowed to be removed
+
+    // CHANGE UPLOAD URL TO WHATEVER IS CORRECT FOR OUR DATABASE
+    setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 'https://cors-anywhere.herokuapp.com/https://reqres.in/api/posts');
+
 
 }
 
@@ -671,3 +698,64 @@ responseJson = {
 
 
 */
+
+function setupDownloadButton(buttonId, fileUrl, fileName) {
+    document.getElementById(buttonId).addEventListener('click', function() {
+        fetch(fileUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            const objectUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = objectUrl;
+            link.download = fileName;
+            link.click();
+        })
+        .catch(error => console.error('Error:', error));
+    });
+}
+    
+function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
+    document.getElementById(buttonId).addEventListener('click', function() {
+        document.getElementById(fileInputId).click();
+    });
+    
+    document.getElementById(fileInputId).addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        fetch(uploadUrl, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const fileInfo = document.createElement('div');
+            fileInfo.innerHTML = `
+            <p>Filename: ${file.name}</p>
+            <p>Filesize: ${file.size} bytes</p>
+            <p>Datetime Uploaded: ${new Date().toISOString()}</p>
+            <button class="removeBtn">Remove</button>
+            `;
+            document.getElementById(fileContainerId).appendChild(fileInfo);
+            
+            fileInfo.querySelector('.removeBtn').addEventListener('click', function() {
+                fetch(uploadUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filename: file.name }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fileInfo.remove();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        })
+        .catch(error => console.error('Error:', error));
+    });
+}
