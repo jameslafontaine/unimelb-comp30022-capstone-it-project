@@ -207,7 +207,7 @@
         </div>
 
         <!-- Approve Quiz Code Popup -->
-        <div id="approveQuizPopup" class="popupBox">
+        <div id="approveQuiPopup" class="popupBox">
             <div class="popupContent">
                 <div class="popupHeaderBox">
                     <span class="popupHeaderContents">Approve Quiz Code
@@ -234,7 +234,7 @@
         </div>
 
         <!-- Reject Quiz Code Popup -->
-        <div id="rejectQuizPopup" class="popupBox">
+        <div id="rejectQuiPopup" class="popupBox">
             <div class="popupContent">
                 <div class="popupHeaderBox">
                     <span class="popupHeaderContents">Reject Quiz Code
@@ -366,10 +366,10 @@
             fillCurrentRequestInformation(threadId, 'Instructor');
 
             // Generate the supporting documentation for the current version of request
-            generateSuppDocTable(suppDocs, '');
+            //generateSuppDocTable(suppDocs, '');
 
             // generate a list of all previous versions of a thread
-            sGetPreviousVersions(threadId)
+            getPreviousVersions(threadId)
                 .then(prevVersions => {
                     // Generate version boxes for all request prevVersions in the data
                     for (let i = 0; i < prevVersions.length; i++) {

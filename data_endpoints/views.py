@@ -150,7 +150,7 @@ def get_cases_endpoint(request):
                             "case_id": 1,
                             "course_id": 2,
                             "date_updated": "2000:01:01 00:00:00",
-                            "request_type": "extension",
+                            "request_type": "Extension",
                             "complex_case": 0,
                             "current_status": "REJECTED",
                             "assignment_id": 3
@@ -160,7 +160,7 @@ def get_cases_endpoint(request):
                             "case_id": 1,
                             "course_id": 1,
                             "date_updated": "2000:01:01 00:00:00",
-                            "request_type": "quizcode",
+                            "request_type": "Quiz",
                             "complex_case": 0,
                             "current_status": "REJECTED",
                             "assignment_id": 1
@@ -391,7 +391,7 @@ def get_threads_user_endpoint(request):
                         "case_id": 1,
                         "course_id": 2,
                         "date_updated": "2000:01:01 00:00:00",
-                        "request_type": "extension",
+                        "request_type": "Extension",
                         "complex_case": 0,
                         "current_status": "REJECTED",
                         "assignment_id": 3
@@ -401,7 +401,7 @@ def get_threads_user_endpoint(request):
                         "case_id": 1,
                         "course_id": 1,
                         "date_updated": "2000:01:01 00:00:00",
-                        "request_type": "quizcode",
+                        "request_type": "Quiz",
                         "complex_case": 0,
                         "current_status": "REJECTED",
                         "assignment_id": 1
@@ -440,7 +440,7 @@ def get_threads_endpoint(request, thread_id):
                         "case_id": 1,
                         "course_id": 1,
                         "date_updated": "2000:01:01 00:00:00",
-                        "request_type": "quizcode",
+                        "request_type": "Quiz",
                         "complex_case": 0,
                         "current_status": "REJECTED",
                         "assignment_id": 1
