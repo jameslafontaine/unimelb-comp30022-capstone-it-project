@@ -410,6 +410,7 @@ function generateStudentCases(cases) {
                     container.appendChild(document.createElement("br"));
                 
                 });
+                fixStyling();
             });
     }
 
@@ -665,29 +666,3 @@ function handleCaseSubmission(numRequests) {
     }
     postNewCase({'requests': requestsData});
 }
-
-/*
-
-responseJson = {
-        'requests' : [
-            {
-                'courseId': ,
-                'requestType': ,
-                'assignmentId': , //null if not linked to an assignment
-                'requestTitle': ,
-                'message': ,
-                'supportingDocuments': , //i dont actually know what this will look like yet
-            },
-            {
-            'courseId': ,
-                'requestType': ,
-                'assignmentId': ,
-                'requestTitle': ,
-                'message': ,
-                'supportingDocuments': ,
-            },
-        ]
-    }
-
-
-*/
