@@ -84,8 +84,8 @@
                     <span class="text" style="margin:10px">Current Deadline</span>
                     <span class="text" style="margin:10px">Default Extension</span>
                     <br>
-                    <textarea class="textBox" id="currentDeadline" style="margin-right: 30px; margin-top: 10px; width:20%; height:30px; resize:none; text-align:center" readonly></textarea>
-                    <textarea class="textBox" id="defaultExtension" style="margin-left: 30px; margin-top: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                    <textarea class="textBox" id="currentDeadline" style="margin-right: 20px; margin-top: 10px; width:35%; height:30px; resize:none; text-align:center" readonly></textarea>
+                    <textarea class="textBox" id="defaultExtension" style="margin-left: 20px; margin-top: 10px; width:35%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                 </div>
                 <div style="text-align:center">
                     <br><br>
@@ -98,7 +98,7 @@
                 <br><br>
                 <div style="text-align:center">
                     <p class="text">Student Selected Assessment</p>
-                    <textarea class="textBox" id="selectedAssessmentAExt" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                    <textarea class="textBox" id="selectedAssessmentAExt" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                 </div>
                 <br>
                 <div style="text-align:center">
@@ -131,7 +131,7 @@
                 
                 <div style="text-align:center">
                     <p class="text">Student Selected Assessment</p>
-                    <textarea class="textBox" id="selectedAssessmentRExt" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                    <textarea class="textBox" id="selectedAssessmentRExt" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                 </div>
                 <br>
                 <div style="text-align:center">
@@ -233,7 +233,7 @@
     </div>
 
     <!-- Approve Quiz Code Popup -->
-    <div id="approveQuizPopup" class="popupBox">
+    <div id="approveQuiPopup" class="popupBox">
         <div class="popupContent">
             <div class="popupHeaderBox">
                 <span class="popupHeaderContents">Approve Quiz Code
@@ -246,19 +246,16 @@
                     <p class="text">Instructor Notes</p>
                     <textarea class="textBox" id="instructorNotesAQui" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
                 </div>
+                <div style="text-align:center">
+                    <p class="text">Quiz password</p>
+                    <textarea class="textBox" id="instructorNotesAQui" placeholder="Enter quiz password here..." style="margin: 10px; width:80%; height:32px; resize:none"></textarea>
+                </div>
                 <br>
-                
                 <div style="text-align:center">
                     <p class="text">Student Selected Assessment</p>
-                    <textarea class="textBox" id="selectedAssessmentAQui" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                    <textarea class="textBox" id="selectedAssessmentAQui" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                 </div>
                 <br>
-                <div style="text-align:center">
-                    <label for="assessmentOverride">Override Assessment:</label>
-                    <select class="assessmentOverride" id="assessmentOverrideAQui">
-                    </select>
-                </div>
-                <br><br>
                 <div class="popupButton" id="popupApproveButtonQui">Approve</div>
                 <br>
             </div>
@@ -266,7 +263,7 @@
     </div>
 
     <!-- Reject Quiz Code Popup -->
-    <div id="rejectQuizPopup" class="popupBox">
+    <div id="rejectQuiPopup" class="popupBox">
         <div class="popupContent">
             <div class="popupHeaderBox">
                 <span class="popupHeaderContents">Reject Quiz Code
@@ -283,7 +280,7 @@
                 
                 <div style="text-align:center">
                     <p class="text">Student Selected Assessment</p>
-                    <textarea class="textBox" id="selectedAssessmentRQui" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                    <textarea class="textBox" id="selectedAssessmentRQui" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                 </div>
                 <br>
                 <div style="text-align:center">
@@ -401,7 +398,7 @@
             reserved: false,
             course: 'COMP30022 - IT Project',
             assessment: 'Project 1',
-            requestType: 'Extension',
+            requestType: 'Quiz',
             requestTitle: 'Project 1 Extension Request',
             message: 'I am sick ;\'( why must misfortune happen to me',
             status: 'Waiting for action'
@@ -467,7 +464,7 @@
             reserved: false,
             course: 'COMP30022 - IT Project',
             assessment: 'Project 1',
-            requestType: 'Extension',
+            requestType: 'Quiz',
             requestTitle: 'Project 1 Extension Request',
             message: 'I am sick ;\'( why must misfortune happen to me',
             status: 'Waiting for action',
@@ -485,9 +482,6 @@
         populatePopups(req1, assessments);
         HideAndDisplayButtons(req1.requestType);
         handleApprovalRejectionAnswer(req1, req1.requestType);
-        
-
-
 
     </script>
     <!-- Student Details Box Population -->
