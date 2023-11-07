@@ -1,6 +1,8 @@
 import json
 import mysql.connector
+import time
 from datetime import datetime
+from wait_for_db import is_db_ready
 
 # Function to create threads and requests
 def createThreads(request, user_ID):
@@ -9,10 +11,10 @@ def createThreads(request, user_ID):
 
     # Connect to the MySQL database
     connection = mysql.connector.connect(
-        host="localhost",
+        host="db",
+        port="3306",
         user="root",
-        password="-", # INSERT PASSWORD HERE
-        database="db"
+        password="admin"
     )
 
     try:
@@ -70,5 +72,11 @@ jsondata = '''
 }
 '''
 
-user_ID = 109194991
-createThreads(jsondata, user_ID)
+if __name__ == "__main__":
+    
+    user_ID = 109194991
+
+    while not is_db_ready("db", "3306", "root", "admin"):
+        time.sleep(1)
+    
+    createThreads(jsondata, user_ID)

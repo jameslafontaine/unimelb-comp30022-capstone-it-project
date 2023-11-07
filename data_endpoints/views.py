@@ -667,8 +667,11 @@ def post_aap(request, user_id):
     file_name = 'test\\testUploadAAP.txt'
     file_type = 'AAP'
     file_path = os.path.join(os.getcwd(), file_name)
-    with open(file_path, 'rb') as file:
-        file_data = file.read()
+    for filename, file in request.FILES:
+        file_data = request.FILES[filename].read()
+        file_name = request.FILES[filename].name
+    #with open(file_path, 'rb') as file:
+    #    file_data = file.read()
     cursor = connection.cursor()
     insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
     cursor.execute(insert_query, (file_data, file_name, user_id, request_id, file_type))
@@ -916,7 +919,7 @@ from django.conf import settings
 
 # Create a request factory
 #request_factory = RequestFactory()
-settings.configure()  #this messes up django
+# settings.configure()  #this messes up django
 
 
 # Create a mock HTTP request
@@ -1131,4 +1134,4 @@ def test_post_case():
 
 
 #test_post_case()
-post_aap("req", 108998192)
+#post_aap("req", 108998192)
