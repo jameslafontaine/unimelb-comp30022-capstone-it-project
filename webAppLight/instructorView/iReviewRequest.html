@@ -16,7 +16,7 @@
     <style>
         .pageAsATable {
             display: grid;
-            grid-template-columns: 70% 1fr;
+            grid-template-columns: 60% 1fr;
         }
     </style>
 
@@ -300,7 +300,7 @@
 
     <!----------------------------- Popup HTML ends here ----------------------------->
 
-    <div class="mainBody" style="width: 90%;">
+    <div class="mainBody" style="width: 100%;">
 
         <div class="pageAsATable">
             
@@ -348,39 +348,42 @@
 
             </div>
 
-            <div class="rightSide" style="text-align: center;">
-                <br><br>
-                <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
-                <div style="display: inline-block; text-align: center;">
-                    <p class="standardBox" style="width: 300px; height: 200px;">
-                        <span class="text" id="studentName"></span>
-                        <span class="text" id="studentId"></span>
-                        <span class="text" id="studentEmail" style="font-size: 14px;"></span>
-                        <span>
-                            <button class="standardButton" onclick="window.location.href='iViewProfile.html'">
-                                View Profile
-                            </button>
-                        </span>
-                    </p>
-                </div>
-                <br><br><br><br>
-                <div style="text-align: center; width: fit-content; margin: 0 auto;">
-                    <div>
-                        <p class="bigButton" id="reserveButton">
-                            Mark as complex
+            <div class="rightSide" style="display: flex; 
+                                          justify-content: center; 
+                                          align-items: center;
+                                          height: 90vh;">
+                <div style="position: fixed;">
+                    <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
+                    <div style="display: inline-block; text-align: center;">
+                        <p class="standardBox" style="width: 300px; height: 170px;">
+                            <span class="text" id="studentName"></span>
+                            <span class="text" id="studentId"></span>
+                            <span class="text" id="studentEmail" style="font-size: 14px;"></span>
+                            <span>
+                                <button class="standardButton" onclick="window.location.href='iViewProfile.html'">
+                                    View Profile
+                                </button>
+                            </span>
                         </p>
-                        <p class="bigButton" id="answerButton" data-target="answerPopup">
-                            Answer
-                        </p>
-                        <p class="bigButton" id="approveButton">
-                            Approve Request
-                        </p>
-                        <p class="bigButton" id="rejectButton">
-                            Reject Request
-                         </p>
-                        <p class="bigButton" onclick="window.location.href='iViewRequests.html'">
-                            Back
-                        </p>
+                    </div>
+                    <br><br>
+                    <div style="text-align: center; width: fit-content; margin: 0 auto;">
+                        <div>
+                            <p class="bigButton" id="reserveButton" style="margin-bottom: 5px;">
+                                Mark as complex
+                            </p>
+                            <p class="bigButton" id="answerButton" data-target="answerPopup" style="margin-bottom: 5px;">
+                                Answer
+                            </p>
+                            <p class="bigButton" id="approveButton" style="margin-bottom: 5px;">
+                                Approve Request
+                            </p>
+                            <p class="bigButton" id="rejectButton" style="margin-bottom: 5px;">
+                                Reject Request
+                            </p>
+                            <p class="bigButton" onclick="window.location.href='iViewRequests.html'">
+                                Back
+                            </p>
                         </div>
                     </div>
                 </div>

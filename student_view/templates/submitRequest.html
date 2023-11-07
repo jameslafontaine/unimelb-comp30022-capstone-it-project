@@ -22,7 +22,7 @@
         <style>
             .pageAsATable{
                 display: grid;
-                grid-template-columns: 70% 1fr;
+                grid-template-columns: 60% 1fr;
             }
             .textBox{
                 height:20px
@@ -61,7 +61,7 @@
     <body>
         <div id="webHeaderContainer"></div>
 
-        <div class="mainBody" style="width: 90%;">
+        <div class="mainBody" style="width: 100%;">
             <div class="pageAsATable">
                 <div class="leftSide">
 
@@ -79,11 +79,18 @@
                     </span>   
                 </div>
                 <div class="rightSide">
-                    
-
-                    <button class="bigButton" id='submitButton' style="position: fixed; margin-top: 60px;">
-                        Submit
-                    </button>
+                    <div style="position: fixed;">
+                        <p class="text">Disclaimer - This portal should be 
+                            used for any questions or requests that may be 
+                            personal or less suited towards existing 
+                            discussion boards. Otherwise, please refer to 
+                            those
+                        </p>
+    
+                        <button class="bigButton" id='submitButton' style="margin-top: 10px;">
+                            Submit
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
