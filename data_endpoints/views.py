@@ -629,6 +629,28 @@ def get_user_endpoint(request, user_id):
 
     return HttpResponseBadRequest('Invalid request, check input again.')
 
+def get_files_endpoint(request, user_id):
+    '''
+    GET /api/data/files/{user_id}/
+    Valid parameter combinations:
+        - No params
+        - ?aaps
+        - ?requestid
+    '''
+    if len(request.GET) == 0:
+        # Test
+        pass
+    elif len(request.GET) == 1:
+        if request.GET.get('aaps').lower() == 'true':
+            # Get all files that are AAPs
+            pass
+        if request.GET.get('requestid'):
+            if check_param_not_integer(request.GET.get('courseid')):
+                return HttpResponseBadRequest('Invalid request, check input again.')
+            # Get all files under request ID
+            pass
+    else:
+        return HttpResponseBadRequest('Invalid request, check input again.')
 @csrf_exempt
 def post_new_case(request):
     '''
@@ -673,7 +695,7 @@ def post_new_case(request):
     else:
         return HttpResponseBadRequest('Invalid request. Check input or request type')
 
-@csrf_exempt
+@csrf_exempt #delete this function
 def post_aap(request, user_id):
     '''
     POST /api/data/user/{user_id}/aap/
@@ -694,6 +716,34 @@ def post_aap(request, user_id):
     connection.commit()
     return JsonResponse({"message": "Uploaded successfully"}, status = 201)
 
+@csrf_exempt
+def post_file(request):
+    '''
+    POST /api/data/files/upload/
+    Check API for request body
+    '''
+    # Some request body validation code idk
+        #change this
+    request_id = 1
+    user_id = 1
+    file_name = 'test\\testUploadAAP.txt'
+    file_type = 'AAP'
+    file_path = os.path.join(os.getcwd(), file_name)
+    for filename, file in request.FILES:
+        file_data = request.FILES[filename].read()
+        file_name = request.FILES[filename].name
+    #with open(file_path, 'rb') as file:
+    #    file_data = file.read()
+    cursor = connection.cursor()
+    insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
+    cursor.execute(insert_query, (file_data, file_name, user_id, request_id, file_type))
+    connection.commit()
+    for filename, file in request.FILES.iteritems():
+        request.FILES[filename].name #name of file
+        request.FILES[filename].content_type # experiment with this one
+        request.FILES[filename].read() # reads file
+    
+    return JsonResponse({"message": "Uploaded successfully"}, status = 201)
 
 @csrf_exempt
 def put_preferences(request):
