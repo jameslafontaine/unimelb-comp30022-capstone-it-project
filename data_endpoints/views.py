@@ -13,6 +13,7 @@ from datetime import datetime, time
 # Create a connection
 # Replace these values with your MySQL server details
 
+database_name = 'db'
 connection = mysql.connector.connect(
     host="db",
     port="3306",
@@ -50,7 +51,7 @@ def get_assessments_endpoint(request):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:
             cursor = connection.cursor(dictionary=True)
-
+            cursor.execute(f"USE {database_name}")
             # Execute a query to fetch the assignment data
             query = "SELECT * FROM Assignment WHERE assignment_id = %s"
             cursor.execute(query, (request.GET.get('assignid'),))
@@ -86,7 +87,7 @@ def get_assessments_endpoint(request):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:
             cursor = connection.cursor(dictionary=True)
-
+            cursor.execute(f"USE {database_name}")
             # Execute a query to fetch assignments for the given course_id
             query = "SELECT * FROM Assignment WHERE course_id = %s"
             cursor.execute(query, (request.GET.get('courseid'),))
@@ -147,7 +148,7 @@ def get_cases_endpoint(request):
         else: 
             # SELECT * FROM 'Case' WHERE 'Case'.user_id == int(request.GET.get('userid'))
             cursor = connection.cursor()
-
+            cursor.execute(f"USE {database_name}")
             # Execute a query to fetch case_id values for the given user_id
             query = "SELECT case_id FROM `Case` WHERE user_id = %s"
             cursor.execute(query, (request.GET.get('userid'),))
@@ -165,7 +166,7 @@ def get_cases_endpoint(request):
         else:
             if len(request.GET) == 1:
                 cursor = connection.cursor(dictionary=True)
-
+                cursor.execute(f"USE {database_name}")
                 # Execute a query to fetch case data for the given case_id
                 query = "SELECT * FROM `Case` WHERE case_id = %s"
                 cursor.execute(query, (request.GET.get('caseid'),))
@@ -186,7 +187,7 @@ def get_cases_endpoint(request):
                     return None  # Case not found
             if len(request.GET) == 2 and request.GET.get('threads').lower() == 'true':
                 cursor = connection.cursor()
-
+                cursor.execute(f"USE {database_name}")
                 # Execute a query to fetch threads for the given case_id
                 query = "SELECT * FROM Thread WHERE case_id = %s"
                 cursor.execute(query, (request.GET.get('caseid'),))
@@ -244,6 +245,7 @@ def get_courses_endpoint(request):
             return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
         else:
             cursor = connection.cursor(dictionary=True)
+            cursor.execute(f"USE {database_name}")
 
             # Execute a query to fetch the courses for the given user_id
             query = "SELECT c.course_id, c.course_name, c.course_code FROM Course c " \
@@ -272,6 +274,7 @@ def get_courses_endpoint(request):
             if len(request.GET) == 1:
                 # SELECT * FROM COURSE WHERE 'Course'.course_Id == int(request.GET.get('courseid'))
                 cursor = connection.cursor(dictionary=True)
+                cursor.execute(f"USE {database_name}")
 
                 # Execute a query to fetch course information for the given course_id
                 query = "SELECT course_id, course_name, course_code FROM Course WHERE course_id = %s"
@@ -295,7 +298,7 @@ def get_courses_endpoint(request):
     
             if len(request.GET) == 2 and request.GET.get('preferences') and request.GET.get('preferences').lower() == 'true':
                 cursor = connection.cursor(dictionary=True)
-
+                cursor.execute(f"USE {database_name}")
                 # Execute a query to fetch course preferences for the given course_id
                 query = "SELECT * FROM CoursePreferences WHERE course_id = %s"
                 cursor.execute(query, (request.GET.get('courseid'),))
@@ -355,6 +358,7 @@ def get_requests_endpoint(request):
                 # Return request history of a user. 
                 # Consult Callum on this, unsure if we actually need more data on this
                 cursor = connection.cursor(dictionary=True)
+                cursor.execute(f"USE {database_name}")
 
                 # Execute a query to fetch requests information for the given student_id
                 query = "SELECT r.request_id, r.thread_id, r.date_created, r.request_content, r.instructor_notes " \
@@ -385,6 +389,7 @@ def get_requests_endpoint(request):
                 return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
             else:
                 cursor = connection.cursor(dictionary=True)
+                cursor.execute(f"USE {database_name}")
 
                 # Query the Request table to retrieve the information for the specified request_id
                 query = "SELECT * FROM Request WHERE request_id = %s"
@@ -430,6 +435,7 @@ def get_threads_user_endpoint(request):
         else:
             # Some join of 'Thread' and 'Case' on case_id
             cursor = connection.cursor(dictionary=True)
+            cursor.execute(f"USE {database_name}")
             query = """
             SELECT `Case`.user_id
             FROM `Case`
@@ -453,6 +459,7 @@ def get_threads_user_endpoint(request):
             # result["thread"]["current_status"] == request.GET.get('checkstatus')
             threads = []
             cursor = connection.cursor(dictionary=True)
+            cursor.execute(f"USE {database_name}")
             # SQL query to retrieve threads based on user_id and status
             query = "SELECT T.thread_id, T.case_id, T.course_id, T.date_updated, T.request_type, T.complex_case, T.current_status, T.assignment_id " \
                     "FROM Thread AS T " \
@@ -496,6 +503,7 @@ def get_threads_endpoint(request, thread_id):
             # SELECT * FROM 'Thread' WHERE 'Thread'.thread_id == thread_id
             # SELECT * FROM 'Request' WHERE 'Request'.thread_id == thread_id
             cursor = connection.cursor(dictionary=True)
+            cursor.execute(f"USE {database_name}")
 
             # Query the Thread table
             thread_query = f"SELECT * FROM Thread WHERE thread_id = {thread_id}"
@@ -540,6 +548,13 @@ def get_user_endpoint(request, user_id):
         - ?aaps
         - ?courseid
     '''
+    #database_name = 'db'
+    #connection = mysql.connector.connect(
+    #    host="db",
+    #    port="3306",
+    #    user="root",
+    #    password="admin"
+    #)
     validate_headers(request)
     
     if len(request.GET) not in [0, 1]:
@@ -548,6 +563,7 @@ def get_user_endpoint(request, user_id):
         if not request.GET:
             cursor = connection.cursor(dictionary=True)
             # Query the User table
+            cursor.execute(f"USE {database_name}")
             user_query = f"SELECT * FROM User WHERE user_id = {user_id}"
             cursor.execute(user_query)
             user_data = cursor.fetchone()
@@ -730,7 +746,8 @@ def put_preferences(request):
         
         # Create a cursor to interact with the database
         cursor = connection.cursor()
-
+        
+        cursor.execute(f"USE {database_name}")
         # Extract data from the JSON
         coursepreference_id = data["coursepreference_id"]
         course_id = data["course_id"]
@@ -825,7 +842,7 @@ def put_req_response(request):
 
         # Create a cursor to interact with the database
         cursor = connection.cursor()
-
+        cursor.execute(f"USE {database_name}")
         # Extract data from the JSON
         instructor_notes = data["instructor_notes"]
         status = data["status"]
@@ -870,6 +887,7 @@ def set_complex(request):
     try:
         # Create a cursor to interact with the database
         cursor = connection.cursor()
+        cursor.execute(f"USE {database_name}")
         data = json.loads(request.body)
         
         # Check the current value of 'complex_case' for the given 'request_id'
