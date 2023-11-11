@@ -42,7 +42,6 @@ def get_assessments_endpoint(request):
         if check_param_not_integer(request.GET.get('assignid')):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
         if not check_param_not_integer(request.GET.get('assignid')):
-            # SELECT * FROM 'Assignment' WHERE 'Assignment'.assignment_id == request.GET.get('assignid')
             # Example result
             result = {
                 "assignment_id": 1,
@@ -55,12 +54,10 @@ def get_assessments_endpoint(request):
             }
             # set result variable as whatever SQL statement returns
             return JsonResponse(result)
-    
     if not request.GET.get('assignid') and request.GET.get('courseid'):
         if check_param_not_integer(request.GET.get('courseid')):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
         if not check_param_not_integer(request.GET.get('courseid')):
-            # SELECT * FROM 'Assignment' WHERE 'Assignment'.course_id == int(request.GET.get('courseid'))
             # Example result
             result = {
                 "assessments": [
@@ -92,10 +89,11 @@ def get_assessments_endpoint(request):
                         "end_date": "2000:01:01 00:00:00"
                     }
                 ]
-            } 
-            if not request.GET.get('names') and len(request.GET) == 1:
+            }
+            if len(request.GET) == 1 and not request.GET.get('names'):
                 return JsonResponse(result)
-            elif len(request.GET) == 2 and request.GET.get('names') and request.GET.get('names').lower() == 'true':
+            if len(request.GET) == 2 and request.GET.get('names') \
+                and request.GET.get('names').lower() == 'true':
                 namesonly = {
                     "assessments": []
                 }
@@ -112,7 +110,6 @@ def get_cases_endpoint(request):
         - ?caseid&?threads, get all threads belonging to case
     '''
     validate_headers(request)
-    
     if request.GET.get('userid') and len(request.GET) == 1:
         if check_param_not_integer(request.GET.get('userid')):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
@@ -221,8 +218,8 @@ def get_courses_endpoint(request):
                         }
                 }
                 return JsonResponse(result)
-            if len(request.GET) == 2 and request.GET.get('preferences') and request.GET.get('preferences').lower() == 'true':
-                # SELECT * FROM CoursePreferences WHERE 'CoursePreferences'.course_id == int(request.GET.get('courseid'))
+            if len(request.GET) == 2 and request.GET.get('preferences') \
+                and request.GET.get('preferences').lower() == 'true':
                 result = {
                     "coursepreferences": {
                         "coursepreference_id": 1,
@@ -266,8 +263,6 @@ def get_requests_endpoint(request):
             if check_param_not_integer(request.GET.get('userid')):
                 return JsonResponse({'message': 'Invalid request.'}, status = 400)
             if not check_param_not_integer(request.GET.get('userid')):
-                # Return request history of a user. 
-                # Consult Callum on this, unsure if we actually need more data on this
                 result = {
                     "requests": [
                         {
@@ -285,14 +280,13 @@ def get_requests_endpoint(request):
                             "instructor_notes": "stop crying"
                         }
                     ]
-                } 
+                }
                 return JsonResponse(result)
 
         if request.GET.get('requestid'):
             if check_param_not_integer(request.GET.get('requestid')):
                 return JsonResponse({'message': 'Invalid request.'}, status = 400)
             if not check_param_not_integer(request.GET.get('requestid')):
-                # SELECT * FROM 'Requets' WHERE 'Request'.request_id == int(request.GET.get('requestid'))
                 result = {
                     "request": {
                         "request_id": 1,
@@ -373,7 +367,6 @@ def get_threads_user_endpoint(request):
                     ]
                 }
                 return JsonResponse(result)
-    
     if len(request.GET) in [1, 2] and request.GET.get('userid') and request.GET.get('status'):
         if check_param_not_integer(request.GET.get('userid')) or \
             not request.GET.get('status').lower() in ["approved", "pending", "rejected"]:
@@ -417,10 +410,8 @@ def get_threads_endpoint(request, thread_id):
     '''
     validate_headers(request)
     print(thread_id) # DELETE THIS COMMENT LATER !!!
-    
     if len(request.GET) not in [0, 1]:
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
-    
     if len(request.GET) == 0:
         result = {
             "threadinfo": {
@@ -484,7 +475,9 @@ def get_threads_endpoint(request, thread_id):
                 # SELECT * FROM 'Request' WHERE 'Request'.thread_id == thread_id
                 # SELECT * FROM 'CoursePreference' WHERE (some JOIN magic)
                 if request.GET:
-                    return JsonResponse({"status": result["threadinfo"]["thread"]["current_status"]})
+                    return JsonResponse({
+                        "status": result["threadinfo"]["thread"]["current_status"]
+                    })
 
 def get_user_endpoint(request, user_id):
     '''
@@ -493,7 +486,6 @@ def get_user_endpoint(request, user_id):
         - ?courseid
     '''
     validate_headers(request)
-    
     if not len(request.GET) in [0, 1]:
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
     if len(request.GET) in [0, 1]:
@@ -543,7 +535,8 @@ def get_files_endpoint(request, user_id):
         if request.GET.get('aaps').lower() == 'true':
             # Get all files that are AAPs from database
             with connection.cursor() as cursor:
-                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", [user_id])
+                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", \
+                               [user_id])
                 rows = cursor.fetchall()
             files_list = []
             for row in rows:
@@ -559,7 +552,8 @@ def get_files_endpoint(request, user_id):
                 return HttpResponseBadRequest('Invalid request, check input again.')
             # Get all files under request ID
             with connection.cursor() as cursor:
-                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", [user_id])
+                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", \
+                               [user_id])
                 rows = cursor.fetchall()
             files_list = []
             for row in rows:
@@ -724,3 +718,4 @@ def set_complex(request):
         return JsonResponse({'message': 'Has been set successfully'}, status = 201)
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
