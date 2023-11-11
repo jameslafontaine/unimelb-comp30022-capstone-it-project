@@ -671,7 +671,21 @@ export function generateAAPTable(aapData) {
 		downloadButton.innerText = 'Download';
 		downloadButton.onclick = function () {
 			// NEED TO ADD DOWNLOAD FUNCTIONALITY HERE 
-			downloadFunctionality();
+            fetch('/api/data/files/' + item.user_id + '?aaps=true', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the downloaded data
+                let blob = new Blob([atob(data.file_data)], { type: data.file_type });
+                let link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = data.file_name;
+                link.click();
+            })
+            .catch((error) => {
+                throw error;
+            });
         }
         downloadCell.appendChild(downloadButton)
 
@@ -683,7 +697,17 @@ export function generateAAPTable(aapData) {
 		removeButton.innerText = 'Remove';
 		removeButton.onclick = function () {
 			// NEED TO ADD REMOVE FUNCTIONALITY HERE
-			removeFunctionality(); 
+            // Assuming that the item object has an id property
+            fetch('/api/data/files/remove?fileid=' + item.id, {
+                method: 'DELETE',
+            }).then(response => response.json())
+                .then(data => {
+                    // Handle the response data here
+                    // TODO:
+                })
+                .catch((error) => {
+                    throw error;
+                });
         }
         removeCell.appendChild(removeButton)
 	});
@@ -700,7 +724,30 @@ export function generateAAPTable(aapData) {
             uploadButton.innerText = 'Upload';
             uploadButton.onclick = function () {
                 // NEED TO ADD UPLOAD FUNCTIONALITY HERE
-				uploadFunctionality();
+                // Get the files from the input field
+                let files = document.querySelector('input[type="file"]').files;
+
+                let formData = new FormData();
+                formData.append('user_id', 'YourUserIdHere');
+
+                // Append each file to the form data
+                for(let i = 0; i < files.length; i++) {
+                    let file = files[i];
+                    formData.append('fileName[]', file, file.name);
+                }
+
+                fetch('api/data/files/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response data here
+                    // TODO:
+                })
+                .catch((error) => {
+                    throw error;
+                });
             }
             uploadCell.appendChild(uploadButton)
         } else {
@@ -712,67 +759,6 @@ export function generateAAPTable(aapData) {
 	
 	// Append the table to the container
 	tableContainer.appendChild(table);
-}
-
-function downloadFunctionality() {
-	fetch('/api/data/files/' + item.user_id + '?aaps=true', {
-		method: 'GET',
-	})
-	.then(response => response.json())
-	.then(data => {
-		// Handle the downloaded data
-		let blob = new Blob([atob(data.file_data)], { type: data.file_type });
-		let link = document.createElement('a');
-		link.href = window.URL.createObjectURL(blob);
-		link.download = data.file_name;
-		link.click();
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
-	
-}
-
-function uploadFunctionality() {
-	// Get the files from the input field
-    let files = document.querySelector('input[type="file"]').files;
-
-    let formData = new FormData();
-    formData.append('user_id', 'YourUserIdHere');
-
-    // Append each file to the form data
-    for(let i = 0; i < files.length; i++) {
-        let file = files[i];
-        formData.append('fileName[]', file, file.name);
-    }
-
-    fetch('api/data/files/upload', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the response data here
-        console.log(data);
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
-}
-
-// !!!!!!!!!!!!!!!!!!  THIS ENDPOINT HAS TO BE FIXED !!!!!!!!!!!!!!!!!!!!!!!!!!!
-function removeFunctionality() {
-		// Assuming that the item object has an id property
-		fetch('/api/data/files/remove?fileid=' + item.id, {
-			method: 'DELETE',
-		}).then(response => response.json())
-			.then(data => {
-				// Handle the response data here
-				console.log(data);
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-			});
 }
 
 export function generateSubjectBox(subject) {
@@ -846,7 +832,7 @@ export function handleComplexRequestFunctionality(thread) {
                     initialiseComplexButton(thread);
                 }
                 else{
-                    console.log("ERROR: ", "put thingo didnt work man");
+                    throw error;
                 }
             })
     });
@@ -1040,7 +1026,8 @@ export function hideAndDisplayButtons(thread) {
 export function handleApprovalRejectionAnswer(thread) {
 
     // First 3 letters of request type used for HTML identifiers
-    reqShort = thread.request_type.substring(0,3)
+    let reqShort = thread.request_type.substring(0,3)
+    let responseJson;
 
     // Initialise approve and request buttons for all request types except queries, other and quiz
     if (thread.request_type != "Query" && thread.request_type != "Other") {
@@ -1132,8 +1119,7 @@ function setComplex(threadId){
             return true;
         })
         .catch(error => {
-            console.error('There was a problem setting the complex status:', error);
-            return false;
+            throw error;
         });
 }
 
@@ -1142,12 +1128,11 @@ function respond(threadId, response){
         "thread_id": threadId,
         "response": response
     })
-        .then(responseData => {
+        .then(() => {
             return true;
         })
         .catch(error => {
-            console.error('There was a problem responding to the request:', error);
-            return false;
+            throw error;
         });
 }
 
@@ -1157,7 +1142,6 @@ function postNewCase(dataToSend){
             return true;
         })
         .catch(error => {
-            console.error('There was a problem responding to the request:', error);
-            return false;
+            throw error;
         });
 }
