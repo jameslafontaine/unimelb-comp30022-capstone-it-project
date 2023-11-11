@@ -11,7 +11,8 @@ module.exports = {
   parser: "@babel/eslint-parser",
   parserOptions: {
     sourceType: "module",
-    allowImportExportEverywhere: true
+    allowImportExportEverywhere: true,
+    requireConfigFile: false
   },
 
   // Add any custom rules or overrides
