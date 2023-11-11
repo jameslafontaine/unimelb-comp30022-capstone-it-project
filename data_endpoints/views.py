@@ -6,7 +6,6 @@ All endpoints in data_endpoints
 import base64
 import json
 import mysql.connector
-import os
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, time
@@ -21,7 +20,6 @@ connection = mysql.connector.connect(
     user="root",
     password="admin"
 )
-
 
 def validate_headers(request):
     '''
@@ -773,19 +771,38 @@ def post_file(request):
     POST /api/data/files/upload/
     Check API for request body
     '''
+    # Some request body validation code idk
     if request.method == 'POST':
-        with connection.cursor() as cursor:
-            for filename, file in request.FILES.items():
-                file_data = file.read()
-                file_extension = os.path.splitext(file.name)[1][1:]
-                cursor.execute("""
-                    INSERT INTO File (file, file_name, file_type, user_id, request_id)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, [file_data, file.name, file_extension, request.POST.get('user_id'), request.POST.get('request_id')])
-        return JsonResponse({'message': 'Files uploaded successfully'}, status=201)
-    else:
-        return HttpResponseBadRequest('Invalid request, check input again.')
+        data = json.loads(request.body)
+        data_keys = list(data.keys())
+        all_fields = ["user_id","request_id","fileName"]
+        if not (all_fields == data_keys):
+            return HttpResponseBadRequest("Request body does not have correct fields")
+        # Create a cursor to interact with the database
+        cursor = connection.cursor()
+        cursor.execute(f"USE {database_name}")
+        # Extract data from the JSON
+        user_id = data["user_id"]
+        fileName = data["fileName"]
+        request_id= data["request_id"]
+        file_type = 'AAP'
+        
+        file_data = request.FILES[fileName].read()
 
+        #for filename, file in request.FILES:
+        #    file_data = request.FILES[filename].read()
+        #    file_name = request.FILES[filename].name
+
+        #with open(file_path, 'rb') as file:
+        #    file_data = file.read()
+
+        cursor = connection.cursor()
+        insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(insert_query, (file_data, fileName, user_id, request_id, file_type))
+        connection.commit()
+        return JsonResponse({"message": "Uploaded successfully"}, status = 201)
+    else:
+        return HttpResponseBadRequest("Uploading file failed")
 @csrf_exempt
 def put_preferences(request):
     '''
