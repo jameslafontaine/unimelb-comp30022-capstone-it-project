@@ -142,15 +142,14 @@ function uploadFunctionality() {
 // !!!!!!!!!!!!!!!!!!  THIS ENDPOINT HAS TO BE FIXED !!!!!!!!!!!!!!!!!!!!!!!!!!!
 function removeFunctionality() {
 		// Assuming that the item object has an id property
-		fetch('/api/data/files/' + item.id, {
+		fetch('/api/data/files/remove?fileid=' + item.id, {
 			method: 'DELETE',
-		})
-		.then(response => response.json())
-		.then(data => {
-			// Handle the response data here
-			console.log(data);
-		})
-		.catch((error) => {
-			console.error('Error:', error);
-		});
+		}).then(response => response.json())
+			.then(data => {
+				// Handle the response data here
+				console.log(data);
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
 }

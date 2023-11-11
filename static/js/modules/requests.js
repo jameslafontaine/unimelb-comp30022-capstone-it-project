@@ -194,7 +194,7 @@ function generateSuppDocTable(requestList, number) {
 		downloadButton.onclick = function () {
 			// Need to add functionality to download the file somehow
         }
-        setupDownloadButton //
+        setupDownloadButton;
 		downloadCell.appendChild(downloadButton);
         fixStyling();
 	});
