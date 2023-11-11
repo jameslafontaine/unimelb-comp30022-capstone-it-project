@@ -6,7 +6,7 @@
 
 import { MAX_REQUESTS_IN_REQUEST } from './modules/constantsModule.js';
 import { loadData } from './modules/dataModule.js';
-import { getGlobalAppHeadersValue } from './modules/helperFunctionModule.js';
+import { getGlobalAppHeadersValue, setGlobalAppHeaders } from './modules/helperFunctionModule.js';
 import { fillCurrentRequestInformation, fillStudentDetailsBox, generateRequestTable, generateStudentCases, generateStudentRequest, generateSubjectBox, generateSuppDocTable, generateVersionBox, handleApprovalRejectionAnswer, handleCaseSubmission, handleComplexRequestFunctionality, hideAndDisplayButtons, populateAssessmentDropdown, populatePopups, saveEdits, setupOpenClosePopupButtons } from './modules/uiPopulationModule.js';
 import { createHeader, fixStyling } from './modules/webHeaderModule.js';
 
@@ -186,21 +186,6 @@ export function sEditRequest() {
         status: 'Active',
         instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
     };
-
-    const suppDocs = [
-        {
-            name: 'iamsick.pdf',
-            size: '20 TB'
-        },
-        {
-            name: 'bible.pdf',
-            size: '40 MB'
-        },
-        {
-            name: 'medcert.pdf',
-            size: '3 MB'
-        }
-    ]
 
     var prevVersions = [
     {

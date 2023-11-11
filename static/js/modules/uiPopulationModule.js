@@ -1,3 +1,5 @@
+import { fixStyling } from './webHeaderModule.js';
+import { getGlobalAppHeadersValue } from './helperFunctionModule.js';
 import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS, REQUEST_TABLE_HEADERS } from './constantsModule.js'
 import { loadData, postData, putData } from './dataModule.js';
 
@@ -38,7 +40,7 @@ export function generateStudentCases(cases) {
         const table = document.createElement('table');
 
         // Create table header row
-	    const headerRow = table.insertRow();
+        const headerRow = table.insertRow();
 
         // wait for the requests to load in and then continue
         loadData('/api/data/cases/?caseid=' + cases[i].case_id + '&threads=true', {})
@@ -158,7 +160,7 @@ export function fillCurrentRequestInformation(threadId, view) {
             //    document.getElementById("notes").innerHTML = requestData.instructorNotes;
             //}
         })
-};
+}
 
 export function generateSuppDocTable(requestList, number) {
 	const tableContainer = document.getElementById(`suppDocContainer${number}`);
@@ -206,7 +208,7 @@ export function generateSuppDocTable(requestList, number) {
 	
 	// Append the table to the container
 	tableContainer.appendChild(table);
-};
+}
 
 export function generateVersionBox(version, number) {
     const container = document.getElementById("requestHistoryContainer");
@@ -414,8 +416,7 @@ export function generateStudentRequest(number, courseList) {
     assignmentDropDownListener(number, courseList);
 
 
-    lastLineBreak = document.createElement("br")
-
+    const lastLineBreak = document.createElement("br")
     lastLineBreak.id = `lastLineBreak${number}`
     caseContainer.appendChild(lastLineBreak);
 
@@ -478,7 +479,7 @@ function createAssignmentDropDown(number, courseList){
                 if (courseCode == course.course_code) {
                     loadData('/api/data/assessments/?courseid=' + course.course_id, {})
                         .then(data => {
-                            assignments = data.assessments
+                            let assignments = data.assessments;
                             assignments.forEach(assignment => {
                                 const option = document.createElement('option');
                                 option.textContent = assignment.assignment_name;
@@ -530,7 +531,7 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
             body: formData
         })
         .then(response => response.json())
-        .then(data => {
+        .then(() => {
             const fileInfo = document.createElement('div');
             fileInfo.innerHTML = `
             <p>Filename: ${file.name}</p>
@@ -554,10 +555,14 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
                         fileInfo.remove();
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    throw error;
+                });
             });
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            throw error;
+        });
     });
 }
 
@@ -572,15 +577,16 @@ function setupDownloadButton(buttonId, fileUrl, fileName) {
             link.download = fileName;
             link.click();
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            throw error;
+        });
     });
 }
 
 export function handleCaseSubmission(numRequests) {
     let requestsData = new Array();
     for (let i=1; i <= numRequests; i++) {
-
-        requestData = {
+        let requestData = {
             'courseId': document.getElementById(`courseDropdown${i}`).value,
             'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
             'assignmentId': -1,
@@ -594,6 +600,21 @@ export function handleCaseSubmission(numRequests) {
 }
 
 export function saveEdits(currRequest, prevVersions) {
+
+    const suppDocs = [
+        {
+            name: 'iamsick.pdf',
+            size: '20 TB'
+        },
+        {
+            name: 'bible.pdf',
+            size: '40 MB'
+        },
+        {
+            name: 'medcert.pdf',
+            size: '3 MB'
+        }
+    ]
 
     // Create a new 'version' with the old 'current request' data
     const newVersion = {
@@ -691,7 +712,7 @@ export function generateAAPTable(aapData) {
 	
 	// Append the table to the container
 	tableContainer.appendChild(table);
-};
+}
 
 function downloadFunctionality() {
 	fetch('/api/data/files/' + item.user_id + '?aaps=true', {
@@ -710,7 +731,7 @@ function downloadFunctionality() {
 		console.error('Error:', error);
 	});
 	
-};
+}
 
 function uploadFunctionality() {
 	// Get the files from the input field
@@ -807,7 +828,7 @@ export function generateSubjectBox(subject) {
 	document.getElementById('subjectBoxContainer').appendChild(document.createElement('br'));
 
 	fixStyling();
-};
+}
 
 export function handleComplexRequestFunctionality(thread) {
     initialiseComplexButton(thread);
