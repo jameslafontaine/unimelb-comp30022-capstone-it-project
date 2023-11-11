@@ -30,6 +30,8 @@ jobs:
         run: npm install
       - name: Install @babel/eslint-parser
         run: npm install --save-dev @babel/eslint-parser
+      - name: Install @babel/core
+        run: npm install --save-dev @babel/core
       - name: Lint JavaScript files
         run: npm run lint
 
