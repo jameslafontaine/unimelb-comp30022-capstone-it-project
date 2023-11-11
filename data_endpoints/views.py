@@ -14,20 +14,13 @@ from datetime import datetime, time
 # Replace these values with your MySQL server details
 
 database_name = 'db'
-'''
 connection = mysql.connector.connect(
     host="db",
     port="3306",
     user="root",
     password="admin"
 )
-'''
-connection = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="queenastrid1", # INSERT PASSWORD HERE
-    database="db"
-)
+
 
 def validate_headers(request):
     '''
