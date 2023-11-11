@@ -48,6 +48,7 @@ function generateAAPTable(aapData) {
 		downloadButton.innerText = 'Download';
 		downloadButton.onclick = function () {
 			// NEED TO ADD DOWNLOAD FUNCTIONALITY HERE 
+			downloadFunctionality();
         }
         downloadCell.appendChild(downloadButton)
 
@@ -58,7 +59,8 @@ function generateAAPTable(aapData) {
 		removeButton.className = 'standardButton';
 		removeButton.innerText = 'Remove';
 		removeButton.onclick = function () {
-			// NEED TO ADD REMOVE FUNCTIONALITY HERE 
+			// NEED TO ADD REMOVE FUNCTIONALITY HERE
+			removeFunctionality(); 
         }
         removeCell.appendChild(removeButton)
 	});
@@ -75,6 +77,7 @@ function generateAAPTable(aapData) {
             uploadButton.innerText = 'Upload';
             uploadButton.onclick = function () {
                 // NEED TO ADD UPLOAD FUNCTIONALITY HERE
+				uploadFunctionality();
             }
             uploadCell.appendChild(uploadButton)
         } else {
@@ -87,4 +90,67 @@ function generateAAPTable(aapData) {
 	// Append the table to the container
 	tableContainer.appendChild(table);
 	fixStyling();
+};
+
+
+function downloadFunctionality() {
+	fetch('/api/data/files/' + item.user_id + '?aaps=true', {
+		method: 'GET',
+	})
+	.then(response => response.json())
+	.then(data => {
+		// Handle the downloaded data
+		let blob = new Blob([atob(data.file_data)], { type: data.file_type });
+		let link = document.createElement('a');
+		link.href = window.URL.createObjectURL(blob);
+		link.download = data.file_name;
+		link.click();
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
+	
+};
+
+function uploadFunctionality() {
+	// Get the files from the input field
+    let files = document.querySelector('input[type="file"]').files;
+
+    let formData = new FormData();
+    formData.append('user_id', 'YourUserIdHere');
+
+    // Append each file to the form data
+    for(let i = 0; i < files.length; i++) {
+        let file = files[i];
+        formData.append('fileName[]', file, file.name);
+    }
+
+    fetch('api/data/files/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response data here
+        console.log(data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+// !!!!!!!!!!!!!!!!!!  THIS ENDPOINT HAS TO BE FIXED !!!!!!!!!!!!!!!!!!!!!!!!!!!
+function removeFunctionality() {
+		// Assuming that the item object has an id property
+		fetch('/api/data/files/' + item.id, {
+			method: 'DELETE',
+		})
+		.then(response => response.json())
+		.then(data => {
+			// Handle the response data here
+			console.log(data);
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
 }
