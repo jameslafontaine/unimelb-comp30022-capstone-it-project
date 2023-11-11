@@ -230,7 +230,7 @@ function loadUserDetails(userId){
  * GENERIC: Returns a given users aaps
  */
 function loadUserAAPs(userId){
-    return loadData('/api/data/user/' + userId + '?aaps=true', {})
+    return loadData('/api/data/files/' + userId + '?aaps=true', {})
         .then(data => {
             return data.aaps;
         })

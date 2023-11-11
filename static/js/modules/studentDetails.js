@@ -4,6 +4,8 @@
  * Description: Handles student detail functionality
  */
 
+const AAP_TABLE_HEADERS = ["File name", "File type"]
+
 function fillStudentDetailsBox(student) {
     document.getElementById('studentName').innerHTML = student.first_name + ' ' + student.last_name
     document.getElementById('studentId').innerHTML = student.user_id
@@ -16,30 +18,29 @@ function generateAAPTable(aapData) {
 	
 	// Create table header row
 	const headerRow = table.insertRow();
-	
-	for (const key in aapData[0]) {
-		if (aapData[0].hasOwnProperty(key)) {
-			const th = document.createElement('th');
-			th.innerText = key;
-			headerRow.appendChild(th);
-		}
+
+	for (const key in AAP_TABLE_HEADERS) {
+		const th = document.createElement('th');
+		th.innerText = AAP_TABLE_HEADERS[key]
+		headerRow.appendChild(th);
 	}
 	
 	// Add two empty headers for the button columns
 	headerRow.appendChild(document.createElement('th'));
     headerRow.appendChild(document.createElement('th'));
 	
-	// Create table aapData rows
 	aapData.forEach(item => {
 		const row = table.insertRow();
-		for (const key in item) {
-			if (item.hasOwnProperty(key)) {
-				const cell = row.insertCell();
-				cell.className = 'tableEntry'; // Apply the CSS class to the cell
-                cell.innerHTML = item[key];
-			}
-		}
-        // Add the "Download" button to the 2nd last cell 
+		
+		const fileNameCell = row.insertCell();
+		fileNameCell.className = 'tableEntry';
+		fileNameCell.innerHTML = item.file_name;
+
+		const fileTypeCell = row.insertCell();
+		fileTypeCell.className = 'tableEntry';
+		fileTypeCell.innerHTML = item.file_type
+
+		// Download button
 		const downloadCell = row.insertCell();
 		downloadCell.className = 'tableEntry';
 		const downloadButton = document.createElement('button');
@@ -50,8 +51,8 @@ function generateAAPTable(aapData) {
         }
         downloadCell.appendChild(downloadButton)
 
-		// Add the "Remove" button to the last cell
-        const removeCell = row.insertCell();
+		// Remove button
+		const removeCell = row.insertCell();
 		removeCell.className = 'tableEntry';
 		const removeButton = document.createElement('button');
 		removeButton.className = 'standardButton';
