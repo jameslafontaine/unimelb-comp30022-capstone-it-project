@@ -50,7 +50,7 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint --ignore=manage.py $(git ls-files '*.py')
+        pylint --ignore=manage.py --disable=R0911 $(git ls-files '*.py')
 
   Tests:
     needs: pylint

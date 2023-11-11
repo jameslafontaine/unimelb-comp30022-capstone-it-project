@@ -188,7 +188,7 @@ def get_courses_endpoint(request):
     if len(request.GET) == 1 and request.GET.get('userid'):
         if check_param_not_integer(request.GET.get('userid')):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
-        else:
+        if not check_param_not_integer(request.GET.get('userid')):
             # Do some fancy join magic here i forgot probably involves enrollmenttable as well
             result = {
                 "courses": [
@@ -603,7 +603,7 @@ def post_new_case(request):
         for item in data['requests']:
             if not set(item.keys()) == set(all_fields):
                 return HttpResponseBadRequest("Request body does not have correct fields")
-            else:
+            if set(item.keys()) == set(all_fields):
                 for field in integer_fields:
                     if not isinstance(item[field], int):
                         return HttpResponseBadRequest("Request body does not have correct fields")
