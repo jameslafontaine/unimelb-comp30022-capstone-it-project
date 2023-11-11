@@ -17,16 +17,6 @@ function iloadThreadData(courseId){
 
 
 /**
- * STUDENT: Loads in active cases from the DB, returns an array full of case JSONs
- */
-function sloadActiveCasesData(){
-    return loadData('/api/data/cases/?userid=' + getGlobalAppHeadersValue('user_id'), {})
-        .then(data => {
-            return data.cases;
-        })
-}
-
-/**
  * STUDENT: Loads in threads from case id from the DB, returns an array full of case JSONs
  */
 function sloadThreadsData(caseId){
