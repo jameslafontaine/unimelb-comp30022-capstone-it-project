@@ -368,7 +368,9 @@
             // read in thread id from the provided data
             let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
             
-
+            // read in supporting documentation list as a JSON
+            let suppDocs = JSON.parse(document.getElementById('something'))
+        
             // Fill information relating to the current request from the database
             fillCurrentRequestInformation(threadId, 'Instructor');
 

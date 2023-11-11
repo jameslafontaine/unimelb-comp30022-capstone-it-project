@@ -194,6 +194,7 @@ function generateSuppDocTable(requestList, number) {
 		downloadButton.onclick = function () {
 			// Need to add functionality to download the file somehow
         }
+        setupDownloadButton;
 		downloadCell.appendChild(downloadButton);
         fixStyling();
 	});
@@ -523,13 +524,30 @@ function generateStudentRequest(number, courseList) {
 
     const uploadButton = document.createElement('button');
     uploadButton.className = 'standardButton';
-    uploadButton.id = `upload${number}`
+    uploadButton.id = `uploadBtn${number}`;
     uploadButton.innerText = 'Upload';
-    uploadButton.onclick = function () {
-        // NEED TO ADD UPLOAD FUNCTIONALITY
-    }
 
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = `fileInput${number}`;
+    fileInput.style.display = 'none'; // Hide the file input element
+
+    const fileContainer = document.createElement('div');
+    fileContainer.id = `fileContainer${number}`;
+
+    supDocContainer.appendChild(fileContainer)
+
+    supDocContainer.appendChild(fileInput);
+
+    // Append the upload button to the document body 
     supDocContainer.appendChild(uploadButton);
+
+
+    // // Event listener for the upload button
+    // uploadButton.onclick = function () {
+    //     // Programmatically trigger a click event on the file input element
+    //     fileInput.click();
+    // };
     
     // Append the new elements into the HTML
     expandableBoxSection.appendChild(course);
@@ -592,9 +610,13 @@ function generateStudentRequest(number, courseList) {
         document.getElementById(`requestTypeDropdown${number}`).appendChild(option);
     });
 
-    fixStyling();
+    // Setup upload button and make sure the files uploaded are displayed correctly and are allowed to be removed
 
-    // Initialise supporting documentation table with upload button
+    // CHANGE UPLOAD URL TO WHATEVER IS CORRECT FOR OUR DATABASE
+    setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 
+    '/api/data/files/upload');
+
+    fixStyling();
 
 }
 
