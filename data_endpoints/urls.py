@@ -12,7 +12,7 @@ from .views import get_threads_endpoint
 from .views import get_user_endpoint
 from .views import get_files_endpoint
 from .views import post_new_case
-from .views import psot_file
+from .views import post_file
 from .views import put_preferences
 from .views import put_req_response
 from .views import set_complex
@@ -27,11 +27,11 @@ urlpatterns = [
     path('thread/', get_threads_user_endpoint, name = 'get_threads_user'),
     path('thread/<int:thread_id>/', get_threads_endpoint, name='get_threads'),
     path('user/<int:user_id>/', get_user_endpoint, name = 'get_user'),
-    path('files/<int:user_id>', get_files_endpoint, name = 'get_files')
+    path('files/<int:user_id>/', get_files_endpoint, name = 'get_files'),
 
     # POST requests
     path('cases/new/', post_new_case, name = 'post_new_case'),
-    path('file/upload', post_file, name = 'post_new_aap'),
+    path('file/upload/', post_file, name = 'post_new_aap'),
 
     # PUT requests
     path('courses/setpreferences/', put_preferences, name = 'put_preferences'),

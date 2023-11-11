@@ -187,6 +187,7 @@ function generateSuppDocTable(requestList, number) {
 		downloadButton.onclick = function () {
 			// Need to add functionality to download the file somehow
         }
+        setupDownloadButton
 		downloadCell.appendChild(downloadButton);
         fixStyling();
 	});
@@ -596,11 +597,10 @@ function generateStudentRequest(number, courseList) {
     // Setup upload button and make sure the files uploaded are displayed correctly and are allowed to be removed
 
     // CHANGE UPLOAD URL TO WHATEVER IS CORRECT FOR OUR DATABASE
-    setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 'https://cors-anywhere.herokuapp.com/https://reqres.in/api/posts');
+    setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 
+    '/api/data/file/upload');
 
     fixStyling();
-
-    // Initialise supporting documentation table with upload button
 
 }
 
