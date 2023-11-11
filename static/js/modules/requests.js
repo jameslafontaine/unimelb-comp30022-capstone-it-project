@@ -4,6 +4,9 @@
  * Description: Handles all functionality surrounding requests
  */
 
+const CASE_TABLE_HEADERS = ["Request Type", "Course Name", "Assessment", "Current Status", "Date Updated"];
+const REQUEST_TABLE_HEADERS = ["Complex case", "Request Type", "Assessment", "Current Status", "Date Updated", "Instructor Notes"];
+
 /** 
  * Generates an interactive table of all active and resolved requests for the currently selected course
  */
@@ -14,69 +17,81 @@ function generateRequestTable(threads, type) {
 	// Create table header row
 	const headerRow = table.insertRow();
 
-    getLatestRequest(threads[0].thread_id)
-        .then(request => {
-            for (const key in request) {
-                if (request.hasOwnProperty(key)) {
-                    const th = document.createElement('th');
-                    th.innerText = key;
-                    headerRow.appendChild(th);
-                }
-            }
+    for (const key in REQUEST_TABLE_HEADERS) {
+        const th = document.createElement('th');
+        th.innerText = REQUEST_TABLE_HEADERS[key];
+        headerRow.appendChild(th);
+    }
 
-            // Add an empty header for the button column
-            const emptyHeader = document.createElement('th');
-            emptyHeader.textContent = '';
-            headerRow.appendChild(emptyHeader);
-        })
-	
-    // Create table data rows
-	threads.forEach(thread => {
+    const emptyHeader = document.createElement('th');
+    emptyHeader.textContent = '';
+    headerRow.appendChild(emptyHeader);
+
+    // Add thread data
+    threads.forEach(thread => {
+        const row = table.insertRow();
+        
+        const complexCaseCell = row.insertCell();
+        complexCaseCell.className = 'tableEntry';
+        if (thread.complex_case == 0) {
+            const hollowStar = '<span style="font-size: 300%; ">☆</span>';
+            complexCaseCell.innerHTML = hollowStar;
+        } else if (thread.complex_case == 1) {
+            const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
+            complexCaseCell.innerHTML = yellowStar;
+        }
+
+        const requestTypeCell = row.insertCell();
+        requestTypeCell.className = 'tableEntry';
+        requestTypeCell.innerHTML = thread.request_type;
+
+        const assessmentNameCell = row.insertCell();
+        assessmentNameCell.className = 'tableEntry';
+        if (thread.assignment_id != null) {
+            loadAssignment(thread.assignment_id)
+                .then(assignmentData => {
+                    assessmentNameCell.innerHTML = assignmentData.assignment_name;
+                });
+        } else {
+            assessmentNameCell.innerHTML = "None";
+        }
+
+        const currentStatusCell = row.insertCell();
+        currentStatusCell.className = 'tableEntry';
+        currentStatusCell.innerHTML = thread.current_status;
+
+        const dateUpdatedCell = row.insertCell();
+        dateUpdatedCell.className = 'tableEntry';
+        dateUpdatedCell.innerHTML = thread.date_updated;
+
+        const instructorNotesCell = row.insertCell();
+        instructorNotesCell.className = 'tableEntry';
         getLatestRequest(thread.thread_id)
-            .then(request => {
-                const row = table.insertRow();
-                for (const key in request) {
-                    if (request.hasOwnProperty(key)) {
-                        const cell = row.insertCell();
-                        cell.className = 'tableEntry'; // Apply the CSS class to the cell
-                        // Check if the key is 'reserved'
-                        if (key === 'reserved') {
-                            // Check if 'reserved' is true, and display a yellow star for such requests
-                            if (request[key] === true) {
-                                const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
-                                cell.innerHTML = yellowStar;
-                            } else {
-                                // Display a hollow star for non-reserved requests
-                                const hollowStar = '<span style="font-size: 300%; ">☆</span>';
-                                cell.innerHTML = hollowStar;
-                            }
-                        } else {
-                            // For other keys, just display the value as is
-                            cell.innerHTML = request[key];
-                        }
-                    }
-                }
+            .then(data => {
+                instructorNotesCell.innerHTML = data.instructor_notes;
+            });
 
-                const reviewCell = row.insertCell();
-                reviewCell.className = 'tableEntry';
-                const requestButton = document.createElement('button');
-                requestButton.className = 'standardButton';
-                // Add the "Review" button to the last cell if this is the awaiting action table
-                if (type === 'Awaiting') {
-                    requestButton.innerText = 'Review';
-                    requestButton.onclick = function () {
-                        window.location.href = '/instructor/review-req/' + request.thread_id; // id needs to be fetched and put in here 
-                    };
-                // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
-                } else if (type === 'Resolved') {
-                    requestButton.innerText = 'View details';
-                    requestButton.onclick = function () {
-                        window.location.href = '/instructor/view-resolved/' + request.thread_id; 
-                    };
-                }
-                reviewCell.appendChild(requestButton);
-            })
-    })
+        const reviewCell = row.insertCell();
+        reviewCell.className = 'tableEntry';
+        const requestButton = document.createElement('button');
+        requestButton.className = 'standardButton';
+        // Add the "Review" button to the last cell if this is the awaiting action table
+        if (type === 'Awaiting') {
+            requestButton.innerText = 'Review';
+            requestButton.onclick = function () {
+                window.location.href = '/instructor/review-req/' + thread.thread_id; // id needs to be fetched and put in here 
+            };
+        // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
+        } else if (type === 'Resolved') {
+            requestButton.innerText = 'View details';
+            requestButton.onclick = function () {
+                window.location.href = '/instructor/view-resolved/' + thread.thread_id; 
+            };
+        }
+        reviewCell.appendChild(requestButton);
+
+
+    });
 	
 	// Append the table to the container
 	tableContainer.appendChild(table);
@@ -180,10 +195,12 @@ function generateSuppDocTable(requestList, number) {
 			// Need to add functionality to download the file somehow
         }
 		downloadCell.appendChild(downloadButton);
+        fixStyling();
 	});
 	
 	// Append the table to the container
 	tableContainer.appendChild(table);
+    fixStyling();
 };
 
 /** 
@@ -250,6 +267,8 @@ function generateVersionBox(version, number) {
     container.appendChild(expandableBox);
     container.appendChild(expandableBoxSection);
     container.appendChild(document.createElement("br"));
+
+    fixStyling();
     
     //generateSuppDocTable(version.documents, number);
     //container.appendChild(document.createElement("br"));
@@ -344,62 +363,77 @@ function generateStudentCases(cases) {
 
         // Create table header row
 	    const headerRow = table.insertRow();
-        
+
         // wait for the requests to load in and then continue
         sloadThreadsData(cases[i].case_id)
-            .then(threads => {
-                // gets the first request of the first thread just to fill out the headers
-                getLatestRequest(threads[0].thread_id)
-                        .then(request => {
-                            for (const key in request) {
-                                if (request.hasOwnProperty(key)) {
-                                    const th = document.createElement('th');
-                                    th.innerText = key;
-                                    headerRow.appendChild(th);
-                                }
-                            }
-                    
-                            // Add an empty header for the button column
-                            const emptyHeader = document.createElement('th');
-                            emptyHeader.textContent = '';
-                            headerRow.appendChild(emptyHeader);
-                        })
+            .then(threads => {                
+
+                // Make the table headers
+
+                for (const key in CASE_TABLE_HEADERS) {
+                    const th = document.createElement('th');
+                    th.innerText = CASE_TABLE_HEADERS[key];
+                    headerRow.appendChild(th);
+                }
+
+                const emptyHeader = document.createElement('th');
+                emptyHeader.textContent = '';
+                headerRow.appendChild(emptyHeader);
 
                 // Create table data rows
                 threads.forEach(thread => {
-                    getLatestRequest(thread.thread_id)
-                        .then(request => {
+                  
+                    const row = table.insertRow();
 
-                            const row = table.insertRow();
-                            for (const key in request) {
-                                if (request.hasOwnProperty(key)) {
-                                    const cell = row.insertCell();
-                                    cell.className = 'tableEntry'; // Apply the CSS class to the cell
-                                cell.innerHTML = request[key];
-                                }
-                            }
-                
-                            const viewDetailsCell = row.insertCell();
-                            viewDetailsCell.className = 'tableEntry';
-                            const viewDetailsButton = document.createElement('button');
-                            viewDetailsButton.className = 'standardButton';
-                            // Add the "View Details" button to the last cell for each request
-                            viewDetailsButton.innerText = 'View Details';
-                            viewDetailsButton.onclick = function () {
-                                window.location.href = '/student/view-req/' + request.thread_id;
-                            }
-                            viewDetailsCell.appendChild(viewDetailsButton);
+                    const requestTypeCell = row.insertCell();
+                    requestTypeCell.className = 'tableEntry';
+                    requestTypeCell.innerHTML = thread.request_type;
+
+                    const courseNameCell = row.insertCell();
+                    courseNameCell.className = 'tableEntry';
+                    loadCourse(thread.course_id)
+                        .then(courseData => {
+                            courseNameCell.innerHTML = courseData.course_name;
                         });
-                        // Append the table to the expandable box
-                        expandableBoxSection.appendChild(table);
+
+                    const assessmentNameCell = row.insertCell();
+                    assessmentNameCell.className = 'tableEntry';
+                    if (thread.assignment_id != null) {
+                        loadAssignment(thread.assignment_id)
+                            .then(assignmentData => {
+                                assessmentNameCell.innerHTML = assignmentData.assignment_name;
+                            });
+                    } else {
+                        assessmentNameCell.innerHTML = "None";
+                    }
+
+                    const currentStatusCell = row.insertCell();
+                    currentStatusCell.className = 'tableEntry';
+                    currentStatusCell.innerHTML = thread.current_status;
+
+                    const dateUpdatedCell = row.insertCell();
+                    dateUpdatedCell.className = 'tableEntry';
+                    dateUpdatedCell.innerHTML = thread.date_updated;
+
+                    const viewDetailsCell = row.insertCell();
+                    viewDetailsCell.className = 'tableEntry';
+                    const viewDetailsButton = document.createElement('button');
+                    viewDetailsButton.className = 'standardButton';
+                    viewDetailsButton.innerText = 'View Details';
+                    viewDetailsButton.onclick = function () {
+                        window.location.href = '/student/view-req/' + thread.thread_id;
+                    }
+                    viewDetailsCell.appendChild(viewDetailsButton);
+                    expandableBoxSection.appendChild(table);
+            
+                    container.appendChild(expandableBox);
+                    container.appendChild(expandableBoxSection);
+                    container.appendChild(document.createElement("br"));
                 
-                        container.appendChild(expandableBox);
-                        container.appendChild(expandableBoxSection);
-                        container.appendChild(document.createElement("br"));
-                })
-                    
-            })
-    };
+                });
+                fixStyling();
+            });
+    }
 
     
 }
@@ -558,6 +592,8 @@ function generateStudentRequest(number, courseList) {
         document.getElementById(`requestTypeDropdown${number}`).appendChild(option);
     });
 
+    fixStyling();
+
     // Initialise supporting documentation table with upload button
 
 }
@@ -613,17 +649,23 @@ function createAssignmentDropDown(number, courseList){
     });
 
     // Populate the dropdown
-    getCourseData(courseCode)
-        .then(course => {
-            getAssignments(course.course_id)
-                .then(assignments => {
-                    assignments.forEach(assignment => {
-                        const option = document.createElement('option');
-                        option.textContent = assignment.assignment_name;
-                        document.getElementById(`assignmentDropdown${number}`).appendChild(option);
-                    })
-                })
-        })
+    getCourseData()
+        .then(courses => {
+            for (let course of courses) {
+                if (courseCode == course.course_code) {
+                    getAssignments(course.course_id)
+                        .then(assignments => {
+                            assignments.forEach(assignment => {
+                                const option = document.createElement('option');
+                                option.textContent = assignment.assignment_name;
+                                document.getElementById(`assignmentDropdown${number}`).appendChild(option);
+                            });
+                            fixStyling();
+                        });
+                    break;
+                }
+            }
+        });
 }
 
 /** 
@@ -645,29 +687,3 @@ function handleCaseSubmission(numRequests) {
     }
     postNewCase({'requests': requestsData});
 }
-
-/*
-
-responseJson = {
-        'requests' : [
-            {
-                'courseId': ,
-                'requestType': ,
-                'assignmentId': , //null if not linked to an assignment
-                'requestTitle': ,
-                'message': ,
-                'supportingDocuments': , //i dont actually know what this will look like yet
-            },
-            {
-            'courseId': ,
-                'requestType': ,
-                'assignmentId': ,
-                'requestTitle': ,
-                'message': ,
-                'supportingDocuments': ,
-            },
-        ]
-    }
-
-
-*/

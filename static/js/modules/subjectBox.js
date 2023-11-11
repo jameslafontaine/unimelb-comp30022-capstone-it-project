@@ -4,48 +4,19 @@
  * Description: handles the loading/creating of subject boxes
  */
 
-// These will be retrieved from an instructor in the database
-let subjects = new Array();
-let usrId;
-
 function loadSubjectBoxData(){
-	return getInstructorId()
-		.then(() => getSubjects())
-		.catch(error => {
-			console.error('Error:', error);
-		});
-
-}
-
-// gets the users id and puts it into usrId for future use
-function getInstructorId(){
-	return fetch('/instructor/get-user-id/')
+	return fetch('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'))
 		.then(response => response.json())
-		.then(data => {
-			usrId = data.id;
-			//console.log('usrId', usrId);
-		})
-		.catch(error => {
-			console.error('Error:', error);
-		});
-}
-
-
-	
-// Calls the api and makes a list of the subjects (courses)
-function getSubjects(){
-	url = '/instructor/courses/' + usrId;
-	return fetch(url)
-        .then(response => response.json())
         .then(data => {
-            subjects = JSON.parse(data.courses);
+            return data.courses;
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error - loadSubjectBoxData()', error);
+			throw error;
         });
 }
 
-
+	
 // Function to create and populate an expandable subject box
 function generateSubjectBox(subject) {
 	// Create a new expandable box element
@@ -96,7 +67,9 @@ function generateSubjectBox(subject) {
 	standardBox.appendChild(standardBoxContents);
   
 	// Append the subject box to the container
-	document.getElementById('subjectBoxContainer').appendChild(standardBox );
+	document.getElementById('subjectBoxContainer').appendChild(standardBox);
 	document.getElementById('subjectBoxContainer').appendChild(document.createElement('br'));
+
+	fixStyling();
 };
   

@@ -104,18 +104,26 @@ function handleApprovalRejectionAnswer(thread) {
     // First 3 letters of request type used for HTML identifiers
     reqShort = thread.request_type.substring(0,3)
 
-    // Initialise approve and request buttons for all request types except queries and other
+    // Initialise approve and request buttons for all request types except queries, other and quiz
     if (thread.request_type != "Query" && thread.request_type != "Other") {
         // Get the Approve Request button
         const popupApproveButton = document.getElementById(`popupApproveButton${reqShort}`);
         
         // Add click event listener to Approve Request button
         popupApproveButton.addEventListener('click', function() {
-
-            responseJson = {
-                'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                'status' : 'Approved',
-                'extended by' : document.getElementById('extensionOverrideAExt').value,
+            // Quiz has the extra field of quiz password to return and doesn't need extension
+            if (thread.request_type == "Quiz") {
+                responseJson = {
+                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                    'status' : 'Approved',
+                    'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                }
+            } else {
+                responseJson = {
+                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                    'status' : 'Approved',
+                    'extended by' : document.getElementById('extensionOverrideAExt').value,
+                }
             }
 
             respond(thread.thread_id, responseJson);

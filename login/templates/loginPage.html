@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,12 +17,21 @@
         <p id="testSetUsr"></p>
 
     </body>
+
+    <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
+
     <script>
+        let globalAppHeaders = new Headers();
+        globalAppHeaders.append(CONTENT_TYPE, 'application/json');
+        globalAppHeaders.append('user_id', '');
+        sessionStorage.setItem('globalAppHeaders', JSON.stringify(Object.fromEntries(globalAppHeaders.entries())));
+
         for (let i = 1; i <= 4; i++) {
             const option = document.createElement('option');
             option.textContent = i;
             document.getElementById('idSelection').appendChild(option);
         }
+
     </script>
 
     <script>
@@ -29,32 +40,11 @@
             var selectedIndex = selectedElem.selectedIndex;
             var selectedOption = selectedElem.options[selectedIndex];
             var selectedValue = selectedOption.value;
-            // set the id
-            if(selectedValue <= 2){
-                url = '/student/set-user-id/' + selectedValue;
-            }
-            if(selectedValue > 2){
-                url = '/instructor/set-user-id/' + selectedValue;
-            }
-            fetch(url,{method: 'PUT'}); 
+            setGlobalAppHeaders('user_id', selectedValue);
         }
         function login(){
-            var selectedElem = document.getElementById("idSelection");
-            var selectedIndex = selectedElem.selectedIndex;
-            var selectedOption = selectedElem.options[selectedIndex];
-            var selectedValue = selectedOption.value;
-
-            // if instructor id
-            if(selectedValue > 2){
-                window.location.href = '/instructor/';
-            }
-
-
-            // if student id
-            if(selectedValue <= 2) {
-                window.location.href = '/student/';
-            }
-
+            var url = getGlobalAppHeadersValue('user_id') <= 2 ? '/student/' : '/instructor/';
+            window.location.href = url;
         }
     </script>
 

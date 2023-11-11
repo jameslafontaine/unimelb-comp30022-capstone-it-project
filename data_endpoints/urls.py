@@ -10,6 +10,7 @@ from .views import get_requests_endpoint
 from .views import get_threads_user_endpoint
 from .views import get_threads_endpoint
 from .views import get_user_endpoint
+from .views import get_files_endpoint
 from .views import post_new_case
 from .views import post_file
 from .views import put_preferences

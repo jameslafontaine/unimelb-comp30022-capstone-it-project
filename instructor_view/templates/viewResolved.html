@@ -18,7 +18,7 @@
         <style>
             .pageAsATable {
                 display: grid;
-                grid-template-columns: 70% 1fr;
+                grid-template-columns: 60% 1fr;
             }
         </style>
 
@@ -59,7 +59,7 @@
 
         <div id="webHeaderContainer"></div>
 
-        <div class="mainBody" style="width: 90%;">
+        <div class="mainBody" style="width: 100%;">
             <div class="pageAsATable">
                 <div class="leftSide">
                     <p class="title" id="requestNum"></p>
@@ -107,34 +107,41 @@
                     
                 </div>
 
-                <div class="rightSide" style="text-align: center;">
-                    <br><br>
-                    <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
-                    <div style="display: inline-block; text-align: center;">
-                        <p class="standardBox" style="width: 300px; height: 200px;">
-                            <span class="text" id="studentName"></span>
-                            <span class="text" id="studentId"></span>
-                            <span class="text" id="studentEmail" style="font-size: 14px;"></span>
-                            <span>
-                                <button class="standardButton" onclick=toProfile()>
-                                    View Profile
-                                </button>
-                            </span>
-                        </p>
-                    </div>
-                    <br><br><br><br><br><br>
-                    <div style="text-align: center; width: fit-content; margin: 0 auto;">
-                        <div>
-                            <p class="bigButton" onclick=back()>
-                                Back
+                <div class="rightSide" style="display: flex; 
+                                          justify-content: center; 
+                                          align-items: center;
+                                          height: 90vh;">
+                    <div style="position: fixed;">
+                        <br><br>
+                        <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
+                        <div style="display: inline-block; text-align: center;">
+                            <p class="standardBox" style="width: 300px; height: 200px;">
+                                <span class="text" id="studentName"></span>
+                                <span class="text" id="studentId"></span>
+                                <span class="text" id="studentEmail" style="font-size: 14px;"></span>
+                                <span>
+                                    <button class="standardButton" onclick=toProfile()>
+                                        View Profile
+                                    </button>
+                                </span>
                             </p>
+                        </div>
+                        <br><br>
+                        <div style="text-align: center; width: fit-content; margin: 0 auto;">
+                            <div>
+                                <p class="bigButton" onclick=back()>
+                                    Back
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
         <script src="{% static 'js/modules/data.js' %}"></script>
         <script src="{% static 'js/modules/webHeader.js' %}"></script>
+        <script src="{% static 'js/modules/styleMode.js' %}"></script>
         <script>createHeader("instructor")</script>
         <script src="{% static 'js/modules/requests.js' %}"></script>
         <script>
