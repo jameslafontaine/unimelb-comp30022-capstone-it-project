@@ -8,7 +8,7 @@ module.exports = {
   // Define the set of rules you want to enforce
   extends: 'eslint:recommended', // You can extend other ESLint configurations here
 
-  parser: "babel-eslint",
+  parser: "@babel/eslint-parser",
   parserOptions: {
     sourceType: "module",
     allowImportExportEverywhere: true
