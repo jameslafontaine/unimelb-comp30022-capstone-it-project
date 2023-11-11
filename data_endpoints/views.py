@@ -14,11 +14,19 @@ from datetime import datetime, time
 # Replace these values with your MySQL server details
 
 database_name = 'db'
+'''
 connection = mysql.connector.connect(
     host="db",
     port="3306",
     user="root",
     password="admin"
+)
+'''
+connection = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="queenastrid1", # INSERT PASSWORD HERE
+    database="db"
 )
 
 def validate_headers(request):
@@ -695,26 +703,6 @@ def post_new_case(request):
     else:
         return HttpResponseBadRequest('Invalid request. Check input or request type')
 
-@csrf_exempt #delete this function
-def post_aap(request, user_id):
-    '''
-    POST /api/data/user/{user_id}/aap/
-    '''
-    #change this
-    request_id = 1
-    file_name = 'test\\testUploadAAP.txt'
-    file_type = 'AAP'
-    file_path = os.path.join(os.getcwd(), file_name)
-    for filename, file in request.FILES:
-        file_data = request.FILES[filename].read()
-        file_name = request.FILES[filename].name
-    #with open(file_path, 'rb') as file:
-    #    file_data = file.read()
-    cursor = connection.cursor()
-    insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
-    cursor.execute(insert_query, (file_data, file_name, user_id, request_id, file_type))
-    connection.commit()
-    return JsonResponse({"message": "Uploaded successfully"}, status = 201)
 
 @csrf_exempt
 def post_file(request):
@@ -723,27 +711,38 @@ def post_file(request):
     Check API for request body
     '''
     # Some request body validation code idk
-        #change this
-    request_id = 1
-    user_id = 1
-    file_name = 'test\\testUploadAAP.txt'
-    file_type = 'AAP'
-    file_path = os.path.join(os.getcwd(), file_name)
-    for filename, file in request.FILES:
-        file_data = request.FILES[filename].read()
-        file_name = request.FILES[filename].name
-    #with open(file_path, 'rb') as file:
-    #    file_data = file.read()
-    cursor = connection.cursor()
-    insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
-    cursor.execute(insert_query, (file_data, file_name, user_id, request_id, file_type))
-    connection.commit()
-    for filename, file in request.FILES.iteritems():
-        request.FILES[filename].name #name of file
-        request.FILES[filename].content_type # experiment with this one
-        request.FILES[filename].read() # reads file
-    
-    return JsonResponse({"message": "Uploaded successfully"}, status = 201)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        data_keys = list(data.keys())
+        all_fields = ["user_id","request_id","fileName"]
+        if not (all_fields == data_keys):
+            return HttpResponseBadRequest("Request body does not have correct fields")
+        # Create a cursor to interact with the database
+        cursor = connection.cursor()
+        cursor.execute(f"USE {database_name}")
+        # Extract data from the JSON
+        user_id = data["user_id"]
+        fileName = data["fileName"]
+        request_id= data["request_id"]
+        file_type = 'AAP'
+        
+        file_data = request.FILES[fileName].read()
+
+        #for filename, file in request.FILES:
+        #    file_data = request.FILES[filename].read()
+        #    file_name = request.FILES[filename].name
+
+        #with open(file_path, 'rb') as file:
+        #    file_data = file.read()
+
+        cursor = connection.cursor()
+        insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(insert_query, (file_data, fileName, user_id, request_id, file_type))
+        connection.commit()
+        return JsonResponse({"message": "Uploaded successfully"}, status = 201)
+    else:
+        return HttpResponseBadRequest("Uploading file failed")
+
 
 @csrf_exempt
 def put_preferences(request):
@@ -986,8 +985,8 @@ from django.test import RequestFactory
 from django.conf import settings
 
 # Create a request factory
-#request_factory = RequestFactory()
-# settings.configure()  #this messes up django
+request_factory = RequestFactory()
+settings.configure()  #this messes up django
 
 
 # Create a mock HTTP request
@@ -1202,4 +1201,32 @@ def test_post_case():
 
 
 #test_post_case()
-#post_aap("req", 108998192)
+
+from django.core.files.uploadedfile import SimpleUploadedFile
+def test_post_AAP():
+    # Create a mock request object
+    request = HttpRequest()
+    request.method = 'POST'
+
+    # Define the request data and headers
+    request_data = {
+        "user_id":108998192,
+        "request_id":1,
+        "fileName":"testfile.txt"
+    }
+    request._body = json.dumps(request_data).encode('utf-8')
+    request.META['HTTP_CONTENT_TYPE'] = 'application/json'
+
+    # Attach a file to the request
+    file_content = b'This is a test file content.'
+    file = SimpleUploadedFile("testfile.txt", file_content)
+    request.FILES['testfile.txt'] = file
+
+    # Call the put_preferences function
+    response = post_file(request)
+
+    # Check the response, e.g., response.status_code, response.content, etc.
+    print(response.status_code)
+    print(response.content)
+
+test_post_AAP()
