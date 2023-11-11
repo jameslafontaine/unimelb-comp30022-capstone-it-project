@@ -31,7 +31,7 @@ urlpatterns = [
 
     # POST requests
     path('cases/new/', post_new_case, name = 'post_new_case'),
-    path('file/upload/', post_file, name = 'post_new_aap'),
+    path('files/upload/', post_file, name = 'post_new_aap'),
 
     # PUT requests
     path('courses/setpreferences/', put_preferences, name = 'put_preferences'),
