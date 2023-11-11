@@ -1,5 +1,5 @@
 import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS, REQUEST_TABLE_HEADERS } from './constantsModule.js'
-import { loadData, putData } from './dataModule.js';
+import { loadData, postData, putData } from './dataModule.js';
 
 export function generateStudentCases(cases) {
     let numCases = cases.length;

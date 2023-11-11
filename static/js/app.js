@@ -10,7 +10,33 @@ import { getGlobalAppHeadersValue } from './modules/helperFunctionModule.js';
 import { fillCurrentRequestInformation, fillStudentDetailsBox, generateRequestTable, generateStudentCases, generateStudentRequest, generateSubjectBox, generateSuppDocTable, generateVersionBox, handleApprovalRejectionAnswer, handleCaseSubmission, handleComplexRequestFunctionality, hideAndDisplayButtons, populateAssessmentDropdown, populatePopups, saveEdits, setupOpenClosePopupButtons } from './modules/uiPopulationModule.js';
 import { createHeader, fixStyling } from './modules/webHeaderModule.js';
 
-/**
+export function loginPage() {
+    let globalAppHeaders = new Headers();
+    globalAppHeaders.append(CONTENT_TYPE, 'application/json');
+    globalAppHeaders.append('user_id', '');
+    sessionStorage.setItem('globalAppHeaders', JSON.stringify(Object.fromEntries(globalAppHeaders.entries())));
+
+    for (let i = 1; i <= 4; i++) {
+        const option = document.createElement('option');
+        option.textContent = i;
+        document.getElementById('idSelection').appendChild(option);
+    }
+
+    function setId(){
+        var selectedElem = document.getElementById("idSelection");
+        var selectedIndex = selectedElem.selectedIndex;
+        var selectedOption = selectedElem.options[selectedIndex];
+        var selectedValue = selectedOption.value;
+        setGlobalAppHeaders('user_id', selectedValue);
+    }
+
+    function login(){
+        var url = getGlobalAppHeadersValue('user_id') <= 2 ? '/student/' : '/instructor/';
+        window.location.href = url;
+    }
+}
+
+/*
  * 
  * Student View
  * 
