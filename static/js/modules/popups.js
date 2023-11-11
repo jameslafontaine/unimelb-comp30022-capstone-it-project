@@ -100,7 +100,6 @@ function HideAndDisplayButtons(thread) {
  */
 function handleApprovalRejectionAnswer(thread) {
 
-
     // First 3 letters of request type used for HTML identifiers
     reqShort = thread.request_type.substring(0,3)
 

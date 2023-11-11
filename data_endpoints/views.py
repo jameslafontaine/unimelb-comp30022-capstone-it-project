@@ -100,6 +100,7 @@ def get_assessments_endpoint(request):
                 for assessment in result["assessments"]:
                     namesonly["assessments"].append(assessment["assignment_name"])
                 return JsonResponse(namesonly)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_cases_endpoint(request):
     '''
@@ -169,6 +170,7 @@ def get_cases_endpoint(request):
                     ]
                 }
                 return JsonResponse(result)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_courses_endpoint(request):
     '''
@@ -245,6 +247,7 @@ def get_courses_endpoint(request):
                     }
                 }
                 return JsonResponse(result)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_requests_endpoint(request):
     '''
@@ -297,6 +300,7 @@ def get_requests_endpoint(request):
                     }
                 }
                 return JsonResponse(result)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_threads_user_endpoint(request):
     '''
@@ -400,6 +404,7 @@ def get_threads_user_endpoint(request):
                 ]
             }
             return JsonResponse(result)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_threads_endpoint(request, thread_id):
     '''
@@ -478,6 +483,7 @@ def get_threads_endpoint(request, thread_id):
                     return JsonResponse({
                         "status": result["threadinfo"]["thread"]["current_status"]
                     })
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_user_endpoint(request, user_id):
     '''
@@ -523,6 +529,7 @@ def get_user_endpoint(request, user_id):
                     ]
                 }
                 return JsonResponse(result)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_files_endpoint(request, user_id):
     '''
@@ -566,6 +573,7 @@ def get_files_endpoint(request, user_id):
             return JsonResponse({'supportingDocs': files_list})
     if not len(request.GET) == 1:
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 @csrf_exempt
 def post_new_case(request):
@@ -611,6 +619,7 @@ def post_new_case(request):
         }, status = 201)
     if not request.method == 'POST':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 @csrf_exempt
 def post_file(request):
@@ -630,6 +639,7 @@ def post_file(request):
         return JsonResponse({'message': 'Files uploaded successfully'}, status=201)
     if not request.method == 'POST':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 @csrf_exempt
 def put_preferences(request):
@@ -682,6 +692,7 @@ def put_preferences(request):
         }, status = 201)
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 @csrf_exempt
 def put_req_response(request):
@@ -703,6 +714,7 @@ def put_req_response(request):
         return JsonResponse({'message': 'Has been successful'}, status = 201)
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 @csrf_exempt
 def set_complex(request):
