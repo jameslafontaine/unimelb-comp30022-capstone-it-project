@@ -28,54 +28,12 @@ function sloadThreadsData(caseId){
 }
 
 /**
- * GENERIC: Loads in requests from thread id from the DB, returns an array full of case JSONs
- */
-function loadRequestsData(threadId){
-    return loadData('/api/data/thread/' + threadId, {})
-        .then(data => {
-            return data.threadinfo.requests;
-        })
-
-}
-
-/**
  * GENERIC: Loads in a thread from thread id from the DB, returns JSON
  */
 function loadThread(threadId){
     return loadData('/api/data/thread/' + threadId, {})
         .then(data => {
             return data.threadinfo.thread;
-        })
-}
-
-/**
- * GENERIC: Loads in a course from course id from the DB, returns JSON
- */
-function loadCourse(courseId){
-    return loadData('/api/data/courses/?courseid=' + courseId, {})
-        .then(data => {
-            return data.course;
-        })
-}
-
-/**
- * GENERIC: Loads in an assignment from assignment id from the DB, returns JSON
- */
-function loadAssignment(assignId){
-    return loadData('/api/data/assessments/?assignid=' + assignId, {})
-        .then(data => {
-            return data;
-        })
-}
-
-/**
- * GENERIC: Generates a list of "previous versions" of a request
- */
-function getPreviousVersions(threadId){
-    return loadRequestsData(threadId)
-        .then(requests => {
-            // cuts off the first request (current request)
-            return requests.splice(1);
         })
 }
 
@@ -179,16 +137,6 @@ function setComplex(threadId){
         });
 }
 
-/** 
- * GENERIC: Returns the latest request from the given thread id
- */
-function getLatestRequest(thread_id) {
-    return loadRequestsData(thread_id)
-        .then(requests => {
-            return requests[0];
-        })
-}
-
 /**
  * INSTRUCTOR: Respond to a request, in the request specify response, notes, etc.
  */
@@ -217,16 +165,6 @@ function loadUserDetails(userId){
 }
 
 /**
- * GENERIC: Returns a given users aaps
- */
-function loadUserAAPs(userId){
-    return loadData('/api/data/files/' + userId + '?aaps=true', {})
-        .then(data => {
-            return data.aaps;
-        })
-}
-
-/**
  * GENERIC: GET all assessments for a course
  */
 function getCourseAssessments(courseId) {
@@ -234,26 +172,6 @@ function getCourseAssessments(courseId) {
         .then(data => {
             return data.assessments;
         });
-}
-
-/**
- * GENERIC: GET course data from a course code
- */
-function getCourseData() {
-    return loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
-        .then(data => {
-            return data.courses;
-        })
-}
-
-/**
- * GENERIC: get assignments from a courseId
- */
-function getAssignments(courseId){
-    return loadData('/api/data/assessments/?courseid=' + courseId, {})
-        .then(data => {
-            return data.assessments;
-        })
 }
 
 /**
@@ -268,11 +186,4 @@ function postNewCase(dataToSend){
             console.error('There was a problem responding to the request:', error);
             return false;
         });
-}
-
-/**
- * STUDENT: Redirects to the edit request page from a threadId
- */
-function redirectToEditReq(threadId){
-    window.location.href = '/student/edit-req/' + threadId;
 }

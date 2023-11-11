@@ -142,16 +142,14 @@
         </script>
         <script src="{% static 'js/modules/studentDetails.js' %}"></script>
         <script>
-
             loadUserDetails(userId)
                 .then(user => {
                     fillStudentDetailsBox(user);
                 })
-            loadUserAAPs(userId)
-                .then(aaps => {
-                    generateAAPTable(aaps)
-                })
-                
+            loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id')+ '?aaps=true', {})
+                .then(data => {
+                    generateAAPTable(data.aaps);
+                });
         </script>
     </body>
 </html>

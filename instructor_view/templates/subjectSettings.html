@@ -167,10 +167,12 @@
 
         <script>
             // Put subject code at start of title
-            loadCourse(31).then(courseData => {
-                subjectCode = courseData.course_code;
-                document.getElementById("title").innerHTML = subjectCode + document.getElementById("title").innerHTML;
-            })
+            loadData('/api/data/courses/?courseid=' + 31, {})
+                .then(data => {
+                    let courseData = data.course;
+                    let subjectCode = courseData.course_code;
+                    document.getElementById("title").innerHTML = subjectCode + document.getElementById("title").innerHTML;
+                });
         </script>
         <script src="{% static 'js/modules/subjectSettings.js' %}"></script>
         <script>

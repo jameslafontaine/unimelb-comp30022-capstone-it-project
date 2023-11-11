@@ -40,7 +40,7 @@ function setupOpenClosePopupButtons() {
  */
 function populatePopups(thread) {
 
-    loadAssignment(thread.assignment_id)
+    loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
         .then(assignment => {
             // Populate current deadline
             document.getElementById('currentDeadline').value = assignment.due_date;
@@ -51,7 +51,7 @@ function populatePopups(thread) {
             document.getElementById('selectedAssessmentRRem').value = assignment.assignment_name;
             document.getElementById('selectedAssessmentAQui').value = assignment.assignment_name;
             document.getElementById('selectedAssessmentRQui').value = assignment.assignment_name;
-        })
+        });
 
     // Populate override extension dropdown
     for (let i = 1; i <= 10; i++) {
