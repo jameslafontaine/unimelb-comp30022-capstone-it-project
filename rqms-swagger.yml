@@ -488,10 +488,20 @@ paths:
                     field_1: 1
                 '?aaps':
                   value:
-                    field_1: 1
+                    file_name: 
+                      type: string
+                    file_type:
+                      type: string
+                    file_data:
+                      type: binary
                 '?requestid':
                   value:
-                    field_1: 1
+                    file_name: 
+                      type: string
+                    file_type:
+                      type: string
+                    file_data:
+                      type: binary
   /api/data/files/upload:
     post:
       description: Upload a file

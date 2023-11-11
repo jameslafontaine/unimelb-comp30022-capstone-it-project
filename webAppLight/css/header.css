@@ -51,7 +51,7 @@
 }
 .dDSection{
     display: flex;
-    align-items: auto;
+    align-items: center;
     background-color: rgb(0,15,70);
     height: 35px;
     border: solid;
@@ -60,12 +60,10 @@
 }
 .dDSectionText{
     color: white;
-    padding: 5px;
-    padding-left: 10px;
+    padding: 10px;
 }
 .dDSection:hover{
     background-color: rgb(0, 21, 99);
-    transition: 0.1s;
 }
 .dropDownMenu.inwards{
     right:0;
@@ -86,13 +84,4 @@
 }
 .dropDown.home:hover{
     border-radius: 1px;
-}
-.custom-control{
-    display: flex;
-    align-self: auto;
-    align-items: center;
-}
-.custom-control-input{
-    height: 17px;
-    width: 17px;
 }

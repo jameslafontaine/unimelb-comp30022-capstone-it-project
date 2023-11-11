@@ -1,8 +1,8 @@
 .popupBox.show 
 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .popupBox {
@@ -15,13 +15,13 @@
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.4);
     display: none;
+    
 }
-
 .popupContent {
     background-color: white;
     margin: 10% auto;
     width: 30%;
-    height:75%;
+    height: 75%;
     font-weight: bolder;
     position:relative;
     vertical-align: center;
@@ -43,7 +43,7 @@
 
 .popupHeaderContents{
     display: grid;
-    grid-template-columns: 1.5fr 0.5fr;
+    grid-template-columns: 1fr 1fr;
     padding-left: 10px;
     justify-content: space-between;
     color: white;
