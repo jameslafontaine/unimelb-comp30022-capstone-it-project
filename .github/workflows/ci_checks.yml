@@ -32,6 +32,8 @@ jobs:
         run: npm install --save-dev @babel/eslint-parser
       - name: Install @babel/core
         run: npm install --save-dev @babel/core
+      - name: Install @babel/preset-env
+        run: npm install --save-dev @babel/preset-env
       - name: Lint JavaScript files
         run: npm run lint
 

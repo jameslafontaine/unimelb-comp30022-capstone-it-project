@@ -11,7 +11,9 @@ import { fillCurrentRequestInformation, generateStudentCases, generateStudentReq
 import { createHeader, fixStyling } from './modules/webHeaderModule.js';
 
 /**
- * Student View functions
+ * 
+ * Student View
+ * 
  */
 export function sHome() {
     createHeader("student");
@@ -211,5 +213,21 @@ export function viewAAPs() {
         .then(data => {
             generateAAPTable(data.aaps);
 	        fixStyling();
+        });
+}
+
+/**
+ * 
+ * Instructor View
+ * 
+ */
+export function iHome() {
+    createHeader('instructor');
+    loadSubjectBoxData()
+        .then(subjects => {
+            // Iterate through the JSON data and create/populate expandable boxes
+            subjects.forEach(subject => {
+                generateSubjectBox(subject);
+            });
         });
 }
