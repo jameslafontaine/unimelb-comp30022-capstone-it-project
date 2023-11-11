@@ -138,66 +138,10 @@
                 </div>
             </div>
         </div>
-        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
-        <script src="{% static 'js/modules/data.js' %}"></script>
-        <script src="{% static 'js/modules/webHeader.js' %}"></script>
-        <script src="{% static 'js/modules/styleMode.js' %}"></script>
-        <script>createHeader("instructor")</script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script>
-
-            const suppDocs = [
-                {
-                    name: 'iamsick.pdf',
-                    size: '20 TB'
-                },
-                {
-                    name: 'bible.pdf',
-                    size: '40 MB'
-                },
-                {
-                    name: 'medcert.pdf',
-                    size: '3 MB'
-                }
-            ]
-
-            // read in thread id from the provided data
-            let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
-
-            // Fill information relating to the current request from the database
-            fillCurrentRequestInformation(threadId, 'Instructor');
-
-            // Generate the supporting documentation for the current version of request
-            generateSuppDocTable(suppDocs, '');
-
-            // generate a list of all previous versions of a thread
-            loadData('/api/data/thread/' + threadId, {})
-                .then(data => {
-                    let prevVersions = data.threadinfo.requests.splice(1);
-                    // Generate version boxes for all request prevVersions in the data
-                    for (let i = 0; i < prevVersions.length; i++) {
-                        generateVersionBox(prevVersions[i], prevVersions.length - i)
-                    }
-                })
-
-        </script>
-        <!-- Student Details Box Population -->
-        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
-        <script>
-
-            iloadStudentDetails(threadId)
-                .then(student => {
-                    fillStudentDetailsBox(student);
-                })
-            function toProfile(){
-                redirectToProfile(threadId);
-            }
-            function back(){
-                loadThread(threadId)
-                    .then(thread => {
-                        redirectToViewReqs(thread.course_id)
-                    })
-            }
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { viewResolved } from "{% static 'js/app.js' %}";
+            viewResolved();
         </script>
     </body>
 </html>

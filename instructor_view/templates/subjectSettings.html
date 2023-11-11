@@ -158,28 +158,10 @@
             </table>
             <p></p>
         </div>
-
-        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
-        <script src="{% static 'js/modules/data.js' %}"></script>
-        <script src="{% static 'js/modules/webHeader.js' %}"></script>
-        <script src="{% static 'js/modules/styleMode.js' %}"></script>
-        <script>createHeader("instructor")</script>
-
-        <script>
-            // Put subject code at start of title
-            loadData('/api/data/courses/?courseid=' + 31, {})
-                .then(data => {
-                    let courseData = data.course;
-                    let subjectCode = courseData.course_code;
-                    document.getElementById("title").innerHTML = subjectCode + document.getElementById("title").innerHTML;
-                });
-        </script>
-        <script src="{% static 'js/modules/subjectSettings.js' %}"></script>
-        <script>
-            // Populate assignments dropdown
-            getCourseAssessments(31).then(assessmentList => {
-                populateAssessmentDropdown(assessmentList);
-            });
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { subjectSettings } from "{% static 'js/app.js' %}";
+            subjectSettings();
         </script>
     </body>
 </html>

@@ -1,5 +1,5 @@
-import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS } from './constantsModule.js'
-import { loadData } from './dataModule.js';
+import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS, REQUEST_TABLE_HEADERS } from './constantsModule.js'
+import { loadData, putData } from './dataModule.js';
 
 export function generateStudentCases(cases) {
     let numCases = cases.length;
@@ -754,3 +754,389 @@ function removeFunctionality() {
 			});
 }
 
+export function generateSubjectBox(subject) {
+	// Create a new expandable box element
+	const standardBox  = document.createElement('div');
+	standardBox.classList.add('standardBox');
+  
+	// Create the standardBoxContents element
+	const standardBoxContents = document.createElement('div');
+	standardBoxContents.classList.add('standardBoxContents');
+	standardBoxContents.style.fontSize = '18px';
+  
+	// Create the subjectCode element
+	const subjectCodeElement = document.createElement('span');
+	subjectCodeElement.textContent = `${subject.course_code} (${subject.course_name})`;
+	
+	// change to this when you can get the numreserved and unresolved
+	//subjectCodeElement.textContent = `${subject.course_id} (${subject.numReserved} reserved, ${subject.numUnresolved} unresolved)`;
+	
+	// Create the rightItems container
+	const rightItems = document.createElement('span');
+	rightItems.classList.add('rightItems');
+  
+	// Create the "View Requests & Queries" button
+    // Will have to hide or grey out and have popup on hover if tutor has not been given permission by subject coordinator to view any requests
+	const viewRequestsButton = document.createElement('button');
+	viewRequestsButton.classList.add('standardButton');
+	viewRequestsButton.textContent = 'View Requests & Queries';
+	viewRequestsButton.style = 'font-size:16px'
+	viewRequestsButton.onclick = function() {
+		window.location.href = '/instructor/view-reqs/' + subject.course_id; 
+	};
+  
+	// Create the "Settings" button
+    // Will have to hide or grey out and have popup on hover if instructor is not subject coordinator
+	const settingsButton = document.createElement('button');
+	settingsButton.classList.add('standardButton');
+	settingsButton.textContent = 'Settings';
+	settingsButton.style = 'font-size:16px'
+	settingsButton.onclick = function() {
+		window.location.href = '/instructor/subject-settings/' + subject.course_id; 
+	};
+  
+	// Append the elements to their respective parent elements
+	rightItems.appendChild(viewRequestsButton);
+	rightItems.appendChild(settingsButton);
+	standardBoxContents.appendChild(subjectCodeElement);
+	standardBoxContents.appendChild(rightItems);
+	standardBox.appendChild(standardBoxContents);
+  
+	// Append the subject box to the container
+	document.getElementById('subjectBoxContainer').appendChild(standardBox);
+	document.getElementById('subjectBoxContainer').appendChild(document.createElement('br'));
+
+	fixStyling();
+};
+
+export function handleComplexRequestFunctionality(thread) {
+    initialiseComplexButton(thread);
+    
+    // Modify the reserved status when mark as complex is clicked and change the 'Mark as complex' button
+    // to 'Unmark'. Vice versa if the unmark button is clicked
+    // Also update the star appropriately at the top of the page
+
+    // Perform the aforementioned steps on button click
+    reserveButton.addEventListener('click', function() {
+        setComplex(thread.thread_id) // when returns true it has worked
+            .then(response => {
+                if(response == true){
+                    // set successfully, change the DOM
+                    initialiseComplexButton(thread);
+                }
+                else{
+                    console.log("ERROR: ", "put thingo didnt work man");
+                }
+            })
+    });
+}
+
+function initialiseComplexButton(thread){
+    // Get a reference to the reserveButton
+    const reserveButton = document.getElementById('reserveButton');
+    // If a case has already been reserved then we show the unmark button
+    loadData('/api/data/thread/' + thread.thread_id, {})
+        .then(data => {
+            let request = data.threadinfo.requests[0];
+            if (thread.complex_case) { // it is complex now
+                reserveButton.innerHTML = 'Unmark'
+                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+            } else { // it is not complex
+                reserveButton.innerHTML = 'Mark as complex'
+                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+            }
+        })
+}
+
+export function setupOpenClosePopupButtons() {
+    const buttons = document.querySelectorAll('#approveButton, #rejectButton, #answerButton');
+    const popups = document.querySelectorAll('.popupBox');
+    
+    buttons.forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevent clicking off the popup box from closing it
+            const targetId = this.getAttribute('data-target');
+            const popup = document.getElementById(targetId);
+            document.body.style.overflow = 'hidden'; // Disable scrolling
+            popup.style.overflow = 'hidden'; // Disable scrolling within the popup
+            popup.classList.add('show');
+        });
+    });
+    
+    popups.forEach(popup => {
+        const closeButton = popup.querySelector('.closePopup');
+        closeButton.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevent clicking off the popup box from closing it
+           
+            document.body.style.overflow = 'auto'; // Enable scrolling
+            popup.classList.remove('show');
+        });
+    });
+}
+
+export function fillStudentDetailsBox(student) {
+    document.getElementById('studentName').innerHTML = student.first_name + ' ' + student.last_name
+    document.getElementById('studentId').innerHTML = student.user_id
+    document.getElementById('studentEmail').innerHTML = student.email
+}
+
+export function generateRequestTable(threads, type) {
+	const tableContainer = document.getElementById('tableContainer' + type);
+	const table = document.createElement('table');
+	
+	// Create table header row
+	const headerRow = table.insertRow();
+
+    for (const key in REQUEST_TABLE_HEADERS) {
+        const th = document.createElement('th');
+        th.innerText = REQUEST_TABLE_HEADERS[key];
+        headerRow.appendChild(th);
+    }
+
+    const emptyHeader = document.createElement('th');
+    emptyHeader.textContent = '';
+    headerRow.appendChild(emptyHeader);
+
+    // Add thread data
+    threads.forEach(thread => {
+        const row = table.insertRow();
+        
+        const complexCaseCell = row.insertCell();
+        complexCaseCell.className = 'tableEntry';
+        if (thread.complex_case == 0) {
+            const hollowStar = '<span style="font-size: 300%; ">☆</span>';
+            complexCaseCell.innerHTML = hollowStar;
+        } else if (thread.complex_case == 1) {
+            const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
+            complexCaseCell.innerHTML = yellowStar;
+        }
+
+        const requestTypeCell = row.insertCell();
+        requestTypeCell.className = 'tableEntry';
+        requestTypeCell.innerHTML = thread.request_type;
+
+        const assessmentNameCell = row.insertCell();
+        assessmentNameCell.className = 'tableEntry';
+        if (thread.assignment_id != null) {
+            loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
+                .then(assignmentData => {
+                    assessmentNameCell.innerHTML = assignmentData.assignment_name;
+                });
+        } else {
+            assessmentNameCell.innerHTML = "None";
+        }
+
+        const currentStatusCell = row.insertCell();
+        currentStatusCell.className = 'tableEntry';
+        currentStatusCell.innerHTML = thread.current_status;
+
+        const dateUpdatedCell = row.insertCell();
+        dateUpdatedCell.className = 'tableEntry';
+        dateUpdatedCell.innerHTML = thread.date_updated;
+
+        const instructorNotesCell = row.insertCell();
+        instructorNotesCell.className = 'tableEntry';
+        loadData('/api/data/thread/' + thread.thread_id, {})
+            .then(data => {
+                return data.threadinfo.requests[0].instructor_notes;
+            });
+
+        const reviewCell = row.insertCell();
+        reviewCell.className = 'tableEntry';
+        const requestButton = document.createElement('button');
+        requestButton.className = 'standardButton';
+        // Add the "Review" button to the last cell if this is the awaiting action table
+        if (type === 'Awaiting') {
+            requestButton.innerText = 'Review';
+            requestButton.onclick = function () {
+                window.location.href = '/instructor/review-req/' + thread.thread_id; // id needs to be fetched and put in here 
+            };
+        // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
+        } else if (type === 'Resolved') {
+            requestButton.innerText = 'View details';
+            requestButton.onclick = function () {
+                window.location.href = '/instructor/view-resolved/' + thread.thread_id; 
+            };
+        }
+        reviewCell.appendChild(requestButton);
+
+
+    });
+	
+	// Append the table to the container
+	tableContainer.appendChild(table);
+};
+
+export function populatePopups(thread) {
+
+    loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
+        .then(assignment => {
+            // Populate current deadline
+            document.getElementById('currentDeadline').value = assignment.due_date;
+            // Populate student selected assessment
+            document.getElementById('selectedAssessmentAExt').value = assignment.assignment_name;
+            document.getElementById('selectedAssessmentRExt').value = assignment.assignment_name;
+            document.getElementById('selectedAssessmentARem').value = assignment.assignment_name;
+            document.getElementById('selectedAssessmentRRem').value = assignment.assignment_name;
+            document.getElementById('selectedAssessmentAQui').value = assignment.assignment_name;
+            document.getElementById('selectedAssessmentRQui').value = assignment.assignment_name;
+        });
+
+    // Populate override extension dropdown
+    for (let i = 1; i <= 10; i++) {
+        const option = document.createElement('option');
+        option.textContent = i;
+        document.getElementById('extensionOverrideAExt').appendChild(option);
+    }
+
+    loadData('/api/data/thread/' + thread.thread_id, {})
+        .then(data => {
+            let prefs = data.threadinfo.coursepreferences;
+            // Populate default extension
+            document.getElementById('defaultExtension').value = prefs.global_extension_length;
+            // Set extension override to match default extension
+            document.getElementById('extensionOverrideAExt').value = prefs.global_extension_length;
+        })
+
+}
+
+export function hideAndDisplayButtons(thread) {
+
+    const reqShort = thread.request_type.substring(0,3);
+
+    if (thread.request_type != 'Query' && thread.request_type != 'Other') {
+        document.getElementById('approveButton').setAttribute('data-target', `approve${reqShort}Popup`);
+        document.getElementById('rejectButton').setAttribute('data-target', `reject${reqShort}Popup`);
+        $("#answerButton").hide();
+
+    } else {
+        document.getElementById('answerButton').setAttribute('data-target', 'answerPopup');
+        $("#approveButton").hide();
+        $("#rejectButton").hide();
+    }
+}
+
+export function handleApprovalRejectionAnswer(thread) {
+
+    // First 3 letters of request type used for HTML identifiers
+    reqShort = thread.request_type.substring(0,3)
+
+    // Initialise approve and request buttons for all request types except queries, other and quiz
+    if (thread.request_type != "Query" && thread.request_type != "Other") {
+        // Get the Approve Request button
+        const popupApproveButton = document.getElementById(`popupApproveButton${reqShort}`);
+        
+        // Add click event listener to Approve Request button
+        popupApproveButton.addEventListener('click', function() {
+            // Quiz has the extra field of quiz password to return and doesn't need extension
+            if (thread.request_type == "Quiz") {
+                responseJson = {
+                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                    'status' : 'Approved',
+                    'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                }
+            } else {
+                responseJson = {
+                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                    'status' : 'Approved',
+                    'extended by' : document.getElementById('extensionOverrideAExt').value,
+                }
+            }
+
+            respond(thread.thread_id, responseJson);
+
+            // return to view reqs (could make a confirmation page or just show confirmation message at top)
+            window.location.href = '/instructor/view-reqs/' + thread.course_id;
+        });
+        
+        // Get the Reject Request button
+        const popupRejectButton = document.getElementById(`popupRejectButton${reqShort}`);
+        
+        // Add click event listener to Reject Request button
+        popupRejectButton.addEventListener('click', function() {
+            responseJson = {
+                'instructorNotes' : document.getElementById(`instructorNotesR${reqShort}`).value,
+                'status' : 'Rejected',
+                'extended by' : 0,
+            }
+
+            respond(thread.thread_id, responseJson);
+
+            // return to view reqs (could make a confirmation page or just show confirmation message at top)
+            window.location.href = '/instructor/view-reqs/' + thread.course_id;
+            
+        });
+
+    // Initialise Answer button for queries and other requests
+    } else {
+        // Get the Answer button
+        const popupAnswerButton = document.getElementById('popupAnswerButton');
+        
+        // Add click event listener to the Answer button
+        popupAnswerButton.addEventListener('click', function() {
+            // write the response json with notes and status
+            responseJson = {
+                'instructorNotes' : document.getElementById('instructorNotesAns').value,
+                'status' : 'Answered',
+            }
+            respond(thread.thread_id, responseJson);
+            window.location.href = '/instructor/view-reqs/' + thread.course_id;
+        });
+    }
+}
+
+export function populateAssessmentDropdown(assessmentList) {
+    
+    const assessmentDropdown = document.getElementById('assessmentDropdown');
+
+
+    // Add global option
+    const option = document.createElement('option');
+    option.textContent = 'Global';
+    assessmentDropdown.appendChild(option);
+
+    // Add all assessments for this subject to dropdown
+    assessmentList.forEach(assessment => {
+        const option = document.createElement('option');
+        option.textContent = assessment;
+        assessmentDropdown.appendChild(option);
+    });
+    assessmentDropdown.value = 'Global'
+}
+
+function setComplex(threadId){
+    return putData(('/api/data/thread/complex'), {
+        "thread_id": threadId
+    }).then(() => {
+            return true;
+        })
+        .catch(error => {
+            console.error('There was a problem setting the complex status:', error);
+            return false;
+        });
+}
+
+function respond(threadId, response){
+    return putData('/api/data/requests/respond/', {
+        "thread_id": threadId,
+        "response": response
+    })
+        .then(responseData => {
+            return true;
+        })
+        .catch(error => {
+            console.error('There was a problem responding to the request:', error);
+            return false;
+        });
+}
+
+function postNewCase(dataToSend){
+    return postData(('/api/data/requests/respond/'), dataToSend)
+        .then(() => {
+            return true;
+        })
+        .catch(error => {
+            console.error('There was a problem responding to the request:', error);
+            return false;
+        });
+}

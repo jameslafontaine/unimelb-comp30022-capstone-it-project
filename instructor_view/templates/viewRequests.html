@@ -91,32 +91,10 @@
             </div>
             
         </div>
-        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
-        <script src="{% static 'js/modules/data.js' %}"></script>
-        <script src="{% static 'js/modules/webHeader.js' %}"></script>
-        <script src="{% static 'js/modules/styleMode.js' %}"></script>
-        <script>createHeader("instructor")</script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script>
-
-            // Put subject code at start of title
-            var course = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
-            subjectCode = course.course_code;
-            
-            // Get the title by its ID
-            const myElement = document.getElementById("title").innerHTML
-            subjectCode + document.getElementById("title").innerHTML;
-
-            iloadThreadsPending(course.course_id)
-                .then(threads => {
-                    generateRequestTable(threads, 'Awaiting');
-                })
-            iloadThreadsResolved(course.course_id)
-                .then(threads => {
-                    generateRequestTable(threads, 'Resolved');
-                })
-            
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { viewRequests } from "{% static 'js/app.js' %}";
+            viewRequests();
         </script>
-
     </body>
 </html>

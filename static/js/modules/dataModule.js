@@ -1,3 +1,5 @@
+import { CONTENT_TYPE } from "./constantsModule.js";
+
 /**
  * Loads JSON data from given url
  * @param {string} url - Endpoint that returns JSON
@@ -14,5 +16,29 @@ export function loadData(url, reqHeaders) {
         .catch(error => {
             throw error;
 		});
+}
+
+export function putData(url, json){
+    return fetch(url, {
+        method: 'PUT',
+        headers: {
+            CONTENT_TYPE: getGlobalAppHeadersValue(CONTENT_TYPE)
+        },
+        body: JSON.stringify(json)
+        })
+        .then(response => {
+            if (response.ok) {
+                // Parse the response JSON if successful
+                return response.json();
+            }
+            throw new Error('Network response was not ok');
+        })
+        .then(data => {
+            // Process the response data
+            return data;
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
 }
 

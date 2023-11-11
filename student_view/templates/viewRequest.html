@@ -124,8 +124,9 @@
             // Only show edit button for active cases
 
             /*
-            loadThread(threadId)
-                .then(thread => {
+            loadData('/api/data/thread/' + threadId, {})
+                .then(data => {
+                    let thread = data.threadinfo.thread;
                     if ((thread.current_status != 'APPROVED') ||
                         (thread.current_status != 'REJECTED')) {
                         document.getElementById("editButton").remove()

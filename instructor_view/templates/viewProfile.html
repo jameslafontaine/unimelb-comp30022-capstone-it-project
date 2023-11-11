@@ -119,37 +119,10 @@
                 </div>
             </div>
         </div>
-        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
-        <script src="{% static 'js/modules/data.js' %}"></script>
-        <script src="{% static 'js/modules/webHeader.js' %}"></script>
-        <script src="{% static 'js/modules/styleMode.js' %}"></script>
-        <script>createHeader("instructor")</script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script>
-
-            // read in user id from the provided data
-            let userId = JSON.parse(document.getElementById('load-user-id').getAttribute('data-user-id'));
-
-            iloadThreadsPendingFromUser(userId)
-                .then(threads => {
-                    generateRequestTable(threads, 'Awaiting');
-                })
-            iloadThreadsResolvedFromUser(userId)
-                .then(threads => {
-                    generateRequestTable(threads, 'Resolved');
-                })
-
-        </script>
-        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
-        <script>
-            loadUserDetails(userId)
-                .then(user => {
-                    fillStudentDetailsBox(user);
-                })
-            loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id')+ '?aaps=true', {})
-                .then(data => {
-                    generateAAPTable(data.aaps);
-                });
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { viewProfile } from "{% static 'js/app.js' %}";
+            viewProfile();
         </script>
     </body>
 </html>

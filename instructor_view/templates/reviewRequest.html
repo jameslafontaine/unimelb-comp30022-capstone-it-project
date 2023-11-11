@@ -356,71 +356,10 @@
                 </div>
             </div>
         </div>
-        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
-        <script src="{% static 'js/modules/data.js' %}"></script>
-        <script src="{% static 'js/modules/webHeader.js' %}"></script>
-        <script src="{% static 'js/modules/styleMode.js' %}"></script>
-        <script>createHeader("instructor")</script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script src="{% static 'js/modules/buttons.js' %}"></script>
-        <script>
-
-            // read in thread id from the provided data
-            let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
-            
-            // read in supporting documentation list as a JSON
-            let suppDocs = JSON.parse(document.getElementById('something'))
-        
-            // Fill information relating to the current request from the database
-            fillCurrentRequestInformation(threadId, 'Instructor');
-
-            // Generate the supporting documentation for the current version of request
-            //generateSuppDocTable(suppDocs, '');
-
-            // generate a list of all previous versions of a thread
-            loadData('/api/data/thread/' + threadId, {})
-                .then(data => {
-                    let prevVersions = data.threadinfo.requests.splice(1);
-                    // Generate version boxes for all request prevVersions in the data
-                    for (let i = 0; i < prevVersions.length; i++) {
-                        generateVersionBox(prevVersions[i], prevVersions.length - i)
-                    }
-                });
-            loadThread(threadId)
-                .then(thread => {
-                    handleComplexRequestFunctionality(thread);
-                })
-
-        </script>
-        <script src="{% static 'js/modules/popups.js' %}"></script>
-        <!-- Popup related JS -->
-        <script>
-
-            setupOpenClosePopupButtons();
-            loadThread(threadId)
-                .then(thread => {
-                    populatePopups(thread);
-                    HideAndDisplayButtons(thread);
-                    handleApprovalRejectionAnswer(thread);
-                })
-            
-        </script>
-        <!-- Student Details Box Population -->
-        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
-        <script>
-            iloadStudentDetails(threadId)
-                .then(student => {
-                    fillStudentDetailsBox(student);
-                })
-            function toProfile(){
-                redirectToProfile(threadId);
-            }
-            function back(){
-                loadThread(threadId)
-                    .then(thread => {
-                        redirectToViewReqs(thread.course_id)
-                    })
-            }
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { reviewRequest } from "{% static 'js/app.js' %}";
+            reviewRequest();
         </script>
     </body>
 </html>

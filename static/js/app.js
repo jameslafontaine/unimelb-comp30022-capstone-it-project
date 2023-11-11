@@ -7,7 +7,7 @@
 import { MAX_REQUESTS_IN_REQUEST } from './modules/constantsModule.js';
 import { loadData } from './modules/dataModule.js';
 import { getGlobalAppHeadersValue } from './modules/helperFunctionModule.js';
-import { fillCurrentRequestInformation, generateStudentCases, generateStudentRequest, generateSuppDocTable, generateVersionBox, handleCaseSubmission, saveEdits } from './modules/uiPopulationModule.js';
+import { fillCurrentRequestInformation, fillStudentDetailsBox, generateRequestTable, generateStudentCases, generateStudentRequest, generateSubjectBox, generateSuppDocTable, generateVersionBox, handleApprovalRejectionAnswer, handleCaseSubmission, handleComplexRequestFunctionality, hideAndDisplayButtons, populateAssessmentDropdown, populatePopups, saveEdits, setupOpenClosePopupButtons } from './modules/uiPopulationModule.js';
 import { createHeader, fixStyling } from './modules/webHeaderModule.js';
 
 /**
@@ -83,6 +83,8 @@ export function submitRequest() {
     // List of students current course codes
     const courseCodes = []
 
+    const removeButton;
+
     loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
         .then(data => {
             let courses = data.courses;
@@ -98,6 +100,22 @@ export function submitRequest() {
                 numRequests += 1;
                 generateStudentRequest(numRequests, courseCodes)
                 if (numRequests == MAX_REQUESTS_IN_REQUEST) {
+                    addButton.style.display = 'none';
+                } else if (numRequests == 0) {
+                    removeButton.style.display = 'none'; 
+                } else if (numRequests > 0 & numRequests < MAX_REQUESTS_IN_REQUEST) {
+                    removeButton.style.display = 'inline';
+                    addButton.style.display = 'inline';  
+                }
+            });
+
+            // Remove a request when the remove request button is clicked
+            removeButton.addEventListener('click', function() {
+                document.getElementById(`expandableBox${numRequests}`).remove()
+                document.getElementById(`expandableBoxSection${numRequests}`).remove()
+                document.getElementById(`lastLineBreak${numRequests}`).remove()
+                numRequests -= 1;
+                if (numRequests == MAX_REQUESTS_IN_REQUEST) {
                     addButton.style.display = 'none';   ; 
                 } else if (numRequests == 0) {
                     removeButton.style.display = 'none'; 
@@ -106,23 +124,8 @@ export function submitRequest() {
                     addButton.style.display = 'inline';  
                 }
             });
-        })
-    
-    // Remove a request when the remove request button is clicked
-    removeButton.addEventListener('click', function() {
-        document.getElementById(`expandableBox${numRequests}`).remove()
-        document.getElementById(`expandableBoxSection${numRequests}`).remove()
-        document.getElementById(`lastLineBreak${numRequests}`).remove()
-        numRequests -= 1;
-        if (numRequests == MAX_REQUESTS_IN_REQUEST) {
-            addButton.style.display = 'none';   ; 
-        } else if (numRequests == 0) {
-            removeButton.style.display = 'none'; 
-        } else if (numRequests > 0 & numRequests < MAX_REQUESTS_IN_REQUEST) {
-            removeButton.style.display = 'inline';
-            addButton.style.display = 'inline';  
-        }
-    });
+
+        });
 
     // Handle submit button being clicked
     var submitButton = document.getElementById('submitButton');
@@ -142,7 +145,7 @@ export function sEditRequest() {
     createHeader('student');
 
     // read in thread id from the provided data
-    let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
+    // let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
 
     var req1 = {
         requestId: 987654,
@@ -201,7 +204,7 @@ export function sEditRequest() {
         window.location.href = '/student/';
     });
 
-    // Handle supporting documentation tables
+    // TODO: Handle supporting documentation tables
 
 
     fixStyling();
@@ -212,7 +215,7 @@ export function viewAAPs() {
     loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id') + '?aaps=true', {})
         .then(data => {
             generateAAPTable(data.aaps);
-	        fixStyling();
+            fixStyling();
         });
 }
 
@@ -223,11 +226,206 @@ export function viewAAPs() {
  */
 export function iHome() {
     createHeader('instructor');
-    loadSubjectBoxData()
-        .then(subjects => {
+	loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
+        .then(data => {
+            let subjects = data.courses;
             // Iterate through the JSON data and create/populate expandable boxes
             subjects.forEach(subject => {
                 generateSubjectBox(subject);
             });
         });
+}
+
+export function reviewRequest() {
+    createHeader('instructor');
+
+    // read in thread id from the provided data
+    let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
+    
+    // read in supporting documentation list as a JSON
+    let suppDocs = JSON.parse(document.getElementById('something'))
+
+    // Fill information relating to the current request from the database
+    fillCurrentRequestInformation(threadId, 'Instructor');
+
+    // Generate the supporting documentation for the current version of request
+    //generateSuppDocTable(suppDocs, '');
+
+    // generate a list of all previous versions of a thread
+    loadData('/api/data/thread/' + threadId, {})
+        .then(data => {
+            let prevVersions = data.threadinfo.requests.splice(1);
+            // Generate version boxes for all request prevVersions in the data
+            for (let i = 0; i < prevVersions.length; i++) {
+                generateVersionBox(prevVersions[i], prevVersions.length - i)
+            }
+        });
+
+    loadData('/api/data/thread/' + threadId, {})
+        .then(data => {
+            handleComplexRequestFunctionality(data.threadinfo.thread);
+        })
+
+    setupOpenClosePopupButtons();
+
+    loadData('/api/data/thread/' + threadId, {})
+        .then(data => {
+            let thread = data.threadinfo.thread;
+            populatePopups(thread);
+            hideAndDisplayButtons(thread);
+            handleApprovalRejectionAnswer(thread);
+        });
+
+    // TODO: Confirm this
+    loadData('/api/data/thread/?threadid=' + threadId, {})
+        .then(data => {
+            fillStudentDetailsBox(data.student);
+        });
+    
+    function toProfile(){
+        loadData('/api/data/thread/?threadid=' + threadId, {})
+            .then(data => {
+                window.location.href = '/instructor/view-profile/' + data.student.user_id; 
+            });
+    }
+
+    function back(){
+        loadData('/api/data/thread/' + threadId, {})
+            .then(data => {
+                window.location.href = '/instructor/view-reqs/' + data.threadinfo.thread.course_id;
+            })
+    }
+
+}
+
+export function viewResolved() {
+    createHeader('instructor');
+
+    const suppDocs = [
+        {
+            name: 'iamsick.pdf',
+            size: '20 TB'
+        },
+        {
+            name: 'bible.pdf',
+            size: '40 MB'
+        },
+        {
+            name: 'medcert.pdf',
+            size: '3 MB'
+        }
+    ]
+
+    // read in thread id from the provided data
+    let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
+
+    // Fill information relating to the current request from the database
+    fillCurrentRequestInformation(threadId, 'Instructor');
+
+    // Generate the supporting documentation for the current version of request
+    generateSuppDocTable(suppDocs, '');
+
+    // generate a list of all previous versions of a thread
+    loadData('/api/data/thread/' + threadId, {})
+        .then(data => {
+            let prevVersions = data.threadinfo.requests.splice(1);
+            // Generate version boxes for all request prevVersions in the data
+            for (let i = 0; i < prevVersions.length; i++) {
+                generateVersionBox(prevVersions[i], prevVersions.length - i)
+            }
+        });
+
+    // TODO: Confirm this
+    loadData('/api/data/thread/?threadid=' + threadId, {})
+        .then(data => {
+            fillStudentDetailsBox(data.student);
+        });
+    
+    function toProfile(){
+        loadData('/api/data/thread/?threadid=' + threadId, {})
+            .then(data => {
+                window.location.href = '/instructor/view-profile/' + data.student.user_id; 
+            });
+    }
+
+    function back(){
+        loadData('/api/data/thread/' + threadId, {})
+            .then(data => {
+                window.location.href = '/instructor/view-reqs/' + data.threadinfo.thread.course_id;
+            });
+    }
+
+}
+
+export function subjectSettings() {
+    createHeader('instructor');
+
+    loadData('/api/data/courses/?courseid=' + 31, {})
+        .then(data => {
+            let courseData = data.course;
+            let subjectCode = courseData.course_code;
+            document.getElementById("title").innerHTML = subjectCode + document.getElementById("title").innerHTML;
+        });
+
+    loadData('/api/data/assessments/?courseid=' + 31 + '&names=true', {})
+        .then(data => {
+            populateAssessmentDropdown(data.assessments);
+        });
+}
+
+export function viewProfile() {
+    createHeader('instructor');
+
+    // read in user id from the provided data
+    let userId = JSON.parse(document.getElementById('load-user-id').getAttribute('data-user-id'));
+
+    loadData('/api/data/thread/?userid=' + userId + '&status=pending', {})
+        .then(data => {
+            generateRequestTable(data.threads, 'Awaiting');
+        });
+    
+    loadData('/api/data/thread/?userid=' + userId + '&status=resolved', {})
+        .then(data => {
+            generateRequestTable(data.threads, 'Resolved');
+        });
+    
+    loadData('/api/data/user/' + userId, {})
+        .then(user => {
+            fillStudentDetailsBox(user);
+        });
+    
+    loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id')+ '?aaps=true', {})
+        .then(data => {
+            generateAAPTable(data.aaps);
+        });
+
+}
+
+export function viewRequests() {
+    createHeader('instructor');
+
+    // Put subject code at start of title
+    var course = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
+    subjectCode = course.course_code;
+    
+    // Get the title by its ID
+    const myElement = document.getElementById("title").innerHTML
+    subjectCode + document.getElementById("title").innerHTML;
+
+    loadData('/api/data/thread/?courseid=' + courseId, {})
+        .then(data => {
+            return data.threads.filter(thread => (thread.course_id == courseId) && (thread.current_status == "PENDING") );
+        })
+        .then(threads => {
+            generateRequestTable(threads, 'Awaiting');
+        });
+
+    loadData('/api/data/thread/?courseid=' + courseId, {})
+        .then(data => {
+            return data.threads.filter(thread => (thread.course_id == courseId) && ((thread.current_status == "APPROVED") || (thread.current_status == "REJECTED")));
+        })
+        .then(threads => {
+            generateRequestTable(threads, 'Resolved');
+        });
+
 }
