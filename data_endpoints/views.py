@@ -23,6 +23,9 @@ def validate_headers(request):
         pass
 
 def check_param_not_integer(value):
+    '''
+    Abstracts away value.isdigit() to make cleaner code
+    '''
     return not value.isdigit()
 
 def get_assessments_endpoint(request):
@@ -37,10 +40,10 @@ def get_assessments_endpoint(request):
 
     if request.GET.get('assignid') and len(request.GET) == 1:
         if check_param_not_integer(request.GET.get('assignid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('assignid')):
             # SELECT * FROM 'Assignment' WHERE 'Assignment'.assignment_id == request.GET.get('assignid')
-            # Example result 
+            # Example result
             result = {
                 "assignment_id": 1,
                 "course_id": 1,
@@ -55,8 +58,8 @@ def get_assessments_endpoint(request):
     
     if not request.GET.get('assignid') and request.GET.get('courseid'):
         if check_param_not_integer(request.GET.get('courseid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('courseid')):
             # SELECT * FROM 'Assignment' WHERE 'Assignment'.course_id == int(request.GET.get('courseid'))
             # Example result
             result = {
@@ -99,8 +102,6 @@ def get_assessments_endpoint(request):
                 for assessment in result["assessments"]:
                     namesonly["assessments"].append(assessment["assignment_name"])
                 return JsonResponse(namesonly)
-    
-    return HttpResponseBadRequest('Invalid request, check input again.')
 
 def get_cases_endpoint(request):
     '''
@@ -114,8 +115,8 @@ def get_cases_endpoint(request):
     
     if request.GET.get('userid') and len(request.GET) == 1:
         if check_param_not_integer(request.GET.get('userid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else: 
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('userid')):
             # SELECT * FROM 'Case' WHERE 'Case'.user_id == int(request.GET.get('userid'))
             result = {
                 "cases": [
@@ -133,8 +134,8 @@ def get_cases_endpoint(request):
 
     if not request.GET.get('userid') and request.GET.get('caseid'):
         if check_param_not_integer(request.GET.get('caseid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('caseid')):
             if len(request.GET) == 1:
                 # SELECT * FROM 'Case' WHERE 'Case'.case_id == int(request.GET.get('caseid'))
                 result = {
@@ -172,8 +173,6 @@ def get_cases_endpoint(request):
                 }
                 return JsonResponse(result)
 
-    return HttpResponseBadRequest('Invalid request, check input again.')
-
 def get_courses_endpoint(request):
     '''
     GET /api/data/courses/
@@ -185,11 +184,11 @@ def get_courses_endpoint(request):
     validate_headers(request)
 
     if len(request.GET) not in [1, 2]:
-        return HttpResponseBadRequest('Invalid number of parameters.')
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
     if len(request.GET) == 1 and request.GET.get('userid'):
         if check_param_not_integer(request.GET.get('userid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
         else:
             # Do some fancy join magic here i forgot probably involves enrollmenttable as well
             result = {
@@ -210,8 +209,8 @@ def get_courses_endpoint(request):
 
     if not request.GET.get('userid') and request.GET.get('courseid'):
         if check_param_not_integer(request.GET.get('courseid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('courseid')):
             if len(request.GET) == 1:
                 # SELECT * FROM COURSE WHERE 'Course'.course_Id == int(request.GET.get('courseid'))
                 result  = {
@@ -249,8 +248,6 @@ def get_courses_endpoint(request):
                     }
                 }
                 return JsonResponse(result)
-    
-    return HttpResponseBadRequest('Invalid request, check input again.')
 
 def get_requests_endpoint(request):
     '''
@@ -263,12 +260,12 @@ def get_requests_endpoint(request):
 
     if len(request.GET) == 1:
         if not request.GET.get('userid') and not request.GET.get('requestid'):
-            return HttpResponseBadRequest('Invalid request, check input again.')
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
         if request.GET.get('userid'):
             if check_param_not_integer(request.GET.get('userid')):
-                return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-            else:
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not check_param_not_integer(request.GET.get('userid')):
                 # Return request history of a user. 
                 # Consult Callum on this, unsure if we actually need more data on this
                 result = {
@@ -293,8 +290,8 @@ def get_requests_endpoint(request):
 
         if request.GET.get('requestid'):
             if check_param_not_integer(request.GET.get('requestid')):
-                return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-            else:
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not check_param_not_integer(request.GET.get('requestid')):
                 # SELECT * FROM 'Requets' WHERE 'Request'.request_id == int(request.GET.get('requestid'))
                 result = {
                     "request": {
@@ -307,8 +304,6 @@ def get_requests_endpoint(request):
                 }
                 return JsonResponse(result)
 
-    return HttpResponseBadRequest('Invalid request, check input again.')
-
 def get_threads_user_endpoint(request):
     '''
     GET /api/data/thread/
@@ -320,71 +315,71 @@ def get_threads_user_endpoint(request):
     validate_headers(request)
 
     if len(request.GET) not in [1, 2]:
-        return HttpResponseBadRequest('Invalid request, check input again.')
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
-    if len(request.GET) == 1 and request.GET.get('threadid'):
-        if check_param_not_integer(request.GET.get('threadid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
-            # Return the user database table of the user who created thread_id
-            result = {
-                'user_id': 2,
-                'name': 'James La Fontaine',
-                'first_name': 'James',
-                'last_name': 'La Fontaine',
-                'email': 'bingbong@student.unimelb.edu.au',
-                'email_preference': 1,
-                'darkmode_preference': 1,
-            }
-            return JsonResponse({"student": result})
-    
-    if len(request.GET) == 1 and request.GET.get('courseid'):
-        if check_param_not_integer(request.GET.get('courseid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer")
-        else:
-            # Return all threads belonging to a Course ID
-            result = {
-                "threads": [
-                    {
-                        'thread_id': 11,
-                        'case_id': 11,
-                        'course_id': 31,
-                        'date_updated': "11-09-2023",
-                        'request_type':'Extension', 
-                        'complex_case':1,
-                        'current_status':'PENDING',
-                        'assignment_id': 1,
-                    },
-                    {
-                        'thread_id': 12,
-                        'case_id': 12,
-                        'course_id': 31,
-                        'date_updated': "01-19-2023",
-                        'request_type':'Query',
-                        'complex_case':0,
-                        'current_status':'PENDING',
-                        'assignment_id':2,
-                    },
-                    {
-                        'thread_id': 13,
-                        'case_id': 12,
-                        'course_id': 31,
-                        'date_updated': "01-19-2023",
-                        'request_type':'Other',
-                        'complex_case':1,
-                        'current_status':'REJECTED',
-                        'assignment_id':3,
-                    }
-                ]
-            }
-            return JsonResponse(result)
+    if len(request.GET) == 1:
+        if request.GET.get('threadid'):
+            if check_param_not_integer(request.GET.get('threadid')):
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not check_param_not_integer(request.GET.get('threadid')):
+                # Return the user database table of the user who created thread_id
+                result = {
+                    'user_id': 2,
+                    'name': 'James La Fontaine',
+                    'first_name': 'James',
+                    'last_name': 'La Fontaine',
+                    'email': 'bingbong@student.unimelb.edu.au',
+                    'email_preference': 1,
+                    'darkmode_preference': 1,
+                }
+                return JsonResponse({"student": result})
+        if request.GET.get('courseid'):
+            if check_param_not_integer(request.GET.get('courseid')):
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not check_param_not_integer(request.GET.get('courseid')):
+                # Return all threads belonging to a Course ID
+                result = {
+                    "threads": [
+                        {
+                            'thread_id': 11,
+                            'case_id': 11,
+                            'course_id': 31,
+                            'date_updated': "11-09-2023",
+                            'request_type':'Extension', 
+                            'complex_case':1,
+                            'current_status':'PENDING',
+                            'assignment_id': 1,
+                        },
+                        {
+                            'thread_id': 12,
+                            'case_id': 12,
+                            'course_id': 31,
+                            'date_updated': "01-19-2023",
+                            'request_type':'Query',
+                            'complex_case':0,
+                            'current_status':'PENDING',
+                            'assignment_id':2,
+                        },
+                        {
+                            'thread_id': 13,
+                            'case_id': 12,
+                            'course_id': 31,
+                            'date_updated': "01-19-2023",
+                            'request_type':'Other',
+                            'complex_case':1,
+                            'current_status':'REJECTED',
+                            'assignment_id':3,
+                        }
+                    ]
+                }
+                return JsonResponse(result)
     
     if len(request.GET) in [1, 2] and request.GET.get('userid') and request.GET.get('status'):
-        if check_param_not_integer(request.GET.get('userid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        if not request.GET.get('status').lower() in ["approved", "pending", "rejected"]:
-            return HttpResponseBadRequest("Invalid request, status isn't set correctly.")
-        else:
+        if check_param_not_integer(request.GET.get('userid')) or \
+            not request.GET.get('status').lower() in ["approved", "pending", "rejected"]:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('userid')) and \
+            request.GET.get('status').lower() in ["approved", "pending", "rejected"]:
             # Some join of 'Thread' and 'Case' on case_id
             # result["thread"]["current_status"] == request.GET.get('checkstatus')
             result = {
@@ -412,8 +407,6 @@ def get_threads_user_endpoint(request):
                 ]
             }
             return JsonResponse(result)
-     
-    return HttpResponseBadRequest('Invalid request, check input again.')
 
 def get_threads_endpoint(request, thread_id):
     '''
@@ -425,74 +418,73 @@ def get_threads_endpoint(request, thread_id):
     validate_headers(request)
     print(thread_id) # DELETE THIS COMMENT LATER !!!
     
-    if len(request.GET) not in range(0, 3):
-        return HttpResponseBadRequest('Invalid request, check input again.')
+    if len(request.GET) not in [0, 1]:
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
     
-    if len(request.GET) in [0, 1] and not request.GET or request.GET.get('checkstatus'):
-        if request.GET.get('checkstatus') and not request.GET.get('checkstatus').lower() == 'true':
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
-            # Compare it to the function input thread_id
-            # SELECT * FROM 'Thread' WHERE 'Thread'.thread_id == thread_id
-            # SELECT * FROM 'Request' WHERE 'Request'.thread_id == thread_id
-            # SELECT * FROM 'CoursePreference' WHERE (some JOIN magic)
-            result = {
-                "threadinfo": {
-                    "thread": {
+    if len(request.GET) == 0:
+        result = {
+            "threadinfo": {
+                "thread": {
+                    "thread_id": 1,
+                    "case_id": 1,
+                    "course_id": 1,
+                    "date_updated": "2000:01:01 00:00:00",
+                    "request_type": "Quiz",
+                    "complex_case": 0,
+                    "current_status": "REJECTED",
+                    "assignment_id": 1
+                },
+                "requests": [
+                    {
+                        "request_id": 2,
                         "thread_id": 1,
-                        "case_id": 1,
-                        "course_id": 1,
-                        "date_updated": "2000:01:01 00:00:00",
-                        "request_type": "Quiz",
-                        "complex_case": 0,
-                        "current_status": "REJECTED",
-                        "assignment_id": 1
+                        "date_created": "2000:01:01 00:00:00",
+                        "request_content": "please do not reject this please please",
+                        "instructor_notes": "this is peak clownery"
                     },
-                    "requests": [
-                        {
-                            "request_id": 2,
-                            "thread_id": 1,
-                            "date_created": "2000:01:01 00:00:00",
-                            "request_content": "please do not reject this please please",
-                            "instructor_notes": "this is peak clownery"
-                        },
-                        {
-                            "request_id": 1,
-                            "thread_id": 1,
-                            "date_created": "2000:01:01 00:00:00",
-                            "request_content": "i am sick, dont have med certificate"
-                        }
-                    ],
-                    "coursepreferences": {
-                        "coursepreference_id": 1,
-                        "course_id": 1,
-                        "global_extension_length": 3,
-                        "general_tutor": 0,
-                        "extension_tutor": 1,
-                        "quiz_tutor": 1,
-                        "remark_tutor": 1,
-                        "other_tutor": 0,
-                        "general_scoord": 1,
-                        "extension_scoord": 1,
-                        "quiz_scoord": 1,
-                        "remark_scoord": 0,
-                        "other_scoord": 0,
-                        "general_reject": "",
-                        "extension_approve": "",
-                        "extension_reject": "",
-                        "quiz_approve": "",
-                        "quiz_reject": "lmao",
-                        "remark_approve": "",
-                        "remark_reject": ""
+                    {
+                        "request_id": 1,
+                        "thread_id": 1,
+                        "date_created": "2000:01:01 00:00:00",
+                        "request_content": "i am sick, dont have med certificate"
                     }
+                ],
+                "coursepreferences": {
+                    "coursepreference_id": 1,
+                    "course_id": 1,
+                    "global_extension_length": 3,
+                    "general_tutor": 0,
+                    "extension_tutor": 1,
+                    "quiz_tutor": 1,
+                    "remark_tutor": 1,
+                    "other_tutor": 0,
+                    "general_scoord": 1,
+                    "extension_scoord": 1,
+                    "quiz_scoord": 1,
+                    "remark_scoord": 0,
+                    "other_scoord": 0,
+                    "general_reject": "",
+                    "extension_approve": "",
+                    "extension_reject": "",
+                    "quiz_approve": "",
+                    "quiz_reject": "lmao",
+                    "remark_approve": "",
+                    "remark_reject": ""
                 }
             }
-            if not request.GET:
-                return JsonResponse(result)
-            else:
-                return JsonResponse({"status": result["threadinfo"]["thread"]["current_status"]})
-    
-    return HttpResponseBadRequest('Invalid request, check input again.')
+        }
+        if not request.GET:
+            return JsonResponse(result)
+        if request.GET.get('checkstatus'):
+            if not request.GET.get('checkstatus').lower() == 'true':
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if request.GET.get('checkstatus').lower() == 'true':
+                # Compare it to the function input thread_id
+                # SELECT * FROM 'Thread' WHERE 'Thread'.thread_id == thread_id
+                # SELECT * FROM 'Request' WHERE 'Request'.thread_id == thread_id
+                # SELECT * FROM 'CoursePreference' WHERE (some JOIN magic)
+                if request.GET:
+                    return JsonResponse({"status": result["threadinfo"]["thread"]["current_status"]})
 
 def get_user_endpoint(request, user_id):
     '''
@@ -502,9 +494,9 @@ def get_user_endpoint(request, user_id):
     '''
     validate_headers(request)
     
-    if len(request.GET) not in [0, 1]:
-        return HttpResponseBadRequest('Invalid request, check input again.')
-    else:
+    if not len(request.GET) in [0, 1]:
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    if len(request.GET) in [0, 1]:
         if not request.GET:
             print(user_id) # delete comment when SQL is implemented
             # SELECT * FROM 'User' where 'User'.user_id == user_id (function input)
@@ -520,8 +512,8 @@ def get_user_endpoint(request, user_id):
             return JsonResponse(result)
         if len(request.GET) == 1 and request.GET.get('courseid'):
             if check_param_not_integer(request.GET.get('courseid')):
-                return HttpResponseBadRequest('Invalid request, check input again.')
-            else:
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not check_param_not_integer(request.GET.get('courseid')):
                 # Some join magic between course, enrollment and user
                 # SELECT * FROM 'Course'
                 result = {
@@ -540,20 +532,14 @@ def get_user_endpoint(request, user_id):
                 }
                 return JsonResponse(result)
 
-    return HttpResponseBadRequest('Invalid request, check input again.')
-
 def get_files_endpoint(request, user_id):
     '''
     GET /api/data/files/{user_id}/
     Valid parameter combinations:
-        - No params
         - ?aaps
         - ?requestid
     '''
-    if len(request.GET) == 0:
-        # Test
-        pass
-    elif len(request.GET) == 1:
+    if len(request.GET) == 1:
         if request.GET.get('aaps').lower() == 'true':
             # Get all files that are AAPs from database
             with connection.cursor() as cursor:
@@ -584,8 +570,8 @@ def get_files_endpoint(request, user_id):
                     'file_data': file_data 
                 })
             return JsonResponse({'supportingDocs': files_list})
-    else:
-        return HttpResponseBadRequest('Invalid request, check input again.')
+    if not len(request.GET) == 1:
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
 @csrf_exempt
 def post_new_case(request):
@@ -629,8 +615,8 @@ def post_new_case(request):
         return JsonResponse({
             "message": "Case created successfully"
         }, status = 201)
-    else:
-        return HttpResponseBadRequest('Invalid request. Check input or request type')
+    if not request.method == 'POST':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
 @csrf_exempt
 def post_file(request):
@@ -648,8 +634,8 @@ def post_file(request):
                     VALUES (%s, %s, %s, %s, %s)
                 """, [file_data, file.name, file_extension, request.POST.get('user_id'), request.POST.get('request_id')])
         return JsonResponse({'message': 'Files uploaded successfully'}, status=201)
-    else:
-        return HttpResponseBadRequest('Invalid request, check input again.')
+    if not request.method == 'POST':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
 @csrf_exempt
 def put_preferences(request):
@@ -700,8 +686,8 @@ def put_preferences(request):
         return JsonResponse({
             "message": "Course preferences updates successfully"
         }, status = 201)
-    else:
-        return HttpResponseBadRequest('Invalid request. Check input or request type')
+    if not request.method == 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
 @csrf_exempt
 def put_req_response(request):
@@ -720,9 +706,9 @@ def put_req_response(request):
     }
     '''
     if request.method == 'PUT':
-        pass
-    else:
-        return HttpResponseBadRequest('Invalid request. Check input or request type')
+        return JsonResponse({'message': 'Has been successful'}, status = 201)
+    if not request.method == 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
 @csrf_exempt
 def set_complex(request):
@@ -735,6 +721,6 @@ def set_complex(request):
     }
     '''
     if request.method == 'PUT':
-        pass
-    else:
-        return HttpResponseBadRequest('Invalid request. Check input or request type')
+        return JsonResponse({'message': 'Has been set successfully'}, status = 201)
+    if not request.method == 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)

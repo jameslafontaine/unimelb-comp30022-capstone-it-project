@@ -23,8 +23,9 @@ def review_req_view(request, thread_id):
     ''' check the id exists '''
     return render(request, 'reviewRequest.html', {'thread_id': thread_id})
 
-def view_reqs_view(request, id):
-    return render(request, 'viewRequests.html', 
+def view_reqs_view(request, input_id):
+    ''' View requests view '''
+    return render(request, 'viewRequests.html',
                   {'course': json.dumps({
                         'course_id': '31',
                         'course_name': 'IT Project',
