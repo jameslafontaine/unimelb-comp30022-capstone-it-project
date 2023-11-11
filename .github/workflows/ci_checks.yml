@@ -28,6 +28,8 @@ jobs:
           node-version: '14'
       - name: Install dependencies
         run: npm install
+      - name: Install @babel/eslint-parser
+        run: npm install --save-dev @babel/eslint-parser
       - name: Lint JavaScript files
         run: npm run lint
 
