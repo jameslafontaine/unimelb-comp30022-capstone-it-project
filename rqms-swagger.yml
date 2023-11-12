@@ -536,8 +536,38 @@ paths:
       responses:
         '201':
           description: 'Successfully POSTed a file to this endpoint'
+  /api/data/preferences/{assignment_id}:
+    get:
+      description: Get assignment specific extension length
+      responses:
+        '200':
+          description: Example response
+          content:
+            application/json:
+              examples:
+                'Return':
+                  value:
+                    extension_length: 4
+  /api/data/assessments/setpreferences:
+    put:
+      description: Put assignment specific extension length
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutAssignExtensionLength'
 components:
   schemas:
+    PutAssignExtensionLength:
+      type: object
+      properties:
+        coursepreference_id:
+          type: integer
+        assignment_id:
+          type: integer
+        extension_length:
+          type: integer
     Assignment:
       type: object
       properties:
