@@ -923,8 +923,6 @@ export function generateSubjectBox(subject) {
  */
 export function handleComplexRequestFunctionality(thread) {
 
-
-
     // Get a reference to the reserveButton
     const reserveButton = document.getElementById('reserveButton');
 
@@ -937,7 +935,7 @@ export function handleComplexRequestFunctionality(thread) {
         // Retrieve the request permissions for the role of the current instructor
         loadData('/api/data/courses/?courseid=' + thread.course_id + '&preferences=true', {})
         .then(prefs => {
-            keyName = `scoord_${thread.request_type}`.toLowerCase();
+            let keyName = `scoord_${thread.request_type}`.toLowerCase();
 
             if (prefs[keyName] == false) {
                 reserveButton.style.display = 'none';
@@ -1165,14 +1163,14 @@ export function populatePopups(thread) {
 
     // Retrieve the template response and put it into the value of the instructor notes box
     loadData('/api/data/courses/?courseid=' + thread.course_id + '&preferences=true', {})
-    .then(assignment => {
-        document.getElementById('instructorNotesAExt').value = data.extension_approve;
-        document.getElementById('instructorNotesRExt').value = data.extension_reject;
-        document.getElementById('instructorNotestARem').value = data.remark_approve;
-        document.getElementById('instructorNotesRRem').value = data.remark_reject;
-        document.getElementById('instructorNotesAQui').value = data.quiz_approve;
-        document.getElementById('instructorNotesRQui').value = data.quiz_reject;
-        document.getElementById('instructorNotesAns').value = data.general_reject;
+    .then(data => {
+        document.getElementById('instructorNotesAExt').value = data.coursepreferences.extension_approve;
+        document.getElementById('instructorNotesRExt').value = data.coursepreferences.extension_reject;
+        document.getElementById('instructorNotestARem').value = data.coursepreferences.remark_approve;
+        document.getElementById('instructorNotesRRem').value = data.coursepreferences.remark_reject;
+        document.getElementById('instructorNotesAQui').value = data.coursepreferences.quiz_approve;
+        document.getElementById('instructorNotesRQui').value = data.coursepreferences.quiz_reject;
+        document.getElementById('instructorNotesAns').value = data.coursepreferences.general_reject;
     });
 
 
