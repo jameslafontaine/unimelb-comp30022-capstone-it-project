@@ -49,7 +49,7 @@ def test_get_assessments_endpoint_courseid():
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
 
-def test_get_assessments_endpoint_courseid():
+def test_get_assessments_endpoint_courseid_names():
     '''
     Test /api/data/assessments?courseid=value&names=true
     Acceptance criteria:
@@ -215,7 +215,7 @@ def test_get_courses_endpoint():
         mocker.get(LOCALHOST + endpoint, json = mock_response, status_code = 200)
         response = requests.get(LOCALHOST + endpoint, timeout = 5)
         assert response.status_code == 200 and response.json() == mock_response, \
-        endpoint + "does not work"
+            endpoint + "does not work"
 
 def test_get_courses_endpoint_courseid():
     '''
@@ -303,59 +303,59 @@ def test_get_request_requestid():
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
 
-test_thread_1 = { 
+test_thread_1 = {
     "created_by": 1
 }
 
-test_thread_2 = { 
+test_thread_2 = {
     "threads": [
-        {"thread_id": 11, 
-         "case_id": 11, 
-         "course_id": 31, 
-         "date_updated": "11-09-2023", 
-         "request_type": "Extension", 
-         "complex_case": 1, 
-         "current_status": "PENDING", 
-         "assignment_id": 1}, 
-         {"thread_id": 12, 
-          "case_id": 12, 
-          "course_id": 31, 
-          "date_updated": "01-19-2023", 
-          "request_type": "Query", 
-          "complex_case": 0, 
-          "current_status": "PENDING", 
-          "assignment_id": 2}, 
-          {"thread_id": 13, 
-           "case_id": 12, 
+        {"thread_id": 11,
+         "case_id": 11,
+         "course_id": 31,
+         "date_updated": "11-09-2023",
+         "request_type": "Extension",
+         "complex_case": 1,
+         "current_status": "PENDING",
+         "assignment_id": 1},
+         {"thread_id": 12,
+          "case_id": 12,
+          "course_id": 31,
+          "date_updated": "01-19-2023",
+          "request_type": "Query",
+          "complex_case": 0,
+          "current_status": "PENDING",
+          "assignment_id": 2},
+          {"thread_id": 13,
+           "case_id": 12,
            "course_id": 31,
-            "date_updated": "01-19-2023", 
-            "request_type": "Other", 
-            "complex_case": 1, 
-            "current_status": "REJECTED", 
+            "date_updated": "01-19-2023",
+            "request_type": "Other",
+            "complex_case": 1,
+            "current_status": "REJECTED",
             "assignment_id": 3}
         ]
-    
+ 
 }
-test_thread_3 = { 
+test_thread_3 = {
     "threads": [
-        {"thread_id": 11, 
-         "case_id": 11, 
-         "course_id": 31, 
-         "date_updated": "11-09-2023", 
-         "request_type": "Extension", 
+        {"thread_id": 11,
+         "case_id": 11,
+         "course_id": 31,
+         "date_updated": "11-09-2023",
+         "request_type": "Extension",
          "complex_case": 1, 
-         "current_status": "PENDING", 
-         "assignment_id": 1}, 
-         {"thread_id": 12, 
-          "case_id": 12, 
-          "course_id": 31, 
-          "date_updated": "01-19-2023", 
-          "request_type": "Query", 
-          "complex_case": 0, 
-          "current_status": "PENDING", 
+         "current_status": "PENDING",
+         "assignment_id": 1},
+         {"thread_id": 12,
+          "case_id": 12,
+          "course_id": 31,
+          "date_updated": "01-19-2023",
+          "request_type": "Query",
+          "complex_case": 0,
+          "current_status": "PENDING",
           "assignment_id": 2}
         ]
-    
+
 }
 #http://localhost:8000/api/data/thread/?threadid=1
 #http://localhost:8000/api/data/thread/?courseid=7727409
