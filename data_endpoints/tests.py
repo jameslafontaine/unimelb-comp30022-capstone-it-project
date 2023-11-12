@@ -3,52 +3,78 @@ Request and Query Management System - Testing Suite
 Unit Tests for data_endpoints
 """
 
-# from unittest.mock import patch
+import requests
+from requests_mock.mocker import Mocker
 
-def test_get_assessments_endpoint_assignid_successful():
-    '''
-    GET /api/data/assessments?assignid=1
-    Acceptance criteria:
-        - Matches Assignment output
-    '''
-    assert True, "Not returning Assignment correctly"
+LOCALHOST = 'http://localhost:8000'
 
-def test_get_assessments_endpoint_assignid_isnotdigit():
+def test_get_assessments_endpoint_assignid():
     '''
-    GET /api/data/assessments?assignid=abcde
+    Test /api/data/assessments?assigid=value
     Acceptance criteria:
-        - Returns 400
+        - Returns 200 and JSONs match
     '''
-    assert True, "Assignment ID parameter check not working"
+    endpoint = '/api/data/assessments?assignid=' + 1
 
-def test_get_assessments_endpoint_courseid_successful():
-    '''
-    GET /api/data/assessments?courseid=1
-    Acceptance criteria:
-        - Matches all assessments from a course output
-    '''
-    assert True, "Not returning all assesments in a course correctly"
+    mock_response = {
+        "assignment_id": 1,
+        "course_id": 1,
+        "assignment_name": "Project 1",
+        "assignment_type": "submission",
+        "assignment_weightage": 15,
+        "start_date": "2000:01:01 00:00:00",
+        "end_date": "2000:01:01 00:00:00"
+    }
 
-def test_get_assessments_endpoint_courseid_isnotdigit():
-    '''
-    GET /api/data/assessments?courseid=abcde
-    Acceptance criteria:
-        - Returns 400
-    '''
-    assert True, "Course ID parameter check not working"
+    with Mocker() as mocker:
+        mocker.get(LOCALHOST + endpoint, json = mock_response, status_code = 200)
+        response = requests.get(LOCALHOST + endpoint, timeout = 5)
+        assert response.status_code == 200 and response.json() == mock_response, \
+            endpoint + "does not work"
 
-def test_get_assessments_endpoint_courseid_names_successful():
+def test_get_assessments_endpoint_courseid():
     '''
-    GET /api/data/assessments?courseid=1&names=true
+    Test /api/data/assessments?courseid=value
     Acceptance criteria:
-        - Matches list of names output
+        - Returns 200 and JSONs match
     '''
-    assert True, "/api/data/assessments?courseid&?names not functional"
+    endpoint = '/api/data/assessments?courseid=' + 1
 
-def test_get_assessments_endpoint_courseid_names_invalid():
-    '''
-    GET /api/data/assessments?courseid=a&names=true
-    Acceptance criteria:
-        - Returns 400
-    '''
-    assert True, "/api/data/assessments?courseid&?names param checks not working"
+    mock_response = {
+        "assessments": [
+            {
+                "assignment_id": 1,
+                "course_id": 2001,
+                "assignment_name": "Project 1",
+                "assignment_type": "submission",
+                "assignment_weightage": 15,
+                "start_date": "2000:01:01 00:00:00",
+                "end_date": "2000:01:01 00:00:00"
+            },
+            {
+                "assignment_id": 2,
+                "course_id": 2001,
+                "assignment_name": "Project 2",
+                "assignment_type": "submission",
+                "assignment_weightage": 15,
+                "start_date": "2000:01:01 00:00:00",
+                "end_date": "2000:01:01 00:00:00"
+            },
+            {
+                "assignment_id": 3,
+                "course_id": 2001,
+                "assignment_name": "Mid Semester Test",
+                "assignment_type": "submission",
+                "assignment_weightage": 20,
+                "start_date": "2000:01:01 00:00:00",
+                "end_date": "2000:01:01 00:00:00"
+            }
+        ]
+    }
+
+    with Mocker() as mocker:
+        mocker.get(LOCALHOST + endpoint, json = mock_response, status_code = 200)
+        response = requests.get(LOCALHOST + endpoint, timeout = 5)
+        assert response.status_code == 200 and response.json() == mock_response, \
+            endpoint + "does not work"
+
