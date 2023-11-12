@@ -63,27 +63,11 @@
             <div id="subjectBoxContainer">
                 <!-- Subject boxes will be added here dynamically -->
             </div>
-
-
         </div>
-        
-        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
-        <script src="{% static 'js/modules/data.js' %}"></script>
-        <script src="{% static 'js/modules/webHeader.js' %}"></script>
-        <script src="{% static 'js/modules/styleMode.js' %}"></script>
-        <script src="{% static 'js/modules/subjectBox.js' %}"></script>
-
-        <script>
-            createHeader('instructor');
-            loadSubjectBoxData()
-                .then(subjects => {
-                    // Iterate through the JSON data and create/populate expandable boxes
-                    subjects.forEach(subject => {
-                        generateSubjectBox(subject);
-                    });
-                });
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { iHome } from "{% static 'js/app.js' %}";
+            iHome();
         </script>
-
     </body>
-
 </html>

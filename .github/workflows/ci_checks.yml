@@ -15,12 +15,25 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      - name: Cache babel-eslint
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-@babel/eslint-parser-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-@babel/eslint-parser-
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14'
       - name: Install dependencies
         run: npm install
+      - name: Install @babel/eslint-parser
+        run: npm install --save-dev @babel/eslint-parser
+      - name: Install @babel/core
+        run: npm install --save-dev @babel/core
+      - name: Install @babel/preset-env
+        run: npm install --save-dev @babel/preset-env
       - name: Lint JavaScript files
         run: npm run lint
 

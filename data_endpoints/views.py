@@ -629,13 +629,14 @@ def post_file(request):
     '''
     if request.method == 'POST':
         with connection.cursor() as cursor:
-            for filename, file in request.FILES.items():
+            for file in request.FILES.items():
                 file_data = file.read()
                 file_extension = os.path.splitext(file.name)[1][1:]
                 cursor.execute("""
                     INSERT INTO File (file, file_name, file_type, user_id, request_id)
                     VALUES (%s, %s, %s, %s, %s)
-                """, [file_data, file.name, file_extension, request.POST.get('user_id'), request.POST.get('request_id')])
+                """, [file_data, file.name, file_extension, request.POST.get('user_id'), \
+                      request.POST.get('request_id')])
         return JsonResponse({'message': 'Files uploaded successfully'}, status=201)
     if not request.method == 'POST':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)

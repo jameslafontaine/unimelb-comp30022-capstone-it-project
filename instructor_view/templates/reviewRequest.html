@@ -283,9 +283,6 @@
                     <p class="text">Request Type</p>
                     <textarea class="textBox" id="requestType" style="height:30px; resize:none" readonly></textarea>
 
-                    <p class="text">Request Title</p>
-                    <textarea class="textBox" id="requestTitle" style="height:30px; resize:none" readonly></textarea>
-
                     <p class="text">Message</p>
                     <textarea class="textBox" id="message" style="height:120px; resize:none" readonly>
                     </textarea>
@@ -326,7 +323,7 @@
                                 <span class="text" id="studentId"></span>
                                 <span class="text" id="studentEmail" style="font-size: 14px;"></span>
                                 <span>
-                                    <button class="standardButton" onclick=toProfile()>
+                                    <button class="standardButton" id="navProfileButton">
                                         View Profile
                                     </button>
                                 </span>
@@ -347,7 +344,7 @@
                                 <p class="bigButton" id="rejectButton" style="margin-bottom: 5px;">
                                     Reject Request
                                 </p>
-                                <p class="bigButton" onclick=back() style="margin-bottom: 5px;">
+                                <p class="bigButton" id="navBackButton" style="margin-bottom: 5px;">
                                     Back
                                 </p>
                             </div>
@@ -356,70 +353,29 @@
                 </div>
             </div>
         </div>
-        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
-        <script src="{% static 'js/modules/data.js' %}"></script>
-        <script src="{% static 'js/modules/webHeader.js' %}"></script>
-        <script src="{% static 'js/modules/styleMode.js' %}"></script>
-        <script>createHeader("instructor")</script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script src="{% static 'js/modules/buttons.js' %}"></script>
-        <script>
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { reviewRequest } from "{% static 'js/app.js' %}";
+            import { loadData } from "{% static 'js/modules/dataModule.js' %}";
+            reviewRequest();
 
-            // read in thread id from the provided data
-            let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
-            
-            // read in supporting documentation list as a JSON
-            let suppDocs = JSON.parse(document.getElementById('something'))
-        
-            // Fill information relating to the current request from the database
-            fillCurrentRequestInformation(threadId, 'Instructor');
-
-            // Generate the supporting documentation for the current version of request
-            //generateSuppDocTable(suppDocs, '');
-
-            // generate a list of all previous versions of a thread
-            getPreviousVersions(threadId)
-                .then(prevVersions => {
-                    // Generate version boxes for all request prevVersions in the data
-                    for (let i = 0; i < prevVersions.length; i++) {
-                        generateVersionBox(prevVersions[i], prevVersions.length - i)
-                    }
-                })
-            loadThread(threadId)
-                .then(thread => {
-                    handleComplexRequestFunctionality(thread);
-                })
-
-        </script>
-        <script src="{% static 'js/modules/popups.js' %}"></script>
-        <!-- Popup related JS -->
-        <script>
-
-            setupOpenClosePopupButtons();
-            loadThread(threadId)
-                .then(thread => {
-                    populatePopups(thread);
-                    HideAndDisplayButtons(thread);
-                    handleApprovalRejectionAnswer(thread);
-                })
-            
-        </script>
-        <!-- Student Details Box Population -->
-        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
-        <script>
-            iloadStudentDetails(threadId)
-                .then(student => {
-                    fillStudentDetailsBox(student);
-                })
+            var navProfileButton = document.getElementById('navProfileButton');
             function toProfile(){
-                redirectToProfile(threadId);
+                loadData('/api/data/thread/?threadid=' + threadId, {})
+                    .then(data => {
+                        window.location.href = '/instructor/view-profile/' + data.student.user_id; 
+                    });
             }
+            navProfileButton.addEventListener("click", toProfile);
+
+            var navBackButton = document.getElementById('navBackButton');
             function back(){
-                loadThread(threadId)
-                    .then(thread => {
-                        redirectToViewReqs(thread.course_id)
+                loadData('/api/data/thread/' + threadId, {})
+                    .then(data => {
+                        window.location.href = '/instructor/view-reqs/' + data.threadinfo.thread.course_id;
                     })
             }
+            navBackButton.addEventListener("click", back);
         </script>
     </body>
 </html>

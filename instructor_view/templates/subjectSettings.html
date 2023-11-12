@@ -55,6 +55,8 @@
     </head>
     <body>
 
+        <div id="load-course-id" data-course-id="{{ course_id }}"></div>
+
         <div id="webHeaderContainer"></div>
 
         <div class="mainBody">
@@ -69,9 +71,9 @@
                 </span>
             </div>
             <br>
-            <span>Default extension length: &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" size="2" placeholder="3">
+            <span>Default extension length: &nbsp;&nbsp;&nbsp;&nbsp;<input id="extensionLengthInput" type="text" size="2">
                 days&nbsp;&nbsp;&nbsp;
-                <button class="standardButton">
+                <button class="standardButton" id="saveExtensionLength">
                     Save
                 </button>
             </span>
@@ -92,27 +94,27 @@
                     <!--row2-->
                     <tr>
                         <td>Extension</td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox" id="extensionTutorCheck"></td>
+                        <td><input type="checkbox" id="extensionCoordCheck"></td>
                         <td>
-                            <textarea class="textBox" placeholder="Your extension has been approved"></textarea>
-                            <button class="standardButton">Edit</button>
+                            <textarea class="textBox" id="extensionApproveMsg" placeholder="Your extension has been approved"></textarea>
+                            <button class="standardButton" id="extensionApproveSave">Edit</button>
                             <br>
-                            <textarea class="textBox" placeholder="Your extension has been rejected"></textarea>
-                            <button class="standardButton">Edit</button>
+                            <textarea class="textBox" id="extensionRejectMsg" placeholder="Your extension has been rejected"></textarea>
+                            <button class="standardButton" id="extensionRejectSave">Edit</button>
                         </td>
                     </tr>
                     <!--row3-->
                     <tr>
                         <td>General Query</td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox" id="generalTutorCheck"></td>
+                        <td><input type="checkbox" id="generalCoordCheck"></td>
                         <td>
-                            <textarea class="textBox" placeholder="Lorem ipsum dolor sit amet"></textarea>
-                            <button class="standardButton">Edit</button>
+                            <textarea class="textBox" id="generalApproveMsg" placeholder="Lorem ipsum dolor sit amet"></textarea>
+                            <button class="standardButton" id="generalApproveSave">Edit</button>
                             <br>
-                            <textarea class="textBox" placeholder="Lorem ipsum dolor sit amet"></textarea>
-                            <button class="standardButton">Edit</button>
+                            <textarea class="textBox" id="generalRejectMsg" placeholder="Lorem ipsum dolor sit amet"></textarea>
+                            <button class="standardButton" id="generalRejectSave" >Edit</button>
                         </td>
                     </tr>
                     <!--row4-->
@@ -158,26 +160,10 @@
             </table>
             <p></p>
         </div>
-
-        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
-        <script src="{% static 'js/modules/data.js' %}"></script>
-        <script src="{% static 'js/modules/webHeader.js' %}"></script>
-        <script src="{% static 'js/modules/styleMode.js' %}"></script>
-        <script>createHeader("instructor")</script>
-
-        <script>
-            // Put subject code at start of title
-            loadCourse(31).then(courseData => {
-                subjectCode = courseData.course_code;
-                document.getElementById("title").innerHTML = subjectCode + document.getElementById("title").innerHTML;
-            })
-        </script>
-        <script src="{% static 'js/modules/subjectSettings.js' %}"></script>
-        <script>
-            // Populate assignments dropdown
-            getCourseAssessments(31).then(assessmentList => {
-                populateAssessmentDropdown(assessmentList);
-            });
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { subjectSettings } from "{% static 'js/app.js' %}";
+            subjectSettings();
         </script>
     </body>
 </html>
