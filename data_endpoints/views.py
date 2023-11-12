@@ -14,13 +14,13 @@ from datetime import datetime, time
 # Replace these values with your MySQL server details
 
 database_name = 'db'
+
 connection = mysql.connector.connect(
     host="db",
     port="3306",
     user="root",
     password="admin"
 )
-
 
 def validate_headers(request):
     '''
@@ -684,24 +684,31 @@ def post_new_case(request):
     '''
     POST /api/data/cases/new/
     Request body takes this format:
-    {
-        "thread_id": 1
+    {   
+        "user_id":1,
         "requests": [
-                {
-                    "request_id": 0,
-                    "thread_id": 0,
-                    "date_created": "string",
-                    "request_content": "string",
-                    "instructor_notes": "string"
-                }
-            ]
+            {
+                "course_id": 7677734,
+                "request_type": "AAP",
+                "assignment_id": 40897567,
+                "request_content": "bla bla"
+            },
+            {
+                "course_id": 7677734,
+                "request_type": "QUERY",
+                "assignment_id": 40268278,
+                "request_content": "bla bla"
+            }
+        ]
     }
     '''
     if request.method == 'POST':
         data = json.loads(request.body)
-        integer_fields = ['request_id', 'thread_id']
-        string_fields = ['date_created', 'request_content', 'instructor_notes']
+        integer_fields = ['course_id', 'assignment_id']
+        string_fields = ['request_type', 'request_content']
         all_fields = integer_fields + string_fields
+        if 'user_id' not in data:
+            return HttpResponseBadRequest("Request body does not have correct fields")
         if 'requests' not in data or not isinstance(data['requests'], list):
             return HttpResponseBadRequest("Request body does not have correct fields")
         for item in data['requests']:
@@ -715,9 +722,45 @@ def post_new_case(request):
                     if not isinstance(item[field], str):
                         return HttpResponseBadRequest("Request body does not have correct fields")
         # Create a new case
-        # For each request in request["requests"]
-        # Create a new thread
-        # Attach request
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(f"USE {database_name}")
+                user_ID = data.get("user_id",)
+                cursor.execute(
+                    "INSERT INTO `db`.`Case` (`user_id`) VALUES (%s)",
+                    (user_ID,)
+                )
+                case_id = cursor.lastrowid
+
+                # Iterate through the requests in the JSON
+                for request_data in data.get("requests", []):
+                    # Fill in default values for missing keys
+                    request_data.setdefault("instructor_notes", "-")
+                    request_data.setdefault("complex_case", 0)
+                    request_data.setdefault("current_status", "pending")
+
+                    # Create a new thread
+                    cursor.execute(
+                        "INSERT INTO `db`.`Thread` (`case_id`, `course_id`, `request_type`, `complex_case`, `current_status`, `assignment_id`, `date_updated`) VALUES (%s, %s, %s, %s, %s, %s, NOW())",
+                        (case_id, request_data['course_id'], request_data['request_type'], request_data['complex_case'], request_data['current_status'], request_data['assignment_id'])
+                    )
+                    thread_id = cursor.lastrowid
+
+                    # Get the current date and time in Python
+                    current_date_time = datetime.now()
+
+                    # Create a new request
+                    cursor.execute(
+                        "INSERT INTO `db`.`Request` (`thread_id`, `request_content`, `instructor_notes`, `date_created`) VALUES (%s, %s, %s, %s)",
+                        (thread_id, request_data['request_content'], request_data['instructor_notes'], current_date_time.strftime('%Y-%m-%d %H:%M:%S'))
+                    )
+
+            # Commit the changes to the database
+            connection.commit()
+
+        finally:
+            connection.close()
         return JsonResponse({
             "message": "Case created successfully"
         }, status = 201)
@@ -992,8 +1035,8 @@ from django.test import RequestFactory
 from django.conf import settings
 
 # Create a request factory
-request_factory = RequestFactory()
-settings.configure()  #this messes up django
+#request_factory = RequestFactory()
+#settings.configure()  #this messes up django
 
 
 # Create a mock HTTP request
@@ -1050,9 +1093,6 @@ def test_put_preferences():
     print(response.status_code)
     print(response.content)
 
-# Call the test function
-#test_put_preferences()
-
 def test_complex():
     # Create a mock request object
     request = HttpRequest()
@@ -1073,9 +1113,6 @@ def test_complex():
     print(response)
     print(response.status_code)
     print(response.content)
-
-# Call the test function
-#test_complex()
 
 def test_request_response():
     # Create a mock request object
@@ -1109,10 +1146,6 @@ def test_request_response():
     print(response.status_code)
     print(response.content)
 
-# Call the test function
-#test_request_response()
-
-
 def test_post_case():
     # Create a mock request object
     request = HttpRequest()
@@ -1123,13 +1156,19 @@ def test_post_case():
     #For extension/quizcode/remark:
     
     request_data = {
-   "requests": [
+    "user_id" : 109194991,
+    "requests": [
             {
-            "request_id": 0,
-            "thread_id": 0,
-            "date_created": "string",
-            "request_content": "string",
-            "instructor_notes": "string"
+                "course_id": 7677734,
+                "request_type": "AAP",
+                "assignment_id": 40897567,
+                "request_content": "bla bla"
+            },
+            {
+                "course_id": 7677734,
+                "request_type": "QUERY",
+                "assignment_id": 40268278,
+                "request_content": "bla bla"
             }
         ]
     }
@@ -1143,9 +1182,6 @@ def test_post_case():
     print(response)
     print(response.status_code)
     print(response.content)
-
-
-#test_post_case()
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 def test_post_AAP():
