@@ -16,6 +16,7 @@ from .views import post_file
 from .views import put_preferences
 from .views import put_req_response
 from .views import set_complex
+from .views import get_files_endpoint
 
 urlpatterns = [
     # GET requests

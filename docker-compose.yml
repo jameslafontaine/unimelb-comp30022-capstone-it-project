@@ -7,7 +7,7 @@ services:
         ports:
             - "33061:3306"
         volumes:
-            - ./init.sql:/etc/mysql/conf.d/init.sql
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     webapp:
         build:
             context: .

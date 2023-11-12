@@ -31,5 +31,7 @@ if __name__ == "__main__":
 
     print("Database is ready")
 
+    os.system("python populate_database.py")
+
     # Start the Django server
     os.system("python manage.py runserver 0.0.0.0:8000")
