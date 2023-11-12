@@ -1058,26 +1058,48 @@ export function handleApprovalRejectionAnswer(thread) {
         
         // Add click event listener to Approve Request button
         popupApproveButton.addEventListener('click', function() {
-            // Quiz has the extra field of quiz password to return and doesn't need extension
-            if (thread.request_type == "Quiz") {
-                responseJson = {
-                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                    'status' : 'Approved',
-                    'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                    'assignmentName' : document.getElementById(`assessmentOverrideA${reqShort}`).value,
-                }
-            } else {
-                responseJson = {
-                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                    'status' : 'Approved',
-                    'extended by' : document.getElementById('extensionOverrideAExt').value,
-                    'assignmentName' : document.getElementById(`assessmentOverrideA${reqShort}`).value,
-                }
-            }
 
-            respond(thread.thread_id, responseJson);
-            // return to view reqs (could make a confirmation page or just show confirmation message at top)
-            window.location.href = '/instructor/view-reqs/' + thread.course_id;
+
+            let assignmentName = document.getElementById(`assessmentOverrideA${reqShort}`).value
+            let assignmentId = -1; //placeholder
+            
+            // find the assignment id to return by matching to the name in backend
+            loadData('/api/data/assessments/?courseid=' + thread.course_id, {})
+                .then(data => {
+                    let assignments = data.assessments;
+                    assignments.forEach(assignment => {
+                        if(assignment.assignment_name == assignmentName){
+                            assignmentId = assignment.assignment_id;
+                        }
+                    });
+                    // assignment id found, organise response json now
+
+                    // Quiz has the extra field of quiz password to return and doesn't need extension
+                    if (thread.request_type == "Quiz") {
+                        responseJson = {
+                            'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'status' : 'Approved',
+                            'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'assignmentId' : assignmentId,
+                        }
+                    } else {
+                        responseJson = {
+                            'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'status' : 'Approved',
+                            'extended by' : document.getElementById('extensionOverrideAExt').value,
+                            'assignmentId' : assignmentId,
+                        }
+                    }
+
+                    respond(thread.thread_id, responseJson);
+                    console.log("responseJson: ", responseJson);
+                    // return to view reqs (could make a confirmation page or just show confirmation message at top)
+                    //window.location.href = '/instructor/view-reqs/' + thread.course_id;
+
+
+
+
+                });
         });
         
         // Get the Reject Request button
