@@ -1071,6 +1071,19 @@ export function shouldDisplayRequest(requestType, isComplex, courseId) {
 
 export function populatePopups(thread) {
 
+    // Retrieve the template response and put it into the value of the instructor notes box
+    loadData('/api/data/courses/?courseid=' + thread.course_id + '&preferences=true', {})
+    .then(assignment => {
+        document.getElementById('instructorNotesAExt').value = data.extension_approve;
+        document.getElementById('instructorNotesRExt').value = data.extension_reject;
+        document.getElementById('instructorNotestARem').value = data.remark_approve;
+        document.getElementById('instructorNotesRRem').value = data.remark_reject;
+        document.getElementById('instructorNotesAQui').value = data.quiz_approve;
+        document.getElementById('instructorNotesRQui').value = data.quiz_reject;
+        document.getElementById('instructorNotesAns').value = data.general_reject;
+    });
+
+
     loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
         .then(assignment => {
             // Populate current deadline
