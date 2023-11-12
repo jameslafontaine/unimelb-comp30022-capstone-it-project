@@ -464,6 +464,18 @@ paths:
                       - course_id: 2
                         course_name: 'Modern Applied Statistics'
                         course_code: 'MAST30025'
+  /api/data/user/:
+    put:
+      description: Set user details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetUserDetailsRequest'
+      responses:
+        '201':
+          description: 
   /api/data/files/{user_id}:
     get:
       parameters:
@@ -681,6 +693,15 @@ components:
         - QUIZCODE
         - REMARK 
         - OTHER
+    SetUserDetailsRequest:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        email_preference:
+          type: integer
+        darkmode_preference:
+          type: integer
     Thread:
       type: object
       properties:

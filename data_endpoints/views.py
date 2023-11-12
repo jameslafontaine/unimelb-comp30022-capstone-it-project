@@ -732,3 +732,23 @@ def set_complex(request):
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+@csrf_exempt
+def put_user_preferences(request):
+    '''
+    PUT /api/data/user/
+    Request body is
+    {
+        "user_id": 0,
+        "email_preference": 0,
+        "darkmode_preference": 1
+    }
+    '''
+    if request.method == 'PUT':
+        #
+        # UPDATE
+        #
+        return JsonResponse({'message': 'Has been set successfully'}, status = 201)
+    if not request.method == 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
