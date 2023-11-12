@@ -860,9 +860,9 @@ export function handleComplexRequestFunctionality(thread) {
 
         // If these types of requests aren't reservable for Scoord, we hide the reserve button
         // Retrieve the request permissions for the role of the current instructor
-        loadData('/api/data/courses/?courseid=' + courseId + '&preferences=true', {})
+        loadData('/api/data/courses/?courseid=' + thread.course_id + '&preferences=true', {})
         .then(prefs => {
-            keyName = `scoord_${request.requestType}`.toLowerCase();
+            keyName = `scoord_${thread.request_type}`.toLowerCase();
 
             if (prefs[keyName] == false) {
                 reserveButton.style.display = 'none';
@@ -961,7 +961,7 @@ export function generateRequestTable(threads, type) {
     threads.forEach(thread => {
         
         // Check if this thread is meant to be displayed for this instructor or not, if not then skip this request
-        if (!shouldDisplayRequest(thread.request_type, thread.complex_case, courseId)) {
+        if (!shouldDisplayRequest(thread.request_type, thread.complex_case, thread.course_id)) {
             return;
         }
         
