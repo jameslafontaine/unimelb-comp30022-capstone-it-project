@@ -1,3 +1,9 @@
+/** 
+ * Author(s): Jun Youn, James La Fontaine, Callum Sharman
+ * Date Last Modified: November 12, 2023
+ * Description: Helper functions for retrieving and sending data to the database
+ */
+
 import { CONTENT_TYPE } from "./constantsModule.js";
 import { getGlobalAppHeadersValue } from "./helperFunctionModule.js";
 
@@ -19,6 +25,11 @@ export function loadData(url, reqHeaders) {
 		});
 }
 
+/**
+ * Sends form data to the given URL endpoint
+ * @param {string} url - Endpoint that receives formdata
+ * @returns {Promise<any>} 
+ */
 export function putData(url, json){
     return fetch(url, {
         method: 'PUT',
