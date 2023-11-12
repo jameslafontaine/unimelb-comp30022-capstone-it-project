@@ -364,7 +364,7 @@ export function subjectSettings() {
     loadData('/api/data/courses?courseid=' + courseId + '&preferences=true')
         .then(data => {
             coursePrefData = data.coursepreferences;
-            console.log(coursePrefData);
+            //console.log(coursePrefData);
             document.getElementById('extensionLengthInput').value = coursePrefData.global_extension_length;
             
             var extensionTutorCheckBox = document.getElementById('extensionTutorCheck');
