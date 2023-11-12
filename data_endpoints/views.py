@@ -13,7 +13,7 @@ from datetime import datetime, time
 # Create a connection
 # Replace these values with your MySQL server details
 
-database_name = 'db'
+DATABASE_NAME = 'db'
 
 connection = mysql.connector.connect(
     host="db",
@@ -55,7 +55,7 @@ def get_assessments_endpoint(request):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
         if not check_param_not_integer(request.GET.get('assignid')):
             cursor = connection.cursor(dictionary=True)
-            cursor.execute(f"USE {database_name}")
+            cursor.execute(f"USE {DATABASE_NAME}")
 
             # Execute a query to fetch the assignment data
             query = "SELECT * FROM Assignment WHERE assignment_id = %s"
@@ -83,7 +83,7 @@ def get_assessments_endpoint(request):
                 }
 
                 return JsonResponse(json_data)
-            
+
             if not assignment_data:
                 return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
@@ -92,7 +92,7 @@ def get_assessments_endpoint(request):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
         if not check_param_not_integer(request.GET.get('courseid')):
             cursor = connection.cursor(dictionary=True)
-            cursor.execute(f"USE {database_name}")
+            cursor.execute(f"USE {DATABASE_NAME}")
 
             # Execute a query to fetch assignments for the given course_id
             query = "SELECT * FROM Assignment WHERE course_id = %s"
@@ -153,25 +153,25 @@ def get_cases_endpoint(request):
         if not check_param_not_integer(request.GET.get('userid')):
             # SELECT * FROM 'Case' WHERE 'Case'.user_id == int(request.GET.get('userid'))
             cursor = connection.cursor()
-            cursor.execute(f"USE {database_name}")
+            cursor.execute(f"USE {DATABASE_NAME}")
             # Execute a query to fetch case_id values for the given user_id
             query = "SELECT case_id FROM `Case` WHERE user_id = %s"
             cursor.execute(query, (request.GET.get('userid'),))
 
             case_ids = [row[0] for row in cursor]
 
-            cases = [{"case_id": case_id, "user_id": request.GET.get('userid')} for case_id in case_ids]
+            cases = [{"case_id": case_id, "user_id": request.GET.get('userid')} \
+                      for case_id in case_ids]
 
             json_data = {"cases": cases}
             return JsonResponse(json_data)
-    
     if not request.GET.get('userid') and request.GET.get('caseid'):
         if check_param_not_integer(request.GET.get('caseid')):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
         if not check_param_not_integer(request.GET.get('caseid')):
             if len(request.GET) == 1:
                 cursor = connection.cursor(dictionary=True)
-                cursor.execute(f"USE {database_name}")
+                cursor.execute(f"USE {DATABASE_NAME}")
                 # Execute a query to fetch case data for the given case_id
                 query = "SELECT * FROM `Case` WHERE case_id = %s"
                 cursor.execute(query, (request.GET.get('caseid'),))
@@ -186,13 +186,13 @@ def get_cases_endpoint(request):
                         }
                     }
                     return JsonResponse(json_data)
-                
+
                 if not case_data:
                     return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
             if len(request.GET) == 2 and request.GET.get('threads').lower() == 'true':
                 cursor = connection.cursor()
-                cursor.execute(f"USE {database_name}")
+                cursor.execute(f"USE {DATABASE_NAME}")
                 # Execute a query to fetch threads for the given case_id
                 query = "SELECT * FROM Thread WHERE case_id = %s"
                 cursor.execute(query, (request.GET.get('caseid'),))
@@ -249,7 +249,7 @@ def get_courses_endpoint(request):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
         if not check_param_not_integer(request.GET.get('userid')):
             cursor = connection.cursor(dictionary=True)
-            cursor.execute(f"USE {database_name}")
+            cursor.execute(f"USE {DATABASE_NAME}")
 
             # Execute a query to fetch the courses for the given user_id
             query = "SELECT c.course_id, c.course_name, c.course_code FROM Course c " \
@@ -278,10 +278,10 @@ def get_courses_endpoint(request):
             if len(request.GET) == 1:
                 # SELECT * FROM COURSE WHERE 'Course'.course_Id == int(request.GET.get('courseid'))
                 cursor = connection.cursor(dictionary=True)
-                cursor.execute(f"USE {database_name}")
+                cursor.execute(f"USE {DATABASE_NAME}")
 
                 # Execute a query to fetch course information for the given course_id
-                query = "SELECT course_id, course_name, course_code FROM Course WHERE course_id = %s"
+                query = "SELECT course_id, course_name, course_code FROM Course WHERE course_id=%s"
                 cursor.execute(query, (request.GET.get('courseid'),))
 
                 course_data = cursor.fetchone()
@@ -295,13 +295,14 @@ def get_courses_endpoint(request):
                         }
                     }
                     return JsonResponse(course_info)
-                
+
                 if not course_data:
                     return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
-            if len(request.GET) == 2 and request.GET.get('preferences') and request.GET.get('preferences').lower() == 'true':
+            if len(request.GET) == 2 and request.GET.get('preferences') and \
+                request.GET.get('preferences').lower() == 'true':
                 cursor = connection.cursor(dictionary=True)
-                cursor.execute(f"USE {database_name}")
+                cursor.execute(f"USE {DATABASE_NAME}")
                 # Execute a query to fetch course preferences for the given course_id
                 query = "SELECT * FROM CoursePreferences WHERE course_id = %s"
                 cursor.execute(query, (request.GET.get('courseid'),))
@@ -313,7 +314,8 @@ def get_courses_endpoint(request):
                         "coursepreferences": {
                             "coursepreference_id": course_preferences_data["coursepreference_id"],
                             "course_id": course_preferences_data["course_id"],
-                            "global_extension_length": course_preferences_data["global_extension_length"],
+                            "global_extension_length": 
+                                course_preferences_data["global_extension_length"],
                             "general_tutor": course_preferences_data["general_tutor"],
                             "extension_tutor": course_preferences_data["extension_tutor"],
                             "quiz_tutor": course_preferences_data["quiz_tutor"],
@@ -357,14 +359,14 @@ def get_requests_endpoint(request):
             if check_param_not_integer(request.GET.get('userid')):
                 return JsonResponse({'message': 'Invalid request.'}, status = 400)
             if not check_param_not_integer(request.GET.get('userid')):
-                # Return request history of a user. 
+                # Return request history of a user
                 # Consult Callum on this, unsure if we actually need more data on this
                 cursor = connection.cursor(dictionary=True)
-                cursor.execute(f"USE {database_name}")
+                cursor.execute(f"USE {DATABASE_NAME}")
 
                 # Execute a query to fetch requests information for the given student_id
-                query = "SELECT r.request_id, r.thread_id, r.date_created, r.request_content, r.instructor_notes " \
-                        "FROM Request r " \
+                query = "SELECT r.request_id, r.thread_id, r.date_created, " \
+                        "r.request_content, r.instructor_notes FROM Request r " \
                         "INNER JOIN Thread t ON r.thread_id = t.thread_id " \
                         "INNER JOIN `Case` c ON t.case_id = c.case_id " \
                         "WHERE c.user_id = %s"
@@ -391,7 +393,7 @@ def get_requests_endpoint(request):
                 return JsonResponse({'message': 'Invalid request.'}, status = 400)
             if not check_param_not_integer(request.GET.get('requestid')):
                 cursor = connection.cursor(dictionary=True)
-                cursor.execute(f"USE {database_name}")
+                cursor.execute(f"USE {DATABASE_NAME}")
 
                 # Query the Request table to retrieve the information for the specified request_id
                 query = "SELECT * FROM Request WHERE request_id = %s"
@@ -418,7 +420,6 @@ def get_requests_endpoint(request):
 
                 if not request_data:
                     return JsonResponse({'message': 'Invalid request.'}, status = 400)
-    
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_threads_user_endpoint(request):
@@ -441,7 +442,7 @@ def get_threads_user_endpoint(request):
             if not check_param_not_integer(request.GET.get('threadid')):
                 # Some join of 'Thread' and 'Case' on case_id
                 cursor = connection.cursor(dictionary=True)
-                cursor.execute(f"USE {database_name}")
+                cursor.execute(f"USE {DATABASE_NAME}")
                 query = """
                 SELECT `Case`.user_id
                 FROM `Case`
@@ -505,13 +506,14 @@ def get_threads_user_endpoint(request):
             # result["thread"]["current_status"] == request.GET.get('checkstatus')
             threads = []
             cursor = connection.cursor(dictionary=True)
-            cursor.execute(f"USE {database_name}")
+            cursor.execute(f"USE {DATABASE_NAME}")
             # SQL query to retrieve threads based on user_id and status
-            query = "SELECT T.thread_id, T.case_id, T.course_id, T.date_updated, T.request_type, T.complex_case, T.current_status, T.assignment_id " \
-                    "FROM Thread AS T " \
+            query = "SELECT T.thread_id, T.case_id, T.course_id," \
+            " T.date_updated, T.request_type, T.complex_case, " \
+            "T.current_status, T.assignment_id FROM Thread AS T " \
                     "JOIN `Case` AS C ON T.case_id = C.case_id " \
                     "WHERE C.user_id = %s AND T.current_status = %s"
-            
+
             # Execute the query with user_id and status as parameters
             cursor.execute(query, (request.GET.get('userid'), request.GET.get('status')))
 
@@ -542,53 +544,57 @@ def get_threads_endpoint(request, thread_id):
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
     if len(request.GET) in [0, 1]:
-            # Compare it to the function input thread_id
-            # SELECT * FROM 'Thread' WHERE 'Thread'.thread_id == thread_id
-            # SELECT * FROM 'Request' WHERE 'Request'.thread_id == thread_id
-            cursor = connection.cursor(dictionary=True)
-            cursor.execute(f"USE {database_name}")
+        # Compare it to the function input thread_id
+        # SELECT * FROM 'Thread' WHERE 'Thread'.thread_id == thread_id
+        # SELECT * FROM 'Request' WHERE 'Request'.thread_id == thread_id
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute(f"USE {DATABASE_NAME}")
 
-            # Query the Thread table
-            thread_query = f"SELECT * FROM Thread WHERE thread_id = {thread_id}"
-            cursor.execute(thread_query)
-            thread_info = cursor.fetchone()
+        # Query the Thread table
+        thread_query = f"SELECT * FROM Thread WHERE thread_id = {thread_id}"
+        cursor.execute(thread_query)
+        thread_info = cursor.fetchone()
 
-            if thread_info:
-                # Query the Request table
-                request_query = f"SELECT * FROM Request WHERE thread_id = {thread_id}"
-                cursor.execute(request_query)
-                requests = cursor.fetchall()
+        if thread_info:
+            # Query the Request table
+            request_query = f"SELECT * FROM Request WHERE thread_id = {thread_id}"
+            cursor.execute(request_query)
+            requests = cursor.fetchall()
 
-                # Query the CoursePreferences table
-                coursepreference_query = "SELECT * FROM CoursePreferences WHERE course_id = %s"
-                cursor.execute(coursepreference_query, (thread_info['course_id'],))
-                coursepreferences = cursor.fetchone()
+            # Query the CoursePreferences table
+            coursepreference_query = "SELECT * FROM CoursePreferences WHERE course_id = %s"
+            cursor.execute(coursepreference_query, (thread_info['course_id'],))
+            coursepreferences = cursor.fetchone()
 
-                # Format the datetime fields
-                thread_info['date_updated'] = thread_info['date_updated'].strftime('%Y:%m:%d %H:%M:%S') if thread_info['date_updated'] else None
-                for request_db in requests:
-                    request_db['date_created'] = request_db['date_created'].strftime('%Y:%m:%d %H:%M:%S') if request_db['date_created'] else None
+            # Format the datetime fields
+            if thread_info['date_updated']:
+                thread_info['date_updated'] = \
+                    thread_info['date_updated'].strftime('%Y:%m:%d %H:%M:%S')
+            for request_db in requests:
+                if request_db['date_created']:
+                    request_db['date_created'] = \
+                        request_db['date_created'].strftime('%Y:%m:%d %H:%M:%S')
 
-                # Create the JSON structure
-                result = {
-                    "threadinfo": {
-                        "thread": thread_info,
-                        "requests": requests,
-                        "coursepreferences": coursepreferences
-                    }
+            # Create the JSON structure
+            result = {
+                "threadinfo": {
+                    "thread": thread_info,
+                    "requests": requests,
+                    "coursepreferences": coursepreferences
                 }
-                if not request.GET:
-                    return JsonResponse(result)
-                if request.GET.get('checkstatus'):
-                    if not request.GET.get('checkstatus').lower() == 'true':
-                        return JsonResponse({'message': 'Invalid request.'}, status = 400)
-                    if request.GET.get('checkstatus').lower() == 'true':
-                        return JsonResponse({
-                            "status": result["threadinfo"]["thread"]["current_status"]
-                        })
+            }
+            if not request.GET:
+                return JsonResponse(result)
+            if request.GET.get('checkstatus'):
+                if not request.GET.get('checkstatus').lower() == 'true':
+                    return JsonResponse({'message': 'Invalid request.'}, status = 400)
+                if request.GET.get('checkstatus').lower() == 'true':
+                    return JsonResponse({
+                        "status": result["threadinfo"]["thread"]["current_status"]
+                    })
 
-            if not thread_info:
-                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not thread_info:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
 def get_user_endpoint(request, user_id):
     '''
@@ -604,7 +610,7 @@ def get_user_endpoint(request, user_id):
         if not request.GET:
             cursor = connection.cursor(dictionary=True)
             # Query the User table
-            cursor.execute(f"USE {database_name}")
+            cursor.execute(f"USE {DATABASE_NAME}")
             user_query = f"SELECT * FROM User WHERE user_id = {user_id}"
             cursor.execute(user_query)
             user_data = cursor.fetchone()
@@ -621,7 +627,7 @@ def get_user_endpoint(request, user_id):
                     "darkmode_preference": user_data['darkmode_preference']
                 }
                 return JsonResponse(result)
-            
+
             if not user_data:
                 return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
@@ -633,9 +639,9 @@ def get_user_endpoint(request, user_id):
                 cursor = connection.cursor(dictionary=True)
 
                 # Query the Enrollment table to get enrolled courses for the user
-                courses_query = f"SELECT Course.course_id, course_name, course_code FROM Course " \
-                                f"INNER JOIN Enrollment ON Course.course_id = Enrollment.course_id " \
-                                f"WHERE user_id = {user_id}"
+                courses_query = f"SELECT Course.course_id, course_name, course_code" \
+                                f"FROM Course INNER JOIN Enrollment ON Course.course_id " \
+                                f"= Enrollment.course_id WHERE user_id = {user_id}"
                 cursor.execute(courses_query)
                 courses_data = cursor.fetchall()
 
@@ -666,7 +672,7 @@ def get_files_endpoint(request, user_id):
         if request.GET.get('aaps').lower() == 'true':
             # Get all files that are AAPs from database
             with connection.cursor() as cursor:
-                cursor.execute(f"USE {database_name}")
+                cursor.execute(f"USE {DATABASE_NAME}")
                 cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s AND file_type IN ('aap', 'AAP')", [user_id])
                 rows = cursor.fetchall()
             files_list = []
@@ -683,7 +689,7 @@ def get_files_endpoint(request, user_id):
                 return HttpResponseBadRequest('Invalid request, check input again. requestID error')
             # Get all files under request ID
             with connection.cursor() as cursor:
-                cursor.execute(f"USE {database_name}")
+                cursor.execute(f"USE {DATABASE_NAME}")
                 cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", [user_id])
                 rows = cursor.fetchall()
             files_list = []
@@ -728,24 +734,24 @@ def post_new_case(request):
         string_fields = ['request_type', 'request_content']
         all_fields = integer_fields + string_fields
         if 'user_id' not in data:
-            return HttpResponseBadRequest("Request body does not have correct fields")
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
         if 'requests' not in data or not isinstance(data['requests'], list):
-            return HttpResponseBadRequest("Request body does not have correct fields")
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
         for item in data['requests']:
             if not set(item.keys()) == set(all_fields):
-                return HttpResponseBadRequest("Request body does not have correct fields")
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
             if set(item.keys()) == set(all_fields):
                 for field in integer_fields:
                     if not isinstance(item[field], int):
-                        return HttpResponseBadRequest("Request body does not have correct fields")
+                        return JsonResponse({'message': 'Invalid request.'}, status = 400)
                 for field in string_fields:
                     if not isinstance(item[field], str):
-                        return HttpResponseBadRequest("Request body does not have correct fields")
+                        return JsonResponse({'message': 'Invalid request.'}, status = 400)
         # Create a new case
 
         try:
             with connection.cursor() as cursor:
-                cursor.execute(f"USE {database_name}")
+                cursor.execute(f"USE {DATABASE_NAME}")
                 user_ID = data.get("user_id",)
                 cursor.execute(
                     "INSERT INTO `db`.`Case` (`user_id`) VALUES (%s)",
@@ -803,7 +809,7 @@ def post_file(request):
             return HttpResponseBadRequest("Request body does not have correct fields")
         # Create a cursor to interact with the database
         cursor = connection.cursor()
-        cursor.execute(f"USE {database_name}")
+        cursor.execute(f"USE {DATABASE_NAME}")
         # Extract data from the JSON
         user_id = data["user_id"]
         fileName = data["fileName"]
@@ -812,7 +818,7 @@ def post_file(request):
         
         file_data = request.FILES[fileName].read()
         cursor = connection.cursor()
-        cursor.execute(f"USE {database_name}")
+        cursor.execute(f"USE {DATABASE_NAME}")
         insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(insert_query, (file_data, fileName, user_id, request_id, file_type))
         connection.commit()
@@ -873,7 +879,7 @@ def put_preferences(request):
         # Create a cursor to interact with the database
         cursor = connection.cursor()
         
-        cursor.execute(f"USE {database_name}")
+        cursor.execute(f"USE {DATABASE_NAME}")
         # Extract data from the JSON
         coursepreference_id = data["coursepreference_id"]
         course_id = data["course_id"]
@@ -969,7 +975,7 @@ def put_req_response(request):
 
         # Create a cursor to interact with the database
         cursor = connection.cursor()
-        cursor.execute(f"USE {database_name}")
+        cursor.execute(f"USE {DATABASE_NAME}")
         # Extract data from the JSON
         instructor_notes = data["instructor_notes"]
         status = data["status"]
@@ -1015,7 +1021,7 @@ def set_complex(request):
         try:
             # Create a cursor to interact with the database
             cursor = connection.cursor()
-            cursor.execute(f"USE {database_name}")
+            cursor.execute(f"USE {DATABASE_NAME}")
             data = json.loads(request.body)
             
             # Check the current value of 'complex_case' for the given 'request_id'
