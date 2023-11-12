@@ -110,6 +110,7 @@ export function generateStudentCases(cases) {
                     container.appendChild(document.createElement("br"));
                 
                 });
+                fixStyling();
             });
     }
     
@@ -120,7 +121,7 @@ export function fillCurrentRequestInformation(threadId, view) {
     loadData('/api/data/thread/' + threadId, {})
         .then(data => {
             let requestData = data.threadinfo.requests[0];
-            if (requestData.reserved == true & view == 'Instructor') { // INSTRUCTOR COMPLEX
+            if (data.threadinfo.thread.complex_case == 1 & view == 'Instructor') { // INSTRUCTOR COMPLEX
                 document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
             } else if (view == 'Instructor') { // INSTRUCTOR NON-COMPLEX
                 document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; ">☆</span>'
@@ -264,6 +265,8 @@ export function generateVersionBox(version, number) {
     container.appendChild(expandableBox);
     container.appendChild(expandableBoxSection);
     container.appendChild(document.createElement("br"));
+
+    fixStyling();
 
     //generateSuppDocTable(version.documents, number);
     //container.appendChild(document.createElement("br"));
@@ -578,19 +581,52 @@ function setupDownloadButton(buttonId, fileUrl, fileName) {
 }
 
 export function handleCaseSubmission(numRequests) {
+
     let requestsData = new Array();
+    let requestsPromises = [];
+
     for (let i=1; i <= numRequests; i++) {
-        let requestData = {
-            'courseId': document.getElementById(`courseDropdown${i}`).value,
-            'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
-            'assignmentId': -1,
-            'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
-            'message': document.getElementById(`messageTextBox${i}`).value,
-            'supportingDocuments': -1,
-        }
-        requestsData.push(requestData);
+
+        let promise = loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
+            .then(data => {
+                let courses = data.courses;
+                for (let course of courses) {
+                    if (course.course_code == document.getElementById(`courseDropdown${i}`).value) {
+                        loadData('/api/data/assessments/?courseid=' + course.course_id, {})
+                            .then(data => {
+                                let assignments = data.assessments;
+                                let assignmentId = -1;
+
+                                assignments.forEach(assignment => {
+                                    if(assignment.assignment_name == document.getElementById(`assignmentDropdown${i}`).value){
+                                        assignmentId = assignment.assignment_id;
+                                    }
+                                });
+
+                                let requestData = {
+                                    'courseId': course.course_id,
+                                    'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
+                                    'assignmentId': assignmentId,
+                                    'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
+                                    'message': document.getElementById(`messageTextBox${i}`).value,
+                                    'supportingDocuments': -1,
+                                }
+                                requestsData.push(requestData);
+
+                            });
+                        break;
+                    }
+                }
+            });
+        requestsPromises.push(promise);
     }
-    postNewCase({'requests': requestsData});
+
+    Promise.all(requestsPromises)
+        .then(() => {
+            // All requests are completed
+            postNewCase({'requests': requestsData});
+        });
+
 }
 
 export function saveEdits(currRequest, prevVersions) {
@@ -818,7 +854,7 @@ export function handleComplexRequestFunctionality(thread) {
     loadData('/api/data/thread/' + thread.thread_id, {})
         .then(data => {
             let request = data.threadinfo.requests[0];
-            if (thread.complex_case) { // it is complex now
+            if (data.threadinfo.thread.complex_case) { // it is complex now
                 reserveButton.innerHTML = 'Unmark'
                 document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
             } else { // it is not complex
@@ -842,7 +878,7 @@ export function handleComplexRequestFunctionality(thread) {
                     loadData('/api/data/thread/' + thread.thread_id, {})
                         .then(data => {
                             let request = data.threadinfo.requests[0];
-                            if (thread.complex_case) { // it is complex now
+                            if (data.threadinfo.thread.complex_case) { // it is complex now
                                 reserveButton.innerHTML = 'Unmark'
                                 document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
                             } else { // it is not complex
@@ -1047,6 +1083,18 @@ export function populatePopups(thread) {
             document.getElementById('extensionOverrideAExt').value = prefs.global_extension_length;
         })
 
+    // Populate the assignment override dropDown
+    loadData('/api/data/assessments/?courseid=' + thread.course_id, {})
+        .then(data => {
+            let assignments = data.assessments;
+            assignments.forEach(assignment => {
+                const option = document.createElement('option');
+                option.textContent = assignment.assignment_name;
+                let dropDownId = "assessmentOverrideA" + document.getElementById("requestType").innerHTML.substring(0,3);
+                document.getElementById(dropDownId).appendChild(option);
+            });
+        });
+
 }
 
 export function hideAndDisplayButtons(thread) {
@@ -1084,25 +1132,47 @@ export function handleApprovalRejectionAnswer(thread) {
         
         // Add click event listener to Approve Request button
         popupApproveButton.addEventListener('click', function() {
-            // Quiz has the extra field of quiz password to return and doesn't need extension
-            if (thread.request_type == "Quiz") {
-                responseJson = {
-                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                    'status' : 'Approved',
-                    'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                }
-            } else {
-                responseJson = {
-                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                    'status' : 'Approved',
-                    'extended by' : document.getElementById('extensionOverrideAExt').value,
-                }
-            }
 
-            respond(thread.thread_id, responseJson);
 
-            // return to view reqs (could make a confirmation page or just show confirmation message at top)
-            window.location.href = '/instructor/view-reqs/' + thread.course_id;
+            let assignmentName = document.getElementById(`assessmentOverrideA${reqShort}`).value
+            let assignmentId = -1; //placeholder
+            
+            // find the assignment id to return by matching to the name in backend
+            loadData('/api/data/assessments/?courseid=' + thread.course_id, {})
+                .then(data => {
+                    let assignments = data.assessments;
+                    assignments.forEach(assignment => {
+                        if(assignment.assignment_name == assignmentName){
+                            assignmentId = assignment.assignment_id;
+                        }
+                    });
+                    // assignment id found, organise response json now
+
+                    // Quiz has the extra field of quiz password to return and doesn't need extension
+                    if (thread.request_type == "Quiz") {
+                        responseJson = {
+                            'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'status' : 'Approved',
+                            'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'assignmentId' : assignmentId,
+                        }
+                    } else {
+                        responseJson = {
+                            'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'status' : 'Approved',
+                            'extended by' : document.getElementById('extensionOverrideAExt').value,
+                            'assignmentId' : assignmentId,
+                        }
+                    }
+
+                    respond(thread.thread_id, responseJson);
+                    // return to view reqs (could make a confirmation page or just show confirmation message at top)
+                    window.location.href = '/instructor/view-reqs/' + thread.course_id;
+
+
+
+
+                });
         });
         
         // Get the Reject Request button
@@ -1164,7 +1234,7 @@ export function populateAssessmentDropdown(assessmentList) {
 }
 
 function setComplex(threadId){
-    return putData(('/api/data/thread/complex'), {
+    return putData(('/api/data/thread/complex/'), {
         "thread_id": threadId
     }).then(() => {
             return true;
@@ -1188,7 +1258,7 @@ function respond(threadId, response){
 }
 
 function postNewCase(dataToSend){
-    return postData(('/api/data/requests/respond/'), dataToSend)
+    return postData(('/api/data/cases/new/'), dataToSend)
         .then(() => {
             return true;
         })
