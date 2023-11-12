@@ -667,7 +667,7 @@ def get_files_endpoint(request, user_id):
             # Get all files that are AAPs from database
             with connection.cursor() as cursor:
                 cursor.execute(f"USE {database_name}")
-                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", [user_id])
+                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s AND file_type IN ('aap', 'AAP')", [user_id])
                 rows = cursor.fetchall()
             files_list = []
             for row in rows:
