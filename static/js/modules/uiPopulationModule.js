@@ -587,6 +587,7 @@ export function handleCaseSubmission(numRequests) {
         let requestData = {
             'courseCode': document.getElementById(`courseDropdown${i}`).value,
             'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
+            'assignmentName': document.getElementById(`assignmentDropdown${i}`).value,
             'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
             'message': document.getElementById(`messageTextBox${i}`).value,
             'supportingDocuments': -1,
