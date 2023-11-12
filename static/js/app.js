@@ -6,8 +6,8 @@
 
 import { CONTENT_TYPE, MAX_REQUESTS_IN_REQUEST } from './modules/constantsModule.js';
 import { loadData } from './modules/dataModule.js';
-import { getGlobalAppHeadersValue, setGlobalAppHeaders } from './modules/helperFunctionModule.js';
-import { fillCurrentRequestInformation, fillStudentDetailsBox, generateRequestTable, generateStudentCases, generateStudentRequest, generateSubjectBox, generateSuppDocTable, generateVersionBox, handleApprovalRejectionAnswer, handleCaseSubmission, handleComplexRequestFunctionality, hideAndDisplayButtons, populateAssessmentDropdown, populatePopups, saveEdits, setupOpenClosePopupButtons } from './modules/uiPopulationModule.js';
+import { getGlobalAppHeadersValue } from './modules/helperFunctionModule.js';
+import { fillCurrentRequestInformation, fillStudentDetailsBox, generateAAPTable, generateRequestTable, generateStudentCases, generateStudentRequest, generateSubjectBox, generateSuppDocTable, generateVersionBox, handleApprovalRejectionAnswer, handleCaseSubmission, handleComplexRequestFunctionality, hideAndDisplayButtons, populateAssessmentDropdown, populatePopups, saveEdits, setupOpenClosePopupButtons } from './modules/uiPopulationModule.js';
 import { createHeader, fixStyling } from './modules/webHeaderModule.js';
 
 export function loginPage() {
@@ -127,7 +127,7 @@ export function submitRequest() {
                 document.getElementById(`lastLineBreak${numRequests}`).remove()
                 numRequests -= 1;
                 if (numRequests == MAX_REQUESTS_IN_REQUEST) {
-                    addButton.style.display = 'none';   ; 
+                    addButton.style.display = 'none';
                 } else if (numRequests == 0) {
                     removeButton.style.display = 'none'; 
                 } else if (numRequests > 0 & numRequests < MAX_REQUESTS_IN_REQUEST) {
@@ -455,12 +455,14 @@ export function viewRequests() {
     createHeader('instructor');
 
     // Put subject code at start of title
-    var course = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
-    let subjectCode = course.course_code;
-    
-    // Get the title by its ID
-    const myElement = document.getElementById("title").innerHTML
-    subjectCode + document.getElementById("title").innerHTML;
+    var courseId = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
+    courseId = 31; // TODO: remove
+
+    loadData('/api/data/courses?courseid=' + courseId)
+        .then(data => {
+            let subjectCode = data.course.course_code;
+            document.getElementById("title").innerHTML = subjectCode + document.getElementById("title").innerHTML;
+        });
 
     loadData('/api/data/thread/?courseid=' + courseId, {})
         .then(data => {

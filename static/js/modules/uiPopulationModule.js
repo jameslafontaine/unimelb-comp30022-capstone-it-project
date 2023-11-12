@@ -1012,15 +1012,21 @@ export function hideAndDisplayButtons(thread) {
 
     const reqShort = thread.request_type.substring(0,3);
 
+    var approveButton = document.getElementById('approveButton');
+    var rejectButton = document.getElementById('rejectButton');
+    var answerButton = document.getElementById('answerButton');
+
     if (thread.request_type != 'Query' && thread.request_type != 'Other') {
-        document.getElementById('approveButton').setAttribute('data-target', `approve${reqShort}Popup`);
-        document.getElementById('rejectButton').setAttribute('data-target', `reject${reqShort}Popup`);
-        $("#answerButton").hide();
+        approveButton.setAttribute('data-target', `approve${reqShort}Popup`);
+        rejectButton.setAttribute('data-target', `reject${reqShort}Popup`);
+        approveButton.style.display = '';
+        rejectButton.style.display = '';
+        answerButton.style.display = 'none';
 
     } else {
-        document.getElementById('answerButton').setAttribute('data-target', 'answerPopup');
-        $("#approveButton").hide();
-        $("#rejectButton").hide();
+        answerButton.setAttribute('data-target', 'answerPopup');
+        approveButton.style.display = 'none';
+        rejectButton.style.display = 'none';
     }
 }
 
