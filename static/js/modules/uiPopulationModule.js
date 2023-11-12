@@ -625,7 +625,6 @@ export function handleCaseSubmission(numRequests) {
         .then(() => {
             // All requests are completed
             postNewCase({'requests': requestsData});
-            console.log("requestsData: ", requestsData);
         });
 
 }
