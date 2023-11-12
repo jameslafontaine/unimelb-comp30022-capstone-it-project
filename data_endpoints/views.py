@@ -505,7 +505,7 @@ def get_user_endpoint(request, user_id):
                 "last_name": "Sharman",
                 "email": "12345@gmail.com",
                 "email_preference": 0,
-                "darkmode_preference": 0
+                "darkmode_preference": 1
             }
             return JsonResponse(result)
         if len(request.GET) == 1 and request.GET.get('courseid'):
