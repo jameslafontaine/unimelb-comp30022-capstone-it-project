@@ -239,13 +239,26 @@ export function reviewRequest() {
     let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
     
     // read in supporting documentation list as a JSON
-    let suppDocs = JSON.parse(document.getElementById('something'))
+    const suppDocs = [
+        {
+            name: 'iamsick.pdf',
+            size: '20 TB'
+        },
+        {
+            name: 'bible.pdf',
+            size: '40 MB'
+        },
+        {
+            name: 'medcert.pdf',
+            size: '3 MB'
+        }
+    ]
 
     // Fill information relating to the current request from the database
     fillCurrentRequestInformation(threadId, 'Instructor');
 
     // Generate the supporting documentation for the current version of request
-    //generateSuppDocTable(suppDocs, '');
+    generateSuppDocTable(suppDocs, '');
 
     // generate a list of all previous versions of a thread
     loadData('/api/data/thread/' + threadId, {})

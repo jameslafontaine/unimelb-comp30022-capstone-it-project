@@ -1,6 +1,6 @@
 import { fixStyling } from './webHeaderModule.js';
 import { getGlobalAppHeadersValue } from './helperFunctionModule.js';
-import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS, REQUEST_TABLE_HEADERS } from './constantsModule.js'
+import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS, REQUEST_TABLE_HEADERS, SUPP_DOC_HEADERS } from './constantsModule.js'
 import { loadData, postData, putData } from './dataModule.js';
 
 export function generateStudentCases(cases) {
@@ -160,17 +160,15 @@ export function fillCurrentRequestInformation(threadId, view) {
 export function generateSuppDocTable(requestList, number) {
 	const tableContainer = document.getElementById(`suppDocContainer${number}`);
 	const table = document.createElement('table');
-	
+
 	// Create table header row
 	const headerRow = table.insertRow();
-	
-	for (const key in requestList[0]) {
-		if (requestList[0].hasOwnProperty(key)) {
-			const th = document.createElement('th');
-			th.innerText = key;
-			headerRow.appendChild(th);
-		}
-	}
+
+    for (const key in CASE_TABLE_HEADERS) {
+        const th = document.createElement('th');
+        th.innerText = CASE_TABLE_HEADERS[key];
+        headerRow.appendChild(th);
+    }
 	
 	// Add an empty header for the button column
 	const emptyHeader = document.createElement('th');
@@ -180,13 +178,14 @@ export function generateSuppDocTable(requestList, number) {
 	// Create table data rows
 	requestList.forEach(request => {
 		const row = table.insertRow();
-		for (const key in request) {
-			if (request.hasOwnProperty(key)) {
-				const cell = row.insertCell();
-				cell.className = 'tableEntry'; // Apply the CSS class to the cell
-                cell.innerHTML = request[key];
-			}
-		}
+
+        const fileNameCell = row.insertCell();
+        fileNameCell.className = 'tableEntry';
+        fileNameCell.innerHTML = request.name;
+
+        const fileSizeCell = row.insertCell();
+        fileSizeCell.className = 'tableEntry';
+        fileSizeCell.innerHTML = request.size;
 
 		const downloadCell = row.insertCell();
 		downloadCell.className = 'tableEntry';
@@ -197,7 +196,7 @@ export function generateSuppDocTable(requestList, number) {
 		downloadButton.onclick = function () {
 			// Need to add functionality to download the file somehow
         }
-        setupDownloadButton; // TODO:
+        // TODO: setupDownloadButton();
 		downloadCell.appendChild(downloadButton);
 	});
 	
@@ -696,9 +695,9 @@ export function generateAAPTable(aapData) {
             fetch('/api/data/files/remove?fileid=' + item.id, {
                 method: 'DELETE',
             }).then(response => response.json())
-                .then(data => {
+                .then(() => {
                     // Handle the response data here
-                    // TODO:
+                    // TODO: manipulate data
                 })
                 .catch((error) => {
                     throw error;
@@ -736,9 +735,9 @@ export function generateAAPTable(aapData) {
                     body: formData
                 })
                 .then(response => response.json())
-                .then(data => {
+                .then(() => {
                     // Handle the response data here
-                    // TODO:
+                    // TODO: manipulate data
                 })
                 .catch((error) => {
                     throw error;
