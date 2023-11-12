@@ -25,7 +25,7 @@ def test_get_assessments_endpoint_assignid():
     Acceptance criteria:
         - Returns 200 and JSONs match
     '''
-    endpoint = '/api/data/assessments?assignid=' + 1
+    endpoint = '/api/data/assessments?assignid=1'
 
     mock_response = test_assessment
 
@@ -41,7 +41,7 @@ def test_get_assessments_endpoint_courseid():
     Acceptance criteria:
         - Returns 200 and JSONs match
     '''
-    endpoint = '/api/data/assessments?courseid=' + 1
+    endpoint = '/api/data/assessments?courseid=1'
 
     mock_response = {
         "assessments": [ test_assessment, test_assessment, test_assessment ]
@@ -53,3 +53,20 @@ def test_get_assessments_endpoint_courseid():
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
 
+def test_get_assessments_endpoint_courseid():
+    '''
+    Test /api/data/assessments?courseid=value
+    Acceptance criteria:
+        - Returns 200 and JSONs match
+    '''
+    endpoint = '/api/data/assessments?courseid=1&names=true'
+
+    mock_response = {
+        "assessments": [ test_assessment["assignment_name"], test_assessment["assignment_name"], test_assessment["assignment_name"] ]
+    }
+          
+    with Mocker() as mocker:
+        mocker.get(LOCALHOST + endpoint, json = mock_response, status_code = 200)
+        response = requests.get(LOCALHOST + endpoint, timeout = 5)
+        assert response.status_code == 200 and response.json() == mock_response, \
+            endpoint + "does not work"
