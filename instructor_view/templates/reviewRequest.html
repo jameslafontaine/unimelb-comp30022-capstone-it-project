@@ -377,6 +377,8 @@
             import { loadData } from "{% static 'js/modules/dataModule.js' %}";
             reviewRequest();
 
+            let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
+
             var navProfileButton = document.getElementById('navProfileButton');
             function toProfile(){
                 loadData('/api/data/thread/?threadid=' + threadId, {})

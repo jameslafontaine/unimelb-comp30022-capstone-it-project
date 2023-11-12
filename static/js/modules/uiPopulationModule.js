@@ -1092,9 +1092,8 @@ export function handleApprovalRejectionAnswer(thread) {
                     }
 
                     respond(thread.thread_id, responseJson);
-                    console.log("responseJson: ", responseJson);
                     // return to view reqs (could make a confirmation page or just show confirmation message at top)
-                    //window.location.href = '/instructor/view-reqs/' + thread.course_id;
+                    window.location.href = '/instructor/view-reqs/' + thread.course_id;
 
 
 
