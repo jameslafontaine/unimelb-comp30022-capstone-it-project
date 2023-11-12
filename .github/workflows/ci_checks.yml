@@ -64,7 +64,6 @@ jobs:
       run: |
         pylint --ignore=manage.py --disable=R0911 $(git ls-files '*.py')
   Tests:
-    needs: pylint
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
