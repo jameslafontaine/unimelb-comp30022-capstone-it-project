@@ -1009,6 +1009,18 @@ export function populatePopups(thread) {
             document.getElementById('extensionOverrideAExt').value = prefs.global_extension_length;
         })
 
+    // Populate the assignment override dropDown
+    loadData('/api/data/assessments/?courseid=' + thread.course_id, {})
+        .then(data => {
+            let assignments = data.assessments;
+            assignments.forEach(assignment => {
+                const option = document.createElement('option');
+                option.textContent = assignment.assignment_name;
+                let dropDownId = "assessmentOverrideA" + document.getElementById("requestType").innerHTML.substring(0,3);
+                document.getElementById(dropDownId).appendChild(option);
+            });
+        });
+
 }
 
 export function hideAndDisplayButtons(thread) {
