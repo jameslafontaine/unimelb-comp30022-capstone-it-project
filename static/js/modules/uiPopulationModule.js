@@ -583,18 +583,51 @@ function setupDownloadButton(buttonId, fileUrl, fileName) {
 export function handleCaseSubmission(numRequests) {
 
     let requestsData = new Array();
+    let requestsPromises = [];
+
     for (let i=1; i <= numRequests; i++) {
-        let requestData = {
-            'courseCode': document.getElementById(`courseDropdown${i}`).value,
-            'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
-            'assignmentName': document.getElementById(`assignmentDropdown${i}`).value,
-            'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
-            'message': document.getElementById(`messageTextBox${i}`).value,
-            'supportingDocuments': -1,
-        }
-        requestsData.push(requestData);
+
+        let promise = loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
+            .then(data => {
+                let courses = data.courses;
+                for (let course of courses) {
+                    if (course.course_code == document.getElementById(`courseDropdown${i}`).value) {
+                        loadData('/api/data/assessments/?courseid=' + course.course_id, {})
+                            .then(data => {
+                                let assignments = data.assessments;
+                                let assignmentId = -1;
+
+                                assignments.forEach(assignment => {
+                                    if(assignment.assignment_name == document.getElementById(`assignmentDropdown${i}`).value){
+                                        assignmentId = assignment.assignment_id;
+                                    }
+                                });
+
+                                let requestData = {
+                                    'courseId': course.course_id,
+                                    'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
+                                    'assignmentId': assignmentId,
+                                    'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
+                                    'message': document.getElementById(`messageTextBox${i}`).value,
+                                    'supportingDocuments': -1,
+                                }
+                                requestsData.push(requestData);
+
+                            });
+                        break;
+                    }
+                }
+            });
+        requestsPromises.push(promise);
     }
-    postNewCase({'requests': requestsData});
+
+    Promise.all(requestsPromises)
+        .then(() => {
+            // All requests are completed
+            postNewCase({'requests': requestsData});
+            console.log("requestsData: ", requestsData);
+        });
+
 }
 
 export function saveEdits(currRequest, prevVersions) {
