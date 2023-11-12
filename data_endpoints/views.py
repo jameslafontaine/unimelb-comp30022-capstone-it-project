@@ -783,7 +783,7 @@ def put_assessment_preferences(request):
         # data = json.loads(request.body)
         # SET AssignmentExtensionLength
         return JsonResponse({'message': 'Has been set successfully'}, status = 201)
-    
+
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
