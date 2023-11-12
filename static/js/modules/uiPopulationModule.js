@@ -121,6 +121,7 @@ export function generateStudentCases(cases) {
                     container.appendChild(document.createElement("br"));
                 
                 });
+                fixStyling();
             });
     }
     
@@ -136,7 +137,7 @@ export function fillCurrentRequestInformation(threadId, view) {
     loadData('/api/data/thread/' + threadId, {})
         .then(data => {
             let requestData = data.threadinfo.requests[0];
-            if (requestData.reserved == true & view == 'Instructor') { // INSTRUCTOR COMPLEX
+            if (data.threadinfo.thread.complex_case == 1 & view == 'Instructor') { // INSTRUCTOR COMPLEX
                 document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
             } else if (view == 'Instructor') { // INSTRUCTOR NON-COMPLEX
                 document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; ">☆</span>'
@@ -290,6 +291,8 @@ export function generateVersionBox(version, number) {
     container.appendChild(expandableBox);
     container.appendChild(expandableBoxSection);
     container.appendChild(document.createElement("br"));
+
+    fixStyling();
 
     //generateSuppDocTable(version.documents, number);
     //container.appendChild(document.createElement("br"));
@@ -636,19 +639,52 @@ function setupDownloadButton(buttonId, fileUrl, fileName) {
  * @param {int} numRequests - number of requests in this case
  */
 export function handleCaseSubmission(numRequests) {
+
     let requestsData = new Array();
+    let requestsPromises = [];
+
     for (let i=1; i <= numRequests; i++) {
-        let requestData = {
-            'courseId': document.getElementById(`courseDropdown${i}`).value,
-            'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
-            'assignmentId': -1,
-            'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
-            'message': document.getElementById(`messageTextBox${i}`).value,
-            'supportingDocuments': -1,
-        }
-        requestsData.push(requestData);
+
+        let promise = loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
+            .then(data => {
+                let courses = data.courses;
+                for (let course of courses) {
+                    if (course.course_code == document.getElementById(`courseDropdown${i}`).value) {
+                        loadData('/api/data/assessments/?courseid=' + course.course_id, {})
+                            .then(data => {
+                                let assignments = data.assessments;
+                                let assignmentId = -1;
+
+                                assignments.forEach(assignment => {
+                                    if(assignment.assignment_name == document.getElementById(`assignmentDropdown${i}`).value){
+                                        assignmentId = assignment.assignment_id;
+                                    }
+                                });
+
+                                let requestData = {
+                                    'courseId': course.course_id,
+                                    'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
+                                    'assignmentId': assignmentId,
+                                    'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
+                                    'message': document.getElementById(`messageTextBox${i}`).value,
+                                    'supportingDocuments': -1,
+                                }
+                                requestsData.push(requestData);
+
+                            });
+                        break;
+                    }
+                }
+            });
+        requestsPromises.push(promise);
     }
-    postNewCase({'requests': requestsData});
+
+    Promise.all(requestsPromises)
+        .then(() => {
+            // All requests are completed
+            postNewCase({'requests': requestsData});
+        });
+
 }
 
 /**
@@ -889,19 +925,34 @@ export function handleComplexRequestFunctionality(thread) {
 
     // Get a reference to the reserveButton
     const reserveButton = document.getElementById('reserveButton');
-    // If a case has already been reserved then we show the unmark button
+
     loadData('/api/data/thread/' + thread.thread_id, {})
-        .then(data => {
-            let request = data.threadinfo.requests[0];
-            if (thread.complex_case) { // it is complex now
-                reserveButton.innerHTML = 'Unmark'
-                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
-            } else { // it is not complex
-                reserveButton.innerHTML = 'Mark as complex'
-                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+    .then(data => {
+         
+        let request = data.threadinfo.requests[0];
+
+        // If these types of requests aren't reservable for Scoord, we hide the reserve button
+        // Retrieve the request permissions for the role of the current instructor
+        loadData('/api/data/courses/?courseid=' + thread.course_id + '&preferences=true', {})
+        .then(prefs => {
+            let keyName = `scoord_${thread.request_type}`.toLowerCase();
+
+            if (prefs[keyName] == false) {
+                reserveButton.style.display = 'none';
             }
-        })
-    
+
+        });
+
+        // If a case has already been reserved then we show the unmark button
+        if (data.threadinfo.thread.complex_case) { // it is complex now
+            reserveButton.innerHTML = 'Unmark'
+            document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+        } else { // it is not complex
+            reserveButton.innerHTML = 'Mark as complex'
+            document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+        }
+    })
+
     // Modify the reserved status when mark as complex is clicked and change the 'Mark as complex' button
     // to 'Unmark'. Vice versa if the unmark button is clicked
     // Also update the star appropriately at the top of the page
@@ -917,7 +968,7 @@ export function handleComplexRequestFunctionality(thread) {
                     loadData('/api/data/thread/' + thread.thread_id, {})
                         .then(data => {
                             let request = data.threadinfo.requests[0];
-                            if (thread.complex_case) { // it is complex now
+                            if (data.threadinfo.thread.complex_case) { // it is complex now
                                 reserveButton.innerHTML = 'Unmark'
                                 document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
                             } else { // it is not complex
@@ -993,6 +1044,14 @@ export function generateRequestTable(threads, type) {
 
     // Add thread data
     threads.forEach(thread => {
+        
+        // Check if this thread is meant to be displayed for this instructor or not, if not then skip this request
+        if (!shouldDisplayRequest(thread.request_type, thread.complex_case, thread.course_id)) {
+            return;
+        }
+        
+
+        // Otherwise proceeding with displaying the relevant information in this table row
         const row = table.insertRow();
         
         const complexCaseCell = row.insertCell();
@@ -1062,10 +1121,58 @@ export function generateRequestTable(threads, type) {
 }
 
 /**
+
+ * Checks whether the provided request should be display to the current instructor
+ *
+ * @param {string} requestType - Denotes the type of request this is [general, query, quiz, remark, other]
+ * @param {int} isComplex - 1 to note that a case is complex, 0 for not
+ * @param {int} courseId - Identifier for the course to allow retrieval of subject settings
+ * @returns {boolean} - Describes whether we should display this request for the instructor or not
+ *
+ */
+export function shouldDisplayRequest(requestType, isComplex, courseId) {
+    
+    // Retrieve the request permissions for the role of the current instructor
+    loadData('/api/data/courses/?courseid=' + courseId + '&preferences=true', {})
+    .then(prefs => {
+
+         // Get the role of the instructor (are they a tutor or a subject coordinator)
+        loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
+            .then(data => {
+            let role = data.enrollment_role.toLowerCase();
+    
+            // Use the course preferences of their role to determine which requests to display to them
+            let keyName = requestType.toLowerCase() + `_${role}`;
+        
+            if (role == 'tutor') {
+                return prefs[keyName];
+            } else if (role == 'scoord' && isComplex == 1) {
+                return prefs[keyName];
+            } else {
+                return false;
+            }
+        });
+    });
+}
+
+/*
  * Populates the popups with required information when instructors are reviewing a request
  * @param {JSON} thread - contains information about the current version of the request being reviewed
  */
 export function populatePopups(thread) {
+
+    // Retrieve the template response and put it into the value of the instructor notes box
+    loadData('/api/data/courses/?courseid=' + thread.course_id + '&preferences=true', {})
+    .then(data => {
+        document.getElementById('instructorNotesAExt').value = data.coursepreferences.extension_approve;
+        document.getElementById('instructorNotesRExt').value = data.coursepreferences.extension_reject;
+        document.getElementById('instructorNotestARem').value = data.coursepreferences.remark_approve;
+        document.getElementById('instructorNotesRRem').value = data.coursepreferences.remark_reject;
+        document.getElementById('instructorNotesAQui').value = data.coursepreferences.quiz_approve;
+        document.getElementById('instructorNotesRQui').value = data.coursepreferences.quiz_reject;
+        document.getElementById('instructorNotesAns').value = data.coursepreferences.general_reject;
+    });
+
 
     loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
         .then(assignment => {
@@ -1095,6 +1202,18 @@ export function populatePopups(thread) {
             // Set extension override to match default extension
             document.getElementById('extensionOverrideAExt').value = prefs.global_extension_length;
         })
+
+    // Populate the assignment override dropDown
+    loadData('/api/data/assessments/?courseid=' + thread.course_id, {})
+        .then(data => {
+            let assignments = data.assessments;
+            assignments.forEach(assignment => {
+                const option = document.createElement('option');
+                option.textContent = assignment.assignment_name;
+                let dropDownId = "assessmentOverrideA" + document.getElementById("requestType").innerHTML.substring(0,3);
+                document.getElementById(dropDownId).appendChild(option);
+            });
+        });
 
 }
 
@@ -1141,25 +1260,47 @@ export function handleApprovalRejectionAnswer(thread) {
         
         // Add click event listener to Approve Request button
         popupApproveButton.addEventListener('click', function() {
-            // Quiz has the extra field of quiz password to return and doesn't need extension
-            if (thread.request_type == "Quiz") {
-                responseJson = {
-                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                    'status' : 'Approved',
-                    'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                }
-            } else {
-                responseJson = {
-                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                    'status' : 'Approved',
-                    'extended by' : document.getElementById('extensionOverrideAExt').value,
-                }
-            }
 
-            respond(thread.thread_id, responseJson);
 
-            // return to view reqs (could make a confirmation page or just show confirmation message at top)
-            window.location.href = '/instructor/view-reqs/' + thread.course_id;
+            let assignmentName = document.getElementById(`assessmentOverrideA${reqShort}`).value
+            let assignmentId = -1; //placeholder
+            
+            // find the assignment id to return by matching to the name in backend
+            loadData('/api/data/assessments/?courseid=' + thread.course_id, {})
+                .then(data => {
+                    let assignments = data.assessments;
+                    assignments.forEach(assignment => {
+                        if(assignment.assignment_name == assignmentName){
+                            assignmentId = assignment.assignment_id;
+                        }
+                    });
+                    // assignment id found, organise response json now
+
+                    // Quiz has the extra field of quiz password to return and doesn't need extension
+                    if (thread.request_type == "Quiz") {
+                        responseJson = {
+                            'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'status' : 'Approved',
+                            'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'assignmentId' : assignmentId,
+                        }
+                    } else {
+                        responseJson = {
+                            'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'status' : 'Approved',
+                            'extended by' : document.getElementById('extensionOverrideAExt').value,
+                            'assignmentId' : assignmentId,
+                        }
+                    }
+
+                    respond(thread.thread_id, responseJson);
+                    // return to view reqs (could make a confirmation page or just show confirmation message at top)
+                    window.location.href = '/instructor/view-reqs/' + thread.course_id;
+
+
+
+
+                });
         });
         
         // Get the Reject Request button
@@ -1229,7 +1370,7 @@ export function populateAssessmentDropdown(assessmentList) {
  * @param {int} threadId - numeric identifier for the current request
  */
 function setComplex(threadId){
-    return putData(('/api/data/thread/complex'), {
+    return putData(('/api/data/thread/complex/'), {
         "thread_id": threadId
     }).then(() => {
             return true;
@@ -1261,7 +1402,7 @@ function respond(threadId, response){
  * @param {JSON} dataToSend - contains information about a case that needs to be submitted to the database
  */
 function postNewCase(dataToSend){
-    return postData(('/api/data/requests/respond/'), dataToSend)
+    return postData(('/api/data/cases/new/'), dataToSend)
         .then(() => {
             return true;
         })

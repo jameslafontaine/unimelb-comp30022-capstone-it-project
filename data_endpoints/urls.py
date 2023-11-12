@@ -16,6 +16,7 @@ from .views import post_file
 from .views import put_preferences
 from .views import put_req_response
 from .views import set_complex
+from .views import put_user_preferences
 
 urlpatterns = [
     # GET requests
@@ -36,4 +37,5 @@ urlpatterns = [
     path('courses/setpreferences/', put_preferences, name = 'put_preferences'),
     path('requests/respond/', put_req_response, name = 'put_req_response'),
     path('thread/complex/', set_complex, name = 'set_complex'),
+    path('user/', put_user_preferences, name = 'put_user_preferences'),
 ]
