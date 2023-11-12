@@ -73,18 +73,12 @@
                     <p class="text">Request Type</p>
                     <textarea class="textBox" id="requestType" style="height:30px; resize:none" readonly></textarea>
 
-                    <p class="text">Request Title</p>
-                    <textarea class="textBox" id="requestTitle" style="height:30px; resize:none" readonly></textarea>
-
                     <p class="text">Message</p>
                     <textarea class="textBox" id="message" style="height:120px; resize:none" readonly>
                     </textarea>
 
                     <p class="text">Status</p>
                     <textarea class="textBox" id="status" style="height:30px; resize:none" readonly></textarea>
-                    
-                    <p class="text">Instructor Notes</p>
-                    <textarea class="textBox" id="notes" style="height:120px; resize:none" readonly></textarea>
 
                     <p></p>
 
@@ -109,7 +103,7 @@
                     <br><br>
                     <div style="text-align: center; width: fit-content; margin: 0 auto;">
                         <div>
-                            <p class="bigButton" id="editButton" onclick=toEditReq()>
+                            <p class="bigButton" id="editButton" onclick="window.location.href = '/student/edit-req/' + threadId">
                                 Edit
                             </p>
                             <p class="bigButton" onclick="window.location.href='/student/cases'">
@@ -120,69 +114,24 @@
                 </div>
             </div>
         </div>
-        <script src="{% static 'js/modules/globalReqHeader.js' %}"></script>
-        <script src="{% static 'js/modules/data.js' %}"></script>
-        <script src="{% static 'js/modules/webHeader.js' %}"></script>
-        <script src="{% static 'js/modules/styleMode.js' %}"></script>
-        <script>createHeader("student")</script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script>
-
-            const suppDocs = [
-                {
-                    name: 'iamsick.pdf',
-                    size: '20 TB'
-                },
-                {
-                    name: 'bible.pdf',
-                    size: '40 MB'
-                },
-                {
-                    name: 'medcert.pdf',
-                    size: '3 MB'
-                }
-            ]
-            
-            // read in thread id from the provided data
-            let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
-
-            // Fill information relating to the current request from the database
-            fillCurrentRequestInformation(threadId, 'Student');
-
-            // Generate the supporting documentation for the current version of request
-            generateSuppDocTable(suppDocs, '');
-            
-            // generate a list of all previous versions of a thread
-            getPreviousVersions(threadId)
-                .then(prevVersions => {
-                    // Generate version boxes for all request prevVersions in the data
-                    for (let i = 0; i < prevVersions.length; i++) {
-                        generateVersionBox(prevVersions[i], prevVersions.length - i)
-                    }
-                })
-
-
-        </script>
-        <!-- Student Details Box Population -->
-        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
-        <script src="{% static 'js/modules/editRequest.js' %}"></script>
-        <!-- Editing related functionality -->
         <script>
             // Only show edit button for active cases
 
             /*
-            loadThread(threadId)
-                .then(thread => {
+            loadData('/api/data/thread/' + threadId, {})
+                .then(data => {
+                    let thread = data.threadinfo.thread;
                     if ((thread.current_status != 'APPROVED') ||
                         (thread.current_status != 'REJECTED')) {
-                        hideEditButton();
+                        document.getElementById("editButton").remove()
                     }
                 })
             */
-            function toEditReq(){
-                redirectToEditReq(threadId);
-            }
         </script>
-
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { viewRequest } from "{% static 'js/app.js' %}";
+            viewRequest();
+        </script>
     </body>
 </html>

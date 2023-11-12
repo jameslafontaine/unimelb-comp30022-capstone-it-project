@@ -35,6 +35,9 @@ def validate_headers(request):
         pass
 
 def check_param_not_integer(value):
+    '''
+    Abstracts away value.isdigit() to make cleaner code
+    '''
     return not value.isdigit()
 
 def get_assessments_endpoint(request):
@@ -49,10 +52,11 @@ def get_assessments_endpoint(request):
 
     if request.GET.get('assignid') and len(request.GET) == 1:
         if check_param_not_integer(request.GET.get('assignid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('assignid')):
             cursor = connection.cursor(dictionary=True)
             cursor.execute(f"USE {database_name}")
+
             # Execute a query to fetch the assignment data
             query = "SELECT * FROM Assignment WHERE assignment_id = %s"
             cursor.execute(query, (request.GET.get('assignid'),))
@@ -64,7 +68,7 @@ def get_assessments_endpoint(request):
                 # Check if due_date is None (null) and handle it
                 if assignment_data["due_date"] is None:
                     due_date_str = "N/A"  # Or any other value you prefer
-                else:
+                if not assignment_data["due_date"] is None:
                     due_date_str = assignment_data["due_date"].strftime("%Y:%m:%d %H:%M:%S")
 
                 # Format the data into the desired JSON format
@@ -79,32 +83,32 @@ def get_assessments_endpoint(request):
                 }
 
                 return JsonResponse(json_data)
+            
+            if not assignment_data:
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
-            else:
-                return None  # Assignment not found
-    
     if not request.GET.get('assignid') and request.GET.get('courseid'):
         if check_param_not_integer(request.GET.get('courseid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('courseid')):
             cursor = connection.cursor(dictionary=True)
             cursor.execute(f"USE {database_name}")
+
             # Execute a query to fetch assignments for the given course_id
             query = "SELECT * FROM Assignment WHERE course_id = %s"
             cursor.execute(query, (request.GET.get('courseid'),))
-
             assignments = []
 
             for assignment_data in cursor:
                 # Check if start_date or end_date is None and provide a default value
                 if assignment_data["start_date"] is None:
                     start_date_str = "N/A"  # Or any other value you prefer
-                else:
+                if not assignment_data["start_date"] is None:
                     start_date_str = assignment_data["start_date"].strftime("%Y:%m:%d %H:%M:%S")
 
                 if assignment_data["due_date"] is None:
                     end_date_str = "N/A"  # Or any other value you prefer
-                else:
+                if not assignment_data["due_date"] is None:
                     end_date_str = assignment_data["due_date"].strftime("%Y:%m:%d %H:%M:%S")
 
                 assignment = {
@@ -119,9 +123,12 @@ def get_assessments_endpoint(request):
 
                 assignments.append(assignment)
                 result = {"assessments": assignments}
-            if not request.GET.get('names') and len(request.GET) == 1:
+
+            if len(request.GET) == 1 and not request.GET.get('names'):
                 return JsonResponse(result)
-            elif len(request.GET) == 2 and request.GET.get('names') and request.GET.get('names').lower() == 'true':
+
+            if len(request.GET) == 2 and request.GET.get('names') \
+                and request.GET.get('names').lower() == 'true':
                 namesonly = {
                     "assessments": []
                 }
@@ -129,9 +136,7 @@ def get_assessments_endpoint(request):
                     namesonly["assessments"].append(assessment["assignment_name"])
                 return JsonResponse(namesonly)
 
-
-    
-    return HttpResponseBadRequest('Invalid request, check input again.')
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_cases_endpoint(request):
     '''
@@ -142,11 +147,10 @@ def get_cases_endpoint(request):
         - ?caseid&?threads, get all threads belonging to case
     '''
     validate_headers(request)
-    
     if request.GET.get('userid') and len(request.GET) == 1:
         if check_param_not_integer(request.GET.get('userid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else: 
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('userid')):
             # SELECT * FROM 'Case' WHERE 'Case'.user_id == int(request.GET.get('userid'))
             cursor = connection.cursor()
             cursor.execute(f"USE {database_name}")
@@ -163,8 +167,8 @@ def get_cases_endpoint(request):
     
     if not request.GET.get('userid') and request.GET.get('caseid'):
         if check_param_not_integer(request.GET.get('caseid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('caseid')):
             if len(request.GET) == 1:
                 cursor = connection.cursor(dictionary=True)
                 cursor.execute(f"USE {database_name}")
@@ -181,11 +185,11 @@ def get_cases_endpoint(request):
                             "user_id": case_data["user_id"]
                         }
                     }
-
                     return JsonResponse(json_data)
+                
+                if not case_data:
+                    return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
-                else:
-                    return None  # Case not found
             if len(request.GET) == 2 and request.GET.get('threads').lower() == 'true':
                 cursor = connection.cursor()
                 cursor.execute(f"USE {database_name}")
@@ -199,7 +203,7 @@ def get_cases_endpoint(request):
                     # Check if date_updated or assignment_id is None and provide default values
                     if thread_data[3] is None:  # Using integer index for date_updated
                         date_updated_str = "N/A"  # Or any other value you prefer
-                    else:
+                    if not thread_data[3] is None:
                         print(thread_data)
                         datetime_with_time = datetime.combine(thread_data[7], time(0, 0, 0))
                         # Format the datetime
@@ -207,7 +211,7 @@ def get_cases_endpoint(request):
 
                     if thread_data[6] is None:  # Using integer index for assignment_id
                         assignment_id = "N/A"  # Or any other value you prefer
-                    else:
+                    if not thread_data[6] is None:
                         assignment_id = thread_data[6]
 
                     thread = {
@@ -225,8 +229,7 @@ def get_cases_endpoint(request):
 
                 json_data = {"threads": threads}
                 return JsonResponse(json_data)
-
-    return HttpResponseBadRequest('Invalid request, check input again.')
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_courses_endpoint(request):
     '''
@@ -239,12 +242,12 @@ def get_courses_endpoint(request):
     validate_headers(request)
 
     if len(request.GET) not in [1, 2]:
-        return HttpResponseBadRequest('Invalid number of parameters.')
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
     if len(request.GET) == 1 and request.GET.get('userid'):
         if check_param_not_integer(request.GET.get('userid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('userid')):
             cursor = connection.cursor(dictionary=True)
             cursor.execute(f"USE {database_name}")
 
@@ -270,8 +273,8 @@ def get_courses_endpoint(request):
 
     if not request.GET.get('userid') and request.GET.get('courseid'):
         if check_param_not_integer(request.GET.get('courseid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('courseid')):
             if len(request.GET) == 1:
                 # SELECT * FROM COURSE WHERE 'Course'.course_Id == int(request.GET.get('courseid'))
                 cursor = connection.cursor(dictionary=True)
@@ -291,12 +294,11 @@ def get_courses_endpoint(request):
                             "course_code": course_data["course_code"]
                         }
                     }
-
                     return JsonResponse(course_info)
+                
+                if not course_data:
+                    return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
-                else:
-                    return None
-    
             if len(request.GET) == 2 and request.GET.get('preferences') and request.GET.get('preferences').lower() == 'true':
                 cursor = connection.cursor(dictionary=True)
                 cursor.execute(f"USE {database_name}")
@@ -333,11 +335,10 @@ def get_courses_endpoint(request):
                     }
                     return JsonResponse(course_preferences)
 
-                else:
-                    return None
+                if not course_preferences_data:
+                    return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
-    
-    return HttpResponseBadRequest('Invalid request, check input again.')
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_requests_endpoint(request):
     '''
@@ -350,12 +351,12 @@ def get_requests_endpoint(request):
 
     if len(request.GET) == 1:
         if not request.GET.get('userid') and not request.GET.get('requestid'):
-            return HttpResponseBadRequest('Invalid request, check input again.')
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
         if request.GET.get('userid'):
             if check_param_not_integer(request.GET.get('userid')):
-                return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-            else:
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not check_param_not_integer(request.GET.get('userid')):
                 # Return request history of a user. 
                 # Consult Callum on this, unsure if we actually need more data on this
                 cursor = connection.cursor(dictionary=True)
@@ -387,8 +388,8 @@ def get_requests_endpoint(request):
 
         if request.GET.get('requestid'):
             if check_param_not_integer(request.GET.get('requestid')):
-                return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-            else:
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not check_param_not_integer(request.GET.get('requestid')):
                 cursor = connection.cursor(dictionary=True)
                 cursor.execute(f"USE {database_name}")
 
@@ -413,10 +414,12 @@ def get_requests_endpoint(request):
                             "instructor_notes": request_data['instructor_notes']
                         }
                     }
+                    return JsonResponse(result)
 
-                return JsonResponse(result)
-
-    return HttpResponseBadRequest('Invalid request, check input again.')
+                if not request_data:
+                    return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_threads_user_endpoint(request):
     '''
@@ -429,34 +432,75 @@ def get_threads_user_endpoint(request):
     validate_headers(request)
 
     if len(request.GET) not in [1, 2]:
-        return HttpResponseBadRequest('Invalid request, check input again.')
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
-    if len(request.GET) == 1 and request.GET.get('threadid'):
-        if check_param_not_integer(request.GET.get('threadid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
-            # Some join of 'Thread' and 'Case' on case_id
-            cursor = connection.cursor(dictionary=True)
-            cursor.execute(f"USE {database_name}")
-            query = """
-            SELECT `Case`.user_id
-            FROM `Case`
-            INNER JOIN Thread ON Thread.case_id = `Case`.case_id
-            WHERE Thread.thread_id = %s
-            """
-            cursor.execute(query, (request.GET.get('threadid'),))
-            user_id = cursor.fetchone()
-            response = {
-                "created_by": user_id
-            }
-            return JsonResponse(response)
-    
+    if len(request.GET) == 1:
+        if request.GET.get('threadid'):
+            if check_param_not_integer(request.GET.get('threadid')):
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not check_param_not_integer(request.GET.get('threadid')):
+                # Some join of 'Thread' and 'Case' on case_id
+                cursor = connection.cursor(dictionary=True)
+                cursor.execute(f"USE {database_name}")
+                query = """
+                SELECT `Case`.user_id
+                FROM `Case`
+                INNER JOIN Thread ON Thread.case_id = `Case`.case_id
+                WHERE Thread.thread_id = %s
+                """
+                cursor.execute(query, (request.GET.get('threadid'),))
+                user_id = cursor.fetchone()
+                response = {
+                    "created_by": user_id
+                }
+                return JsonResponse(response)
+        if request.GET.get('courseid'):
+            if check_param_not_integer(request.GET.get('courseid')):
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not check_param_not_integer(request.GET.get('courseid')):
+                # TODO: Return all threads belonging to a Course ID
+                result = {
+                    "threads": [
+                        {
+                            'thread_id': 11,
+                            'case_id': 11,
+                            'course_id': 31,
+                            'date_updated': "11-09-2023",
+                            'request_type':'Extension', 
+                            'complex_case':1,
+                            'current_status':'PENDING',
+                            'assignment_id': 1,
+                        },
+                        {
+                            'thread_id': 12,
+                            'case_id': 12,
+                            'course_id': 31,
+                            'date_updated': "01-19-2023",
+                            'request_type':'Query',
+                            'complex_case':0,
+                            'current_status':'PENDING',
+                            'assignment_id':2,
+                        },
+                        {
+                            'thread_id': 13,
+                            'case_id': 12,
+                            'course_id': 31,
+                            'date_updated': "01-19-2023",
+                            'request_type':'Other',
+                            'complex_case':1,
+                            'current_status':'REJECTED',
+                            'assignment_id':3,
+                        }
+                    ]
+                }
+                return JsonResponse(result)
+
     if len(request.GET) in [1, 2] and request.GET.get('userid') and request.GET.get('status'):
-        if check_param_not_integer(request.GET.get('userid')):
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        if not request.GET.get('status').lower() in ["approved", "pending", "rejected"]:
-            return HttpResponseBadRequest("Invalid request, status isn't set correctly.")
-        else:
+        if check_param_not_integer(request.GET.get('userid')) or \
+            not request.GET.get('status').lower() in ["approved", "pending", "rejected"]:
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        if not check_param_not_integer(request.GET.get('userid')) and \
+            request.GET.get('status').lower() in ["approved", "pending", "rejected"]:
             # Some join of 'Thread' and 'Case' on case_id
             # result["thread"]["current_status"] == request.GET.get('checkstatus')
             threads = []
@@ -482,8 +526,8 @@ def get_threads_user_endpoint(request):
                 threads.append(row)
             json_result = {"threads": threads}
             return JsonResponse(json_result)
-     
-    return HttpResponseBadRequest('Invalid request, check input again.')
+
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_threads_endpoint(request, thread_id):
     '''
@@ -493,14 +537,11 @@ def get_threads_endpoint(request, thread_id):
         - ?checkstatus
     '''
     validate_headers(request)
-    
-    if len(request.GET) not in range(0, 3):
-        return HttpResponseBadRequest('Invalid request, check input again.')
-    
-    if len(request.GET) in [0, 1] and not request.GET or request.GET.get('checkstatus'):
-        if request.GET.get('checkstatus') and not request.GET.get('checkstatus').lower() == 'true':
-            return HttpResponseBadRequest("Invalid request, parameter must be an integer.")
-        else:
+
+    if len(request.GET) not in [0, 1]:
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+
+    if len(request.GET) in [0, 1]:
             # Compare it to the function input thread_id
             # SELECT * FROM 'Thread' WHERE 'Thread'.thread_id == thread_id
             # SELECT * FROM 'Request' WHERE 'Request'.thread_id == thread_id
@@ -533,15 +574,21 @@ def get_threads_endpoint(request, thread_id):
                     "threadinfo": {
                         "thread": thread_info,
                         "requests": requests,
-                        "coursepreferences": coursepreferences,
+                        "coursepreferences": coursepreferences
                     }
                 }
-            if not request.GET:
-                return JsonResponse(result)
-            else:
-                return JsonResponse({"status": result["threadinfo"]["thread"]["current_status"]})
-    
-    return HttpResponseBadRequest('Invalid request, check input again.')
+                if not request.GET:
+                    return JsonResponse(result)
+                if request.GET.get('checkstatus'):
+                    if not request.GET.get('checkstatus').lower() == 'true':
+                        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+                    if request.GET.get('checkstatus').lower() == 'true':
+                        return JsonResponse({
+                            "status": result["threadinfo"]["thread"]["current_status"]
+                        })
+
+            if not thread_info:
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
 def get_user_endpoint(request, user_id):
     '''
@@ -549,18 +596,11 @@ def get_user_endpoint(request, user_id):
     Valid parameter combinations:
         - ?courseid
     '''
-    #database_name = 'db'
-    #connection = mysql.connector.connect(
-    #    host="db",
-    #    port="3306",
-    #    user="root",
-    #    password="admin"
-    #)
     validate_headers(request)
-    
-    if len(request.GET) not in [0, 1]:
-        return HttpResponseBadRequest('Invalid request, check input again.')
-    else:
+    if not len(request.GET) in [0, 1]:
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+
+    if len(request.GET) in [0, 1]:
         if not request.GET:
             cursor = connection.cursor(dictionary=True)
             # Query the User table
@@ -581,70 +621,49 @@ def get_user_endpoint(request, user_id):
                     "darkmode_preference": user_data['darkmode_preference']
                 }
                 return JsonResponse(result)
-            else:
-                return None
-        if len(request.GET) == 1:
-            if request.GET.get('aaps'):
-                if request.GET.get('aaps').lower() != 'true':
-                    return HttpResponseBadRequest('Invalid request, check input again.')
-                else:
-                    cursor = connection.cursor()
+            
+            if not user_data:
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
-                    # Query the File table to get aap files for the user
-                    aap_query = f"SELECT file_name FROM File WHERE user_id = {user_id} AND file_type = 'aap'"
-                    cursor.execute(aap_query)
-                    aap_data = cursor.fetchall()
+        if len(request.GET) == 1 and request.GET.get('courseid'):
+            if check_param_not_integer(request.GET.get('courseid')):
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not check_param_not_integer(request.GET.get('courseid')):
+                # Some join magic between course, enrollment and user
+                cursor = connection.cursor(dictionary=True)
 
-                    # Create a list of aap file names
-                    aap_list = [aap['file_name'] for aap in aap_data]
+                # Query the Enrollment table to get enrolled courses for the user
+                courses_query = f"SELECT Course.course_id, course_name, course_code FROM Course " \
+                                f"INNER JOIN Enrollment ON Course.course_id = Enrollment.course_id " \
+                                f"WHERE user_id = {user_id}"
+                cursor.execute(courses_query)
+                courses_data = cursor.fetchall()
 
-                    # Create the JSON structure
-                    result = {"aaps": aap_list}
-                    return JsonResponse(result)
-            if request.GET.get('courseid'):
-                if check_param_not_integer(request.GET.get('courseid')):
-                    return HttpResponseBadRequest('Invalid request, check input again.')
-                else:
-                    cursor = connection.cursor(dictionary=True)
+                # Create a list of course dictionaries
+                course_list = []
+                for course in courses_data:
+                    course_info = {
+                        "course_id": course['course_id'],
+                        "course_name": course['course_name'],
+                        "course_code": course['course_code']
+                    }
+                    course_list.append(course_info)
 
-                    # Query the Enrollment table to get enrolled courses for the user
-                    courses_query = f"SELECT Course.course_id, course_name, course_code FROM Course " \
-                                    f"INNER JOIN Enrollment ON Course.course_id = Enrollment.course_id " \
-                                    f"WHERE user_id = {user_id}"
-                    cursor.execute(courses_query)
-                    courses_data = cursor.fetchall()
+                # Create the JSON structure
+                result = {"courses": course_list}
+                return JsonResponse(result)
 
-                    # Create a list of course dictionaries
-                    course_list = []
-                    for course in courses_data:
-                        course_info = {
-                            "course_id": course['course_id'],
-                            "course_name": course['course_name'],
-                            "course_code": course['course_code']
-                        }
-                        course_list.append(course_info)
-
-                    # Create the JSON structure
-                    result = {"courses": course_list}
-                    return JsonResponse(result)
-
-    return HttpResponseBadRequest('Invalid request, check input again.')
-
-
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_files_endpoint(request, user_id):
     '''
     GET /api/data/files/{user_id}/
     Valid parameter combinations:
-        - No params
         - ?aaps
         - ?requestid
     '''
-    if len(request.GET) == 0:
-        # Test
-        return HttpResponseBadRequest('Invalid request, check input again')
-    elif len(request.GET) == 1:
-        if request.GET.get('aaps') == True:
+    if len(request.GET) == 1:
+        if request.GET.get('aaps').lower() == 'true':
             # Get all files that are AAPs from database
             with connection.cursor() as cursor:
                 cursor.execute(f"USE {database_name}")
@@ -676,8 +695,9 @@ def get_files_endpoint(request, user_id):
                     'file_data': file_data 
                 })
             return JsonResponse({'supportingDocs': files_list})
-    else:
-        return HttpResponseBadRequest('Invalid request, check input again.')
+    if not len(request.GET) == 1:
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 @csrf_exempt
 def post_new_case(request):
@@ -714,7 +734,7 @@ def post_new_case(request):
         for item in data['requests']:
             if not set(item.keys()) == set(all_fields):
                 return HttpResponseBadRequest("Request body does not have correct fields")
-            else:
+            if set(item.keys()) == set(all_fields):
                 for field in integer_fields:
                     if not isinstance(item[field], int):
                         return HttpResponseBadRequest("Request body does not have correct fields")
@@ -764,9 +784,9 @@ def post_new_case(request):
         return JsonResponse({
             "message": "Case created successfully"
         }, status = 201)
-    else:
-        return HttpResponseBadRequest('Invalid request. Check input or request type')
-
+    if not request.method == 'POST':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 @csrf_exempt
 def post_file(request):
@@ -791,22 +811,16 @@ def post_file(request):
         file_type = 'AAP'
         
         file_data = request.FILES[fileName].read()
-
-        #for filename, file in request.FILES:
-        #    file_data = request.FILES[filename].read()
-        #    file_name = request.FILES[filename].name
-
-        #with open(file_path, 'rb') as file:
-        #    file_data = file.read()
-
         cursor = connection.cursor()
         cursor.execute(f"USE {database_name}")
         insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(insert_query, (file_data, fileName, user_id, request_id, file_type))
         connection.commit()
         return JsonResponse({"message": "Uploaded successfully"}, status = 201)
-    else:
-        return HttpResponseBadRequest("Uploading file failed")
+    if not request.method == 'POST':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
 @csrf_exempt
 def put_preferences(request):
     '''
@@ -919,8 +933,9 @@ def put_preferences(request):
         return JsonResponse({
             "message": "Course preferences updates successfully"
         }, status = 201)
-    else:
-        return HttpResponseBadRequest('Invalid request. Check input or request type')
+    if not request.method == 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 @csrf_exempt
 def put_req_response(request):
@@ -982,8 +997,9 @@ def put_req_response(request):
         # Commit the changes
         connection.commit()
         return JsonResponse({"message": "Updated successfully"}, status = 201)
-    else:
-        return HttpResponseBadRequest('Invalid request. Check input or request type')
+    if not request.method == 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 @csrf_exempt
 def set_complex(request):
@@ -995,237 +1011,34 @@ def set_complex(request):
         "complex_case": 1
     }
     '''
-    
-    try:
-        # Create a cursor to interact with the database
-        cursor = connection.cursor()
-        cursor.execute(f"USE {database_name}")
-        data = json.loads(request.body)
-        
-        # Check the current value of 'complex_case' for the given 'request_id'
-        
-        cursor.execute(f"SELECT complex_case FROM Thread WHERE thread_id = {data['thread_id']}")
-        current_complex_case = cursor.fetchall()[0][0]
-        print(current_complex_case)
-        # Toggle the 'complex_case' value (0 to 1 or 1 to 0)
-        new_complex_case = 1 if current_complex_case == 0 else 0
+    if request.method == 'PUT':
+        try:
+            # Create a cursor to interact with the database
+            cursor = connection.cursor()
+            cursor.execute(f"USE {database_name}")
+            data = json.loads(request.body)
+            
+            # Check the current value of 'complex_case' for the given 'request_id'
+            
+            cursor.execute(f"SELECT complex_case FROM Thread WHERE thread_id = {data['thread_id']}")
+            current_complex_case = cursor.fetchall()[0][0]
+            print(current_complex_case)
+            # Toggle the 'complex_case' value (0 to 1 or 1 to 0)
+            new_complex_case = 1 if current_complex_case == 0 else 0
 
-        # Update the 'complex_case' value in the database
-        cursor.execute(f"UPDATE Thread SET complex_case = {new_complex_case} WHERE thread_id = {data['thread_id']}")
+            # Update the 'complex_case' value in the database
+            cursor.execute(f"UPDATE Thread SET complex_case = {new_complex_case} WHERE thread_id = {data['thread_id']}")
 
-        # Commit the changes
-        connection.commit()
+            # Commit the changes
+            connection.commit()
 
-        print(f"Complex_case for thread_id {data['thread_id']} updated to {new_complex_case}")
-        return JsonResponse({
-            "message": "Updated successfully"
-        }, status = 201)
-        
-
-    except mysql.connector.Error as error: 
-        return HttpResponseBadRequest('Invalid request. Check input or request type')
-
-
-
-
-##################################################################testing block###########################
-from django.http import QueryDict
-from django.http import HttpRequest
-from django.test import RequestFactory
-from django.conf import settings
-
-# Create a request factory
-#request_factory = RequestFactory()
-#settings.configure()  #this messes up django
-
-
-# Create a mock HTTP request
-#request = request_factory.get('/api/data/assessments/', {'courseid': 7727409})
-#request = request_factory.get('/api/data/assessments/', {'courseid': '1', 'names': 'true'})
-#request = request_factory.get('/api/data/thread/', {'userid':109194991, 'status':'pending'})
-
-
-#request = request_factory.get('/api/data/thread/1/', {'checkstatus': 'true'})
-#request = request_factory.get('/api/data/user/1/', {'aaps': 'true'})
-#request = request_factory.get('/api/data/user/1/')
-#response = get_user_endpoint(request, 109194991)
-#response = get_assessments_endpoint(request)
-# Process the response
-#data = response.content  # This will contain the JSON response
-#print(response.content)
-
-
-def test_put_preferences():
-    # Create a mock request object
-    request = HttpRequest()
-    request.method = 'PUT'
-
-    # Define the request data and headers
-    request_data = {
-        "coursepreference_id": 1,
-        "course_id": 7677734,
-        "global_extension_length": 0,
-        "general_tutor": 1,
-        "extension_tutor": 1,
-        "quiz_tutor": 1,
-        "remark_tutor": 1,
-        "other_tutor": 1,
-        "general_scoord": 1,
-        "extension_scoord": 1,
-        "quiz_scoord": 1,
-        "remark_scoord": 1,
-        "other_scoord": 1,
-        "general_reject": "string",
-        "extension_approve": "string",
-        "extension_reject": "string",
-        "quiz_approve": "string",
-        "quiz_reject": "string",
-        "remark_approve": "string",
-        "remark_reject": "string"
-    }
-    request._body = json.dumps(request_data).encode('utf-8')
-    request.META['HTTP_CONTENT_TYPE'] = 'application/json'
-
-    # Call the put_preferences function
-    response = put_preferences(request)
-
-    # Check the response, e.g., response.status_code, response.content, etc.
-    print(response.status_code)
-    print(response.content)
-
-def test_complex():
-    # Create a mock request object
-    request = HttpRequest()
-    request.method = 'PUT'
-
-    # Define the request data and headers
-    request_data = {
-        "thread_id": 1,
-        "complex_case": True
-    }
-    request._body = json.dumps(request_data).encode('utf-8')
-    request.META['HTTP_CONTENT_TYPE'] = 'application/json'
-
-    # Call the put_preferences function
-    response = set_complex(request)
-
-    # Check the response, e.g., response.status_code, response.content, etc.
-    print(response)
-    print(response.status_code)
-    print(response.content)
-
-def test_request_response():
-    # Create a mock request object
-    request = HttpRequest()
-    request.method = 'PUT'
-
-    # Define the request data and headers
-
-    #For extension/quizcode/remark:
-    
-    request_data = {
-        "request_id":1,
-        "assignment_id":1,
-        "instructor_notes": ":o",
-        "status": "APPROVED",
-        "extended_by": 4
-    }
-    #request_data = {
-    #    "request_id":1,
-    #    "instructor_notes": "no!",
-    #    "status": "REJECTED"
-    #}
-    request._body = json.dumps(request_data).encode('utf-8')
-    request.META['HTTP_CONTENT_TYPE'] = 'application/json'
-
-    # Call the put_preferences function
-    response = put_req_response(request)
-
-    # Check the response, e.g., response.status_code, response.content, etc.
-    print(response)
-    print(response.status_code)
-    print(response.content)
-
-def test_post_case():
-    # Create a mock request object
-    request = HttpRequest()
-    request.method = 'POST'
-
-    # Define the request data and headers
-
-    #For extension/quizcode/remark:
-    
-    request_data = {
-    "user_id" : 109194991,
-    "requests": [
-            {
-                "course_id": 7677734,
-                "request_type": "AAP",
-                "assignment_id": 40897567,
-                "request_content": "bla bla"
-            },
-            {
-                "course_id": 7677734,
-                "request_type": "QUERY",
-                "assignment_id": 40268278,
-                "request_content": "bla bla"
-            }
-        ]
-    }
-    request._body = json.dumps(request_data).encode('utf-8')
-    request.META['HTTP_CONTENT_TYPE'] = 'application/json'
-
-    # Call the put_preferences function
-    response = post_new_case(request)
-
-    # Check the response, e.g., response.status_code, response.content, etc.
-    print(response)
-    print(response.status_code)
-    print(response.content)
-
-from django.core.files.uploadedfile import SimpleUploadedFile
-def test_post_AAP():
-    # Create a mock request object
-    request = HttpRequest()
-    request.method = 'POST'
-
-    # Define the request data and headers
-    request_data = {
-        "user_id":108998192,
-        "request_id":1,
-        "fileName":"testfile.txt"
-    }
-    request._body = json.dumps(request_data).encode('utf-8')
-    request.META['HTTP_CONTENT_TYPE'] = 'application/json'
-
-    # Attach a file to the request
-    file_content = b'This is a test file content.'
-    file = SimpleUploadedFile("testfile.txt", file_content)
-    request.FILES['testfile.txt'] = file
-
-    # Call the put_preferences function
-    response = post_file(request)
-
-    # Check the response, e.g., response.status_code, response.content, etc.
-    print(response.status_code)
-    print(response.content)
-
-def test_get_files():
-    # Create a mock request object
-    request = HttpRequest()
-    request.method = 'GET'
-
-    # Define the request data and headers
-    user_id = 108998192
-    request_data = {
-        #"aaps":True
-        "requestid":1
-    }
-    request.GET = request_data
-
-    # Call the put_preferences function
-    response = get_files_endpoint(request,user_id)
-
-    # Check the response, e.g., response.status_code, response.content, etc.
-    print(response.status_code)
-    print(response.content)
+            print(f"Complex_case for thread_id {data['thread_id']} updated to {new_complex_case}")
+            return JsonResponse({
+                "message": "Updated successfully"
+            }, status = 201)
+        except mysql.connector.Error as error: 
+            print(error)
+            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    if not request.method == 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)

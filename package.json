@@ -2,6 +2,9 @@
   "devDependencies": {
     "eslint": "^6.0.0"
   },
+  "babel": {
+    "presets": ["@babel/preset-env"]
+  },
   "scripts": {
     "lint": "eslint static/"
   }

@@ -1,41 +1,12 @@
-/**
- * Author: Jun Youn
- * Description: Global helper functions
- */
-
-/**
- * Constants helper
- */
-const CONTENT_TYPE = 'Content-Type';
-
-/**
- * Modify globally stored header values
- */
-
-function getGlobalAppHeadersValue(header) {
-    let tempHeaders = new Headers(JSON.parse(sessionStorage.getItem('globalAppHeaders')));
-    return tempHeaders.get(header);
-}
-
-function setGlobalAppHeaders(header, value) {
-    let tempHeaders = new Headers(JSON.parse(sessionStorage.getItem('globalAppHeaders')));
-    tempHeaders.set(header, value);
-    sessionStorage.setItem('globalAppHeaders', JSON.stringify(Object.fromEntries(tempHeaders.entries())));
-    console.log(getGlobalAppHeadersValue(header));
-}
-
-/**
- *
- * Helper functions for data endpoints
- * 
- */
+import { CONTENT_TYPE } from "./constantsModule.js";
+import { getGlobalAppHeadersValue } from "./helperFunctionModule.js";
 
 /**
  * Loads JSON data from given url
  * @param {string} url - Endpoint that returns JSON
  * @returns {Promise<any>} 
  */
-function loadData(url, reqHeaders) {
+export function loadData(url, reqHeaders) {
     return fetch(url, {
         method: 'GET',
         headers: reqHeaders
@@ -44,18 +15,11 @@ function loadData(url, reqHeaders) {
             return data;
         })
         .catch(error => {
-			console.error('Calling ' + url + ' returned an error ', error);
             throw error;
 		});
 }
 
-/**
- * 
- * @param {string} url 
- * @param {integer} json 
- * @returns 
- */
-function putData(url, json){
+export function putData(url, json){
     return fetch(url, {
         method: 'PUT',
         headers: {
@@ -75,15 +39,11 @@ function putData(url, json){
             return data;
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
+            throw error;
         });
 }
 
-/**
- * POST call to 'url' with the given json. Returns the response data
- */
-function postData(url, json){
-
+export function postData(url, json){
     return fetch(url, {
         method: 'POST',
         headers: {
@@ -103,6 +63,6 @@ function postData(url, json){
             return data;
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
+            throw error;
         });
 }
