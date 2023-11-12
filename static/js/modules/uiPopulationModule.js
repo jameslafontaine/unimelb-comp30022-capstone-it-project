@@ -826,7 +826,7 @@ export function handleComplexRequestFunctionality(thread) {
                 document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
             }
         })
-    
+
     // Modify the reserved status when mark as complex is clicked and change the 'Mark as complex' button
     // to 'Unmark'. Vice versa if the unmark button is clicked
     // Also update the star appropriately at the top of the page
@@ -906,6 +906,14 @@ export function generateRequestTable(threads, type) {
 
     // Add thread data
     threads.forEach(thread => {
+        
+        // Check if this thread is meant to be displayed for this instructor or not, if not then skip this request
+        if (!shouldDisplayRequest(thread.request_type, thread.complex_case, courseId)) {
+            return;
+        }
+        
+
+        // Otherwise proceeding with displaying the relevant information in this table row
         const row = table.insertRow();
         
         const complexCaseCell = row.insertCell();
@@ -972,6 +980,40 @@ export function generateRequestTable(threads, type) {
 	
 	// Append the table to the container
 	tableContainer.appendChild(table);
+}
+
+/**
+ * Checks whether the provided request should be display to the current instructor
+ *
+ * @param {string} requestType - Denotes the type of request this is [general, query, quiz, remark, other]
+ * @param {int} isComplex - 1 to note that a case is complex, 0 for not
+ * @param {int} courseId - Identifier for the course to allow retrieval of subject settings
+ * @returns {boolean} - Describes whether we should display this request for the instructor or not
+ *
+ */
+export function shouldDisplayRequest(requestType, isComplex, courseId) {
+    
+    // Retrieve the request permissions for the role of the current instructor
+    loadData('/api/data/courses/?courseid=' + courseId + '&preferences=true', {})
+    .then(prefs => {
+
+         // Get the role of the instructor (are they a tutor or a subject coordinator)
+        loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
+            .then(data => {
+            let role = data.enrollment_role.toLowerCase();
+    
+            // Use the course preferences of their role to determine which requests to display to them
+            let keyName = requestType.toLowerCase() + `_${role}`;
+        
+            if (role == 'tutor') {
+                return prefs[keyName];
+            } else if (role == 'scoord' && isComplex == 1) {
+                return prefs[keyName];
+            } else {
+                return false;
+            }
+        });
+    });
 }
 
 export function populatePopups(thread) {
