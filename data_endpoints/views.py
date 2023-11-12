@@ -5,10 +5,10 @@ All endpoints in data_endpoints
 # from django.shortcuts import render
 import base64
 import json
+from datetime import datetime, time, timedelta
 import mysql.connector
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime, time
 
 # Create a connection
 # Replace these values with your MySQL server details
@@ -958,30 +958,50 @@ def put_req_response(request):
     '''
     if request.method == 'PUT':
         data = json.loads(request.body)
-        all_fields = ["request_id","instructor_notes","status"]
-        extension_fields = ["request_id","assignment_id","instructor_notes","status","extended_by"]
+        all_fields = ["request_id", "instructor_notes", "status"]
+        extension_fields = ["request_id", "assignment_id", "instructor_notes", "status", "extended_by"]
         data_keys = list(data.keys())
         
         print(data_keys)
         if not ((all_fields == data_keys) or (extension_fields == data_keys)):
             return HttpResponseBadRequest("Request body does not have correct fields")
+        
         # Update course preferences table
 
         # Create a cursor to interact with the database
         cursor = connection.cursor()
         cursor.execute(f"USE {database_name}")
+        
         # Extract data from the JSON
         instructor_notes = data["instructor_notes"]
         status = data["status"]
-        request_id= data["request_id"]
+        request_id = data["request_id"]
         
-        #check if json has assignment_id
+        # Check if "assignment_id" is in data
         if "assignment_id" in data:
             assignment_id = data["assignment_id"]
             extended_by = data["extended_by"]
 
-            #update canvas API
+            # Update the 'Assignment' table due_date
+            cursor.execute("""
+                SELECT start_date, due_date FROM db.Assignment
+                WHERE assignment_id = %s
+            """, (assignment_id,))
+            
+            assignment_data = cursor.fetchone()
+            due_date = assignment_data[1]
 
+            if due_date is not None:
+                # If due_date is not null, add extended_by days to it
+                new_due_date = due_date + timedelta(days=extended_by)
+                cursor.execute("""
+                    UPDATE db.Assignment
+                    SET due_date = %s
+                    WHERE assignment_id = %s
+                """, (new_due_date, assignment_id))
+            else:
+                # If due_date is null, return an error
+                return JsonResponse({"message": "Due date is null. Cannot extend assignment."}, status=400)
 
         # Update the 'CoursePreferences' table in the database
         cursor.execute("""
@@ -996,10 +1016,12 @@ def put_req_response(request):
 
         # Commit the changes
         connection.commit()
-        return JsonResponse({"message": "Updated successfully"}, status = 201)
+        return JsonResponse({"message": "Updated successfully"}, status=201)
+
     if not request.method == 'PUT':
-        return JsonResponse({'message': 'Invalid request.'}, status = 400)
-    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+        return JsonResponse({'message': 'Invalid request.'}, status=400)
+
+    return JsonResponse({'message': 'Invalid request.'}, status=500)
 
 @csrf_exempt
 def set_complex(request):

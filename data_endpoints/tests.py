@@ -57,7 +57,11 @@ def test_get_assessments_endpoint_courseid():
     '''
     endpoint = '/api/data/assessments?courseid=1&names=true'
     mock_response = {
-        "assessments": [ test_assessment["assignment_name"], test_assessment["assignment_name"], test_assessment["assignment_name"] ]
+        "assessments": [ 
+            test_assessment["assignment_name"],
+            test_assessment["assignment_name"],
+            test_assessment["assignment_name"]
+        ]
     }
     with Mocker() as mocker:
         mocker.get(LOCALHOST + endpoint, json = mock_response, status_code = 200)
@@ -211,8 +215,8 @@ def test_get_courses_endpoint():
         mocker.get(LOCALHOST + endpoint, json = mock_response, status_code = 200)
         response = requests.get(LOCALHOST + endpoint, timeout = 5)
         assert response.status_code == 200 and response.json() == mock_response, \
-            endpoint + "does not work"
-        
+        endpoint + "does not work"
+
 def test_get_courses_endpoint_courseid():
     '''
     Test /api/data/cases?userid=value
@@ -226,7 +230,7 @@ def test_get_courses_endpoint_courseid():
         response = requests.get(LOCALHOST + endpoint, timeout = 5)
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
-        
+
 def test_get_courses_endpoint_courseid_preference():
     '''
     Test /api/data/cases?userid=value
@@ -284,7 +288,7 @@ def test_get_request_userid():
         response = requests.get(LOCALHOST + endpoint, timeout = 5)
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
-        
+
 def test_get_request_requestid():
     '''
     Test /api/data/cases?userid=value
@@ -370,7 +374,7 @@ def test_get_thread_threadid():
         response = requests.get(LOCALHOST + endpoint, timeout = 5)
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
-        
+
 def test_get_thread_courseid():
     '''
     Test /api/data/cases?userid=value
@@ -398,7 +402,7 @@ def test_get_thread_userid_status():
         response = requests.get(LOCALHOST + endpoint, timeout = 5)
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
-        
+
 test_thread_4 = {
   "threadinfo": {
     "thread": {
@@ -468,7 +472,7 @@ def test_get_thread_info():
         response = requests.get(LOCALHOST + endpoint, timeout = 5)
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
-        
+
 def test_get_thread_status():
     '''
     Test /api/data/cases?userid=value
@@ -482,7 +486,6 @@ def test_get_thread_status():
         response = requests.get(LOCALHOST + endpoint, timeout = 5)
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
-
 
 test_user_1 = {
   "user_id": 1,
@@ -522,7 +525,7 @@ def test_get_user():
         response = requests.get(LOCALHOST + endpoint, timeout = 5)
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
-        
+
 def test_get_user_course():
     '''
     Test /api/data/cases?userid=value
