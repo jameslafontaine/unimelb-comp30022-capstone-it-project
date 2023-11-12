@@ -581,12 +581,12 @@ function setupDownloadButton(buttonId, fileUrl, fileName) {
 }
 
 export function handleCaseSubmission(numRequests) {
+
     let requestsData = new Array();
     for (let i=1; i <= numRequests; i++) {
         let requestData = {
-            'courseId': document.getElementById(`courseDropdown${i}`).value,
+            'courseCode': document.getElementById(`courseDropdown${i}`).value,
             'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
-            'assignmentId': -1,
             'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
             'message': document.getElementById(`messageTextBox${i}`).value,
             'supportingDocuments': -1,
@@ -1149,7 +1149,7 @@ function respond(threadId, response){
 }
 
 function postNewCase(dataToSend){
-    return postData(('/api/data/requests/respond/'), dataToSend)
+    return postData(('/api/data/cases/new/'), dataToSend)
         .then(() => {
             return true;
         })
