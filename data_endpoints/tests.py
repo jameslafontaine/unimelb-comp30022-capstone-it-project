@@ -618,7 +618,7 @@ check if complex_case has changed
 '''
 
 
-def test_put_files():
+def test_put_prefernces():
    '''
    Test /api/data/cases?userid=value
    Acceptance criteria:
@@ -656,7 +656,6 @@ def test_put_files():
        assert response.status_code == 200, \
            endpoint + "does not work"
 
-
 def test_put_case():
    '''
    Test /api/data/cases?userid=value
@@ -683,6 +682,68 @@ def test_put_case():
                 "request_content": "bla bla"
             }
         ]
+    }
+   with Mocker() as mocker:
+       mocker.put(LOCALHOST + endpoint, json = mock_response, status_code = 200)
+       response = requests.put(LOCALHOST + endpoint, json=request_body, timeout = 5)
+       assert response.status_code == 200, \
+           endpoint + "does not work"
+
+def test_put_respond():
+   '''
+   Test /api/data/cases?userid=value
+   Acceptance criteria:
+       - Returns 200 and JSONs match
+   '''
+   endpoint = '/api/data/requests/respond'
+   mock_response = {
+        "message": "Updated successfully"
+    }
+   request_body =     {
+        "request_id":1,
+        "instructor_notes": ":o",
+        "status": "APPROVED"
+    }
+   with Mocker() as mocker:
+       mocker.put(LOCALHOST + endpoint, json = mock_response, status_code = 200)
+       response = requests.put(LOCALHOST + endpoint, json=request_body, timeout = 5)
+       assert response.status_code == 200, \
+           endpoint + "does not work"
+
+def test_put_complex():
+   '''
+   Test /api/data/cases?userid=value
+   Acceptance criteria:
+       - Returns 200 and JSONs match
+   '''
+   endpoint = '/api/data/thread/complex'
+   mock_response = {
+        "message": "Updated successfully"
+    }
+   request_body = {
+        "thread_id": 0,
+        "complex_case": 1
+    }
+   with Mocker() as mocker:
+       mocker.put(LOCALHOST + endpoint, json = mock_response, status_code = 200)
+       response = requests.put(LOCALHOST + endpoint, json=request_body, timeout = 5)
+       assert response.status_code == 200, \
+           endpoint + "does not work"
+
+def test_post_file():
+   '''
+   Test /api/data/cases?userid=value
+   Acceptance criteria:
+       - Returns 200 and JSONs match
+   '''
+   endpoint = '/api/data/files/upload'
+   mock_response = {
+        "message": "Uploaded successfully"
+    }
+   request_body = {
+        "user_id" : 1,
+        "fileName" : "filename",
+        "request_id" : 1
     }
    with Mocker() as mocker:
        mocker.put(LOCALHOST + endpoint, json = mock_response, status_code = 200)

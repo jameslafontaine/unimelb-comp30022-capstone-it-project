@@ -667,7 +667,6 @@ def get_user_endpoint(request, user_id):
 
     return JsonResponse({'message': 'Invalid request.'}, status=500)
 
-
 def get_files_endpoint(request, user_id):
     '''
     GET /api/data/files/{user_id}/
@@ -956,14 +955,14 @@ def put_req_response(request):
     PUT /api/data/requests/respond/
     For query/other:
     {
-        "request_id":1
+        "request_id":1,
         "instructor_notes": ":o",
         "status": "APPROVED"
     }
     For extension/quizcode/remark:
     {
-        "request_id":1
-        "assignment_id":1
+        "request_id":1,
+        "assignment_id":1,
         "instructor_notes": ":o",
         "status": "APPROVED",
         "extended_by": 4
