@@ -1,3 +1,9 @@
+/** 
+ * Author(s): Jun Youn
+ * Date Last Modified: November 12
+ * Description: Constants for use throughout the app
+ */
+
 export const AAP_TABLE_HEADERS = ["File name", "File type"]
 export const CASE_TABLE_HEADERS = ["Request Type", "Course Name", "Assessment", "Current Status", "Date Updated"];
 export const CONTENT_TYPE = 'Content-Type';

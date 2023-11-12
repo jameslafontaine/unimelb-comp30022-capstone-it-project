@@ -7,6 +7,10 @@
 import { getGlobalAppHeadersValue } from "./helperFunctionModule.js";
 import { loadData } from "./dataModule.js";
 
+/**
+ * Creates the header at the top of the web app
+ * @param {string} instOrStudent - denotes whether a student or instructor is logged into the app
+ */
 export function createHeader(instOrStudent) {
 	let url = (instOrStudent == "student") ? '/student/sWebHeader' : '/instructor/iWebHeader';
 

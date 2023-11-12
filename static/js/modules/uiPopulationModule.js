@@ -1,8 +1,19 @@
+/** 
+ * Author: James La Fontaine, Callum Sharman, Jun Youn
+ * Date Last Modified: November 12, 2023
+ * Description: Functions which generate and deal with the user interface
+ */
+
 import { fixStyling } from './webHeaderModule.js';
 import { getGlobalAppHeadersValue } from './helperFunctionModule.js';
 import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS, REQUEST_TABLE_HEADERS, SUPP_DOC_HEADERS } from './constantsModule.js'
 import { loadData, postData, putData } from './dataModule.js';
 
+
+/**
+ * Dynamically generates the table which contains student cases
+ * @param {array} cases - list of student cases
+ */
 export function generateStudentCases(cases) {
     let numCases = cases.length;
     const container = document.getElementById("caseContainer");
@@ -115,6 +126,11 @@ export function generateStudentCases(cases) {
     
 }
 
+/**
+ * Inserts the required information into the most recent updated version of a request (top of page)
+ * @param {int} threadId - identifier for version of request
+ * @param {JUN} view - ******************
+ */
 export function fillCurrentRequestInformation(threadId, view) {
 
     loadData('/api/data/thread/' + threadId, {})
@@ -157,6 +173,11 @@ export function fillCurrentRequestInformation(threadId, view) {
         });
 }
 
+/**
+ * Dynamically generates the supporting documentation table
+ * @param {array} requestList - list of student requests
+ * @param {int} number - which version of the request this is (i.e. which supporting doc table this is)
+ */
 export function generateSuppDocTable(requestList, number) {
 	const tableContainer = document.getElementById(`suppDocContainer${number}`);
 	const table = document.createElement('table');
@@ -204,6 +225,11 @@ export function generateSuppDocTable(requestList, number) {
 	tableContainer.appendChild(table);
 }
 
+/**
+ * Dynamically generates the boxes which contain past versions of requests and their details
+ * @param {JSON} version - past request
+ * @param {int} number - which version of the request this is (i.e. which past request this is relative to others)
+ */
 export function generateVersionBox(version, number) {
     const container = document.getElementById("requestHistoryContainer");
 
@@ -271,6 +297,11 @@ export function generateVersionBox(version, number) {
     //container.appendChild(document.createElement("br"));
 }
 
+/**
+ * Creates a student request form to be filled when a student is submitting a request
+ * @param {int} number - which request this is within the current case the student is making
+ * @param {array} courseList - list of courses this student is enrolled in
+ */
 export function generateStudentRequest(number, courseList) {
     const caseContainer = document.getElementById("caseContainer");
 
@@ -373,7 +404,7 @@ export function generateStudentRequest(number, courseList) {
 
     // // Event listener for the upload button
     // uploadButton.onclick = function () {
-    //     // Programmatically trigger a click event on the file input element
+    // 
     //     fileInput.click();
     // };
     
@@ -447,6 +478,11 @@ export function generateStudentRequest(number, courseList) {
 
 }
 
+/**
+ * Creates the assignment dropdown for a student submitting a request
+ * @param {int} number - which request this is within the current case the student is making
+ * @param {array} courseList - list of courses this student is enrolled in
+ */
 function createAssignmentDropDown(number, courseList){
     const assignment = document.getElementById(`assignment${number}`);
     assignment.textContent = "Assignment"; 
@@ -486,6 +522,11 @@ function createAssignmentDropDown(number, courseList){
         });
 }
 
+/**
+ * Checks whether the assignment dropdown needs to be displayed or not
+ * @param {int} number - which request this is within the current case the student is making
+ * @param {array} courseList - list of courses this student is enrolled in
+ */
 function assignmentDropDownListener(number, courseList){
 
     const requestDropDown = document.getElementById(`requestTypeDropdown${number}`);
@@ -510,6 +551,13 @@ function assignmentDropDownListener(number, courseList){
     });
 }
 
+/**
+ * Handles functionality relating to the upload button for supporting documentation
+ * @param {int} buttonId - HTML id for the upload button
+ * @param {array} fileInputId - HTML id for the fileinput element
+ * @param {int} fileContainerId - HTML id for the container which will display file information
+ * @param {array} uploadUrl - URL endpoint for uploading files
+ */
 function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
     document.getElementById(buttonId).addEventListener('click', function() {
         document.getElementById(fileInputId).click();
@@ -560,6 +608,12 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
     });
 }
 
+/**
+ * Handles functionality relating to the download button for supporting documentation
+ * @param {int} buttonId - HTML id for the download button
+ * @param {string} fileUrl - URL endpoint for downloading files
+ * @param {string} fileName - Name of the file that the user will download
+ */
 function setupDownloadButton(buttonId, fileUrl, fileName) {
     document.getElementById(buttonId).addEventListener('click', function() {
         fetch(fileUrl)
@@ -577,6 +631,10 @@ function setupDownloadButton(buttonId, fileUrl, fileName) {
     });
 }
 
+/**
+ * Pushes information to the database after a case is submitted
+ * @param {int} numRequests - number of requests in this case
+ */
 export function handleCaseSubmission(numRequests) {
     let requestsData = new Array();
     for (let i=1; i <= numRequests; i++) {
@@ -593,6 +651,11 @@ export function handleCaseSubmission(numRequests) {
     postNewCase({'requests': requestsData});
 }
 
+/**
+ * Pushes edits made to a request
+ * @param {JSON} currRequest - JSON containing information about the 'current' version of the request (before edits are made)
+ * @param {array} prevVersions - list of previous versions of the request
+ */
 export function saveEdits(currRequest, prevVersions) {
 
     const suppDocs = [
@@ -629,6 +692,10 @@ export function saveEdits(currRequest, prevVersions) {
     //currRequest.suppDocs = document.getElementById('suppDocContainer')
 }
 
+/**
+ * Generates the table which contains AAPs and the ability to upload and download them
+ * @param {array} aapData - list of AAP JSONs
+ */
 export function generateAAPTable(aapData) {
     const tableContainer = document.getElementById('aapTableContainer');
 	const table = document.createElement('table');
@@ -755,6 +822,10 @@ export function generateAAPTable(aapData) {
 	tableContainer.appendChild(table);
 }
 
+/**
+ * Generates a subject box which instructors can use to access subjects from the home page
+ * @param {JSON} subject - contains information about the subject relevant to the subject box UI element
+ */
 export function generateSubjectBox(subject) {
 	// Create a new expandable box element
 	const standardBox  = document.createElement('div');
@@ -810,6 +881,10 @@ export function generateSubjectBox(subject) {
 	fixStyling();
 }
 
+/**
+ * Handles the display of request complexity and the ability to toggle request complexity
+ * @param {JSON} thread - current version of a request
+ */
 export function handleComplexRequestFunctionality(thread) {
 
     // Get a reference to the reserveButton
@@ -855,6 +930,9 @@ export function handleComplexRequestFunctionality(thread) {
     });
 }
 
+/**
+ * Sets up the buttons that allow popups to be opened and closed for approving and rejecting requests
+ */
 export function setupOpenClosePopupButtons() {
     const buttons = document.querySelectorAll('#approveButton, #rejectButton, #answerButton');
     const popups = document.querySelectorAll('.popupBox');
@@ -881,12 +959,21 @@ export function setupOpenClosePopupButtons() {
     });
 }
 
+/**
+ * Fills in the information for the student details box on a view request page
+ * @param {JSON} student - contains information about the student who made the request
+ */
 export function fillStudentDetailsBox(student) {
     document.getElementById('studentName').innerHTML = student.first_name + ' ' + student.last_name
     document.getElementById('studentId').innerHTML = student.user_id
     document.getElementById('studentEmail').innerHTML = student.email
 }
 
+/**
+ * Creates the table of requests which instructors view for a particular subject
+ * @param {array} threads - list of request JSONs
+ * @param {string} type - denotes whether this is the table for active requests or resolved requests ('Awaiting' or 'Resolved)
+ */
 export function generateRequestTable(threads, type) {
 	const tableContainer = document.getElementById('tableContainer' + type);
 	const table = document.createElement('table');
@@ -974,6 +1061,10 @@ export function generateRequestTable(threads, type) {
 	tableContainer.appendChild(table);
 }
 
+/**
+ * Populates the popups with required information when instructors are reviewing a request
+ * @param {JSON} thread - contains information about the current version of the request being reviewed
+ */
 export function populatePopups(thread) {
 
     loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
@@ -1007,6 +1098,10 @@ export function populatePopups(thread) {
 
 }
 
+/**
+ * Handles the displaying and hiding of buttons as needed depending on the type of request being reviewed
+ * @param {JSON} thread - contains information about the request currently being reviewed
+ */
 export function hideAndDisplayButtons(thread) {
 
     const reqShort = thread.request_type.substring(0,3);
@@ -1029,6 +1124,10 @@ export function hideAndDisplayButtons(thread) {
     }
 }
 
+/**
+ * Updates the relevant information and performs required operations when a request is resolved
+ * @param {JSON} thread - contains information about the request currently being reviewed
+ */
 export function handleApprovalRejectionAnswer(thread) {
 
     // First 3 letters of request type used for HTML identifiers
@@ -1099,6 +1198,10 @@ export function handleApprovalRejectionAnswer(thread) {
     }
 }
 
+/**
+ * Populates the assessment dropdown for instructor popups
+ * @param {array} assessmentList - list of assesssments for the subject of the request currently being reviewed
+ */
 export function populateAssessmentDropdown(assessmentList) {
     
     const assessmentDropdown = document.getElementById('assessmentDropdown');
@@ -1121,6 +1224,10 @@ export function populateAssessmentDropdown(assessmentList) {
 
 }
 
+/**
+ * Sets a request to complex in the database
+ * @param {int} threadId - numeric identifier for the current request
+ */
 function setComplex(threadId){
     return putData(('/api/data/thread/complex'), {
         "thread_id": threadId
@@ -1132,6 +1239,10 @@ function setComplex(threadId){
         });
 }
 
+/**
+ * ******************************* JUN ************************************
+ * @param {int} threadId - numeric identifier for the current request
+ */
 function respond(threadId, response){
     return putData('/api/data/requests/respond/', {
         "thread_id": threadId,
@@ -1145,6 +1256,10 @@ function respond(threadId, response){
         });
 }
 
+/**
+ * Posts a new case to the database ******************************* JUN ************************************
+ * @param {JSON} dataToSend - contains information about a case that needs to be submitted to the database
+ */
 function postNewCase(dataToSend){
     return postData(('/api/data/requests/respond/'), dataToSend)
         .then(() => {
