@@ -25,7 +25,7 @@ export function createHeader(instOrStudent) {
 				.then(usr => {
 					headerText.innerHTML = "Signed in as: " + usr.first_name + " " + usr.last_name;
 					setPreferences();
-      				checkAndChangePrefs();
+					checkAndChangePrefs();
 				});
     }).catch(error => {
 			throw error;
