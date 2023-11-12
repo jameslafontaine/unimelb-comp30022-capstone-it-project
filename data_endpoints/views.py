@@ -505,7 +505,7 @@ def get_user_endpoint(request, user_id):
                 "last_name": "Sharman",
                 "email": "12345@gmail.com",
                 "email_preference": 0,
-                "darkmode_preference": 0
+                "darkmode_preference": 1
             }
             return JsonResponse(result)
         if len(request.GET) == 1 and request.GET.get('courseid'):
@@ -751,4 +751,40 @@ def put_user_preferences(request):
         return JsonResponse({'message': 'Has been set successfully'}, status = 201)
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+def get_assessment_preferences(request):
+    '''
+    GET /api/data/preferences/{assignment_id}
+    No parameters
+    '''
+    if not request.GET:
+        result = {
+            "extension_length": 4
+        }
+        return JsonResponse(result)
+
+    if request.GET:
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+def put_assessment_preferences(request):
+    '''
+    PUT /api/data/assessments/setpreferences
+    Request body
+    {
+        "coursepreference_id": 0,
+        "assignment_id": 0,
+        "extension_length": 0
+    }
+    '''
+    if request.method == 'PUT':
+        # data = json.loads(request.body)
+        # SET AssignmentExtensionLength
+        return JsonResponse({'message': 'Has been set successfully'}, status = 201)
+
+    if not request.method == 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
     return JsonResponse({'message': 'Invalid request.'}, status = 500)

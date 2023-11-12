@@ -8,7 +8,7 @@
  */
 
 import { CONTENT_TYPE, MAX_REQUESTS_IN_REQUEST } from './modules/constantsModule.js';
-import { loadData } from './modules/dataModule.js';
+import { loadData, putData } from './modules/dataModule.js';
 import { getGlobalAppHeadersValue } from './modules/helperFunctionModule.js';
 import { fillCurrentRequestInformation, fillStudentDetailsBox, generateAAPTable, generateRequestTable, generateStudentCases, generateStudentRequest, generateSubjectBox, generateSuppDocTable, generateVersionBox, handleApprovalRejectionAnswer, handleCaseSubmission, handleComplexRequestFunctionality, hideAndDisplayButtons, populateAssessmentDropdown, populatePopups, saveEdits, setupOpenClosePopupButtons } from './modules/uiPopulationModule.js';
 import { createHeader, fixStyling } from './modules/webHeaderModule.js';
@@ -288,11 +288,15 @@ export function reviewRequest() {
             handleApprovalRejectionAnswer(thread);
         });
 
-    // TODO: Confirm this
     loadData('/api/data/thread/?threadid=' + threadId, {})
         .then(data => {
             fillStudentDetailsBox(data.student);
         });
+
+    var editButton = document.getElementById('editButton');
+    editButton.addEventListener("click", function() {
+        window.location.href = '/student/edit-req/' + threadId;
+    });
 
 }
 
@@ -333,7 +337,6 @@ export function viewResolved() {
             }
         });
 
-    // TODO: Confirm this
     loadData('/api/data/thread/?threadid=' + threadId, {})
         .then(data => {
             fillStudentDetailsBox(data.student);
@@ -367,7 +370,7 @@ export function subjectSettings() {
     loadData('/api/data/courses?courseid=' + courseId + '&preferences=true')
         .then(data => {
             coursePrefData = data.coursepreferences;
-            console.log(coursePrefData);
+            //console.log(coursePrefData);
             document.getElementById('extensionLengthInput').value = coursePrefData.global_extension_length;
             
             var extensionTutorCheckBox = document.getElementById('extensionTutorCheck');
@@ -500,6 +503,10 @@ export function subjectSettings() {
                     for (let i = 0; i < assessments.length; i++) {
                         if (assessments[i].assigment_name == this.value) {
                             // Endpoint to get a specific assignment's preferences
+                            loadData('/api/data/preferences/' + assessments[i].assignment_id, {})
+                                .then(data => {
+                                    document.getElementById('extensionLengthInput').value = data.extension_length;
+                                });
                             break;
                         }
                     }
@@ -518,6 +525,12 @@ export function subjectSettings() {
                     for (let i = 0; i < assessments.length; i++) {
                         if (assessments[i].assigment_name == this.value) {
                             // Endpoint to set a specific assignment's preferences
+                            putData('/api/data/assessments/setpreferences', {
+                                'coursepreference_id': coursePrefData.coursepreference_id,
+                                'assignment_id': assessments[i].assignment_id,
+                                'extension_length': document.getElementById('extensionLengthInput').value
+                            });
+                            console.log(document.getElementById('extensionLengthInput').value);
                             break;
                         }
                     }

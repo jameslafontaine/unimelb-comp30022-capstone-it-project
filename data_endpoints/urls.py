@@ -17,6 +17,8 @@ from .views import put_preferences
 from .views import put_req_response
 from .views import set_complex
 from .views import put_user_preferences
+from .views import get_assessment_preferences
+from .views import put_assessment_preferences
 
 urlpatterns = [
     # GET requests
@@ -28,6 +30,8 @@ urlpatterns = [
     path('thread/<int:thread_id>/', get_threads_endpoint, name='get_threads'),
     path('user/<int:user_id>/', get_user_endpoint, name = 'get_user'),
     path('files/<int:user_id>/', get_files_endpoint, name = 'get_files'),
+    path('preferences/<int:assignment_id>', get_assessment_preferences, \
+         name = 'get_assessment_extension_length'),
 
     # POST requests
     path('cases/new/', post_new_case, name = 'post_new_case'),
@@ -38,4 +42,6 @@ urlpatterns = [
     path('requests/respond/', put_req_response, name = 'put_req_response'),
     path('thread/complex/', set_complex, name = 'set_complex'),
     path('user/', put_user_preferences, name = 'put_user_preferences'),
+    path('assessments/setpreferences/', put_assessment_preferences, \
+         name = 'put_assessment_extension_length'),
 ]

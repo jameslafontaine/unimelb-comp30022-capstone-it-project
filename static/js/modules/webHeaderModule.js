@@ -5,7 +5,7 @@
  */
 
 import { getGlobalAppHeadersValue } from "./helperFunctionModule.js";
-import { loadData } from "./dataModule.js";
+import { loadData, putData } from "./dataModule.js";
 
 /**
  * Creates the header at the top of the web app
@@ -28,9 +28,9 @@ export function createHeader(instOrStudent) {
             loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
 				.then(usr => {
 					headerText.innerHTML = "Signed in as: " + usr.first_name + " " + usr.last_name;
+					setPreferences();
+					checkAndChangePrefs();
 				});
-      setPreferences();
-      checkAndChangePrefs();
     }).catch(error => {
 			throw error;
 	});
@@ -237,33 +237,20 @@ function convertStylesToLightMode(){
  * Sets current preference values for emails and darkMode
  */
 function setPreferences(){
-	// will be extended to make calls to database eventually instead of using locally stored global vars
+	
+	loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
+		.then(user => {
+			// take the values 0 and 1
+			let emailNotifsPref = user.email_preference;
+			let darkModePref = user.darkmode_preference;
 
-	let emailNotifsPref;
-	let darkModePref;
+			document.getElementById('emailNotifCheckBox').checked = (emailNotifsPref === 1);
+			document.getElementById('darkModeCheckBox').checked = (darkModePref === 1);
 
-	// initialise local storage of prefs if not already done
-	if(localStorage.getItem('emailNotifsPref') === null){
-		localStorage.setItem('emailNotifsPref', "false"); 
-	}
-	if(localStorage.getItem('darkModePref') === null){
-		localStorage.setItem('darkModePref', "false");
-	}
-
-	// get the stored string values
-	const emailNotifsPrefStr = localStorage.getItem('emailNotifsPref');
-	const darkModePrefStr = localStorage.getItem('darkModePref');
-
-	// get the boolean version of the string storage
-	emailNotifsPref = emailNotifsPrefStr === "true";
-	darkModePref = darkModePrefStr === "true";
-
-	document.getElementById('emailNotifCheckBox').checked = emailNotifsPref;
-	document.getElementById('darkModeCheckBox').checked = darkModePref;
-
-	// this page should be dark mode!! Spoopy
-	if(darkModePref) convertStylesToDarkMode();
-	else convertStylesToLightMode();
+			// this page should be dark mode!! Spoopy
+			if(darkModePref) convertStylesToDarkMode();
+			else convertStylesToLightMode();
+		});
 }
 
 /**
@@ -274,10 +261,9 @@ function checkAndChangePrefs(){
 	const emailNotifCheckBox = document.getElementById('emailNotifCheckBox');
 	emailNotifCheckBox.addEventListener("change", function() {
 
-		const updatedEmailNotifsPref = document.getElementById('emailNotifCheckBox').checked;
-		const emailNotifsPrefStr = updatedEmailNotifsPref.toString();
+		changePrefs(document.getElementById('emailNotifCheckBox').checked, 
+							document.getElementById('darkModeCheckBox').checked);
 
-		localStorage.setItem('emailNotifsPref', emailNotifsPrefStr); 
 		setPreferences();
 	})
 
@@ -285,11 +271,25 @@ function checkAndChangePrefs(){
 	const darkModeCheckBox = document.getElementById('darkModeCheckBox');
 	darkModeCheckBox.addEventListener("change", function() {
 
-		const updatedDarkModePref = document.getElementById('darkModeCheckBox').checked;
-		const darkModePrefStr = updatedDarkModePref.toString();
+		changePrefs(document.getElementById('emailNotifCheckBox').checked, 
+							document.getElementById('darkModeCheckBox').checked);
 
-		localStorage.setItem('darkModePref', darkModePrefStr);
 		setPreferences();
 	})
 
+}
+
+// emailPref and darkModePref should be 0 or 1
+function changePrefs(emailPref, darkModePref){
+    return putData('/api/data/user/', {
+        "user_id": getGlobalAppHeadersValue('user_id'),
+        "email_preference": emailPref,
+		"darkmode_preference": darkModePref,
+    })
+        .then(() => {
+            return true;
+        })
+        .catch(error => {
+            throw error;
+        });
 }
