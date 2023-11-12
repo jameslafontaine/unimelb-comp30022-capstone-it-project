@@ -164,9 +164,9 @@ export function generateSuppDocTable(requestList, number) {
 	// Create table header row
 	const headerRow = table.insertRow();
 
-    for (const key in CASE_TABLE_HEADERS) {
+    for (const key in SUPP_DOC_HEADERS) {
         const th = document.createElement('th');
-        th.innerText = CASE_TABLE_HEADERS[key];
+        th.innerText = SUPP_DOC_HEADERS[key];
         headerRow.appendChild(th);
     }
 	
@@ -196,7 +196,7 @@ export function generateSuppDocTable(requestList, number) {
 		downloadButton.onclick = function () {
 			// Need to add functionality to download the file somehow
         }
-        // TODO: setupDownloadButton();
+        setupDownloadButton; // TODO: setupDownloadButton()
 		downloadCell.appendChild(downloadButton);
 	});
 	
