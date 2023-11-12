@@ -110,6 +110,7 @@ export function generateStudentCases(cases) {
                     container.appendChild(document.createElement("br"));
                 
                 });
+                fixStyling();
             });
     }
     
@@ -264,6 +265,8 @@ export function generateVersionBox(version, number) {
     container.appendChild(expandableBox);
     container.appendChild(expandableBoxSection);
     container.appendChild(document.createElement("br"));
+
+    fixStyling();
 
     //generateSuppDocTable(version.documents, number);
     //container.appendChild(document.createElement("br"));
