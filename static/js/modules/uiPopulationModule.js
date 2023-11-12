@@ -848,20 +848,37 @@ export function generateSubjectBox(subject) {
 
 export function handleComplexRequestFunctionality(thread) {
 
+
+
     // Get a reference to the reserveButton
     const reserveButton = document.getElementById('reserveButton');
-    // If a case has already been reserved then we show the unmark button
+
     loadData('/api/data/thread/' + thread.thread_id, {})
-        .then(data => {
-            let request = data.threadinfo.requests[0];
-            if (data.threadinfo.thread.complex_case) { // it is complex now
-                reserveButton.innerHTML = 'Unmark'
-                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
-            } else { // it is not complex
-                reserveButton.innerHTML = 'Mark as complex'
-                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+    .then(data => {
+         
+        let request = data.threadinfo.requests[0];
+
+        // If these types of requests aren't reservable for Scoord, we hide the reserve button
+        // Retrieve the request permissions for the role of the current instructor
+        loadData('/api/data/courses/?courseid=' + courseId + '&preferences=true', {})
+        .then(prefs => {
+            keyName = `scoord_${request.requestType}`.toLowerCase();
+
+            if (prefs[keyName] == false) {
+                reserveButton.style.display = 'none';
             }
-        })
+
+        });
+
+        // If a case has already been reserved then we show the unmark button
+        if (data.threadinfo.thread.complex_case) { // it is complex now
+            reserveButton.innerHTML = 'Unmark'
+            document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+        } else { // it is not complex
+            reserveButton.innerHTML = 'Mark as complex'
+            document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+        }
+    })
 
     // Modify the reserved status when mark as complex is clicked and change the 'Mark as complex' button
     // to 'Unmark'. Vice versa if the unmark button is clicked
