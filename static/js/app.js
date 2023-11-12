@@ -4,7 +4,7 @@
  * Description: The entrypoint of everything good and holy Javascript related
  */
 
-import { MAX_REQUESTS_IN_REQUEST } from './modules/constantsModule.js';
+import { CONTENT_TYPE, MAX_REQUESTS_IN_REQUEST } from './modules/constantsModule.js';
 import { loadData } from './modules/dataModule.js';
 import { getGlobalAppHeadersValue, setGlobalAppHeaders } from './modules/helperFunctionModule.js';
 import { fillCurrentRequestInformation, fillStudentDetailsBox, generateRequestTable, generateStudentCases, generateStudentRequest, generateSubjectBox, generateSuppDocTable, generateVersionBox, handleApprovalRejectionAnswer, handleCaseSubmission, handleComplexRequestFunctionality, hideAndDisplayButtons, populateAssessmentDropdown, populatePopups, saveEdits, setupOpenClosePopupButtons } from './modules/uiPopulationModule.js';
@@ -20,19 +20,6 @@ export function loginPage() {
         const option = document.createElement('option');
         option.textContent = i;
         document.getElementById('idSelection').appendChild(option);
-    }
-
-    function setId(){
-        var selectedElem = document.getElementById("idSelection");
-        var selectedIndex = selectedElem.selectedIndex;
-        var selectedOption = selectedElem.options[selectedIndex];
-        var selectedValue = selectedOption.value;
-        setGlobalAppHeaders('user_id', selectedValue);
-    }
-
-    function login(){
-        var url = getGlobalAppHeadersValue('user_id') <= 2 ? '/student/' : '/instructor/';
-        window.location.href = url;
     }
 }
 
@@ -108,8 +95,6 @@ export function submitRequest() {
 
     // List of students current course codes
     const courseCodes = []
-
-    const removeButton;
 
     loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
         .then(data => {
@@ -292,20 +277,6 @@ export function reviewRequest() {
         .then(data => {
             fillStudentDetailsBox(data.student);
         });
-    
-    function toProfile(){
-        loadData('/api/data/thread/?threadid=' + threadId, {})
-            .then(data => {
-                window.location.href = '/instructor/view-profile/' + data.student.user_id; 
-            });
-    }
-
-    function back(){
-        loadData('/api/data/thread/' + threadId, {})
-            .then(data => {
-                window.location.href = '/instructor/view-reqs/' + data.threadinfo.thread.course_id;
-            })
-    }
 
 }
 
@@ -351,37 +322,105 @@ export function viewResolved() {
         .then(data => {
             fillStudentDetailsBox(data.student);
         });
-    
-    function toProfile(){
-        loadData('/api/data/thread/?threadid=' + threadId, {})
-            .then(data => {
-                window.location.href = '/instructor/view-profile/' + data.student.user_id; 
-            });
-    }
-
-    function back(){
-        loadData('/api/data/thread/' + threadId, {})
-            .then(data => {
-                window.location.href = '/instructor/view-reqs/' + data.threadinfo.thread.course_id;
-            });
-    }
 
 }
 
 export function subjectSettings() {
     createHeader('instructor');
 
-    loadData('/api/data/courses/?courseid=' + 31, {})
+    let courseId = JSON.parse(document.getElementById('load-course-id').getAttribute('data-course-id'));
+
+    loadData('/api/data/courses/?courseid=' + courseId, {})
         .then(data => {
             let courseData = data.course;
             let subjectCode = courseData.course_code;
             document.getElementById("title").innerHTML = subjectCode + document.getElementById("title").innerHTML;
+            fixStyling();
+            loadData('/api/data/assessments/?courseid=' + courseId + '&names=true', {})
+                .then(data => {
+                    populateAssessmentDropdown(data.assessments);
+                    fixStyling();
+                });
+        });
+    
+    // Populate subject settings
+
+    let coursePrefData;
+
+    // Initialise variables
+    loadData('/api/data/courses?courseid=' + courseId + '&preferences=true')
+        .then(data => {
+            coursePrefData = data;
+            document.getElementById('extensionLengthInput').value = data.global_extension_length;
+            
+            var extensionTutorCheckBox = document.getElementById('extensionTutorCheck');
+            (coursePrefData.extension_tutor == 1) ? extensionTutorCheckBox.checked = true : extensionTutorCheckBox.checked = false;
+            extensionTutorCheckBox.addEventListener("change", function() {
+                this.checked ? coursePrefData.extension_tutor = 1 : coursePrefData.extension_tutor = 0;
+            });
+
+            var extensionCoordCheckBox = document.getElementById('extensionCoordCheck');
+            (coursePrefData.extension_scoord == 1) ? extensionCoordCheckBox.checked = true : extensionCoordCheckBox.checked = false;
+            extensionCoordCheckBox.addEventListener("change", function() {
+                this.checked ? coursePrefData.extension_scoord = 1 : coursePrefData.extension_scoord = 0;
+            });
+
+            var extensionApproveSaveButton = document.getElementById('extensionApproveSave');
+            var extensionApproveMsgBox = document.getElementById('extensionApproveMsg');
+            extensionApproveMsgBox.value = coursePrefData.extension_approve;
+            extensionApproveSaveButton.addEventListener("click", function() {
+                coursePrefData.extension_approve = extensionApproveMsgBox.value;
+            });
+
+            var extensionRejectSaveButton = document.getElementById('extensionRejectSave');
+            var extensionRejectMsgBox = document.getElementById('extensionRejectMsg');
+            extensionRejectMsgBox.value = coursePrefData.extension_reject;
+            extensionRejectSaveButton.addEventListener("click", function() {
+                coursePrefData.extension_reject = extensionRejectMsgBox.value;
+            });
+
         });
 
-    loadData('/api/data/assessments/?courseid=' + 31 + '&names=true', {})
-        .then(data => {
-            populateAssessmentDropdown(data.assessments);
-        });
+    // If dropdown box is changed, get the assessment specific extension length
+    var assessmentDropdownBox = document.getElementById('assessmentDropdown');
+    assessmentDropdownBox.addEventListener("change", function() {
+        // Create an endpoint to get Assignment ID from names
+        if (this.value == "Global") {
+            document.getElementById('extensionLengthInput').value = coursePrefData.global_extension_length;
+        } else {
+            loadData('/api/data/assessments?courseid=' + courseId)
+                .then(data => {
+                    let assessments = data.assessments;
+                    for (let i = 0; i < assessments.length; i++) {
+                        if (assessments[i].assigment_name == this.value) {
+                            // Endpoint to get a specific assignment's preferences
+                            break;
+                        }
+                    }
+                });
+        }
+    });
+
+    var saveExtensionLengthButton = document.getElementById('saveExtensionLength');
+    saveExtensionLengthButton.addEventListener("click", function() {
+        if (this.value == "Global") {
+            coursePrefData.global_extension_length = this.value;
+        } else {
+            loadData('/api/data/assessments?courseid=' + courseId)
+                .then(data => {
+                    let assessments = data.assessments;
+                    for (let i = 0; i < assessments.length; i++) {
+                        if (assessments[i].assigment_name == this.value) {
+                            // Endpoint to set a specific assignment's preferences
+                            break;
+                        }
+                    }
+                });
+        }
+    });
+
+    // PUT coursePrefData via a new endpoint
+    
 }
 
 export function viewProfile() {
@@ -417,7 +456,7 @@ export function viewRequests() {
 
     // Put subject code at start of title
     var course = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
-    subjectCode = course.course_code;
+    let subjectCode = course.course_code;
     
     // Get the title by its ID
     const myElement = document.getElementById("title").innerHTML

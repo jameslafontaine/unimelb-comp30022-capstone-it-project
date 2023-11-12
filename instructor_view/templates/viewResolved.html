@@ -120,7 +120,7 @@
                                 <span class="text" id="studentId"></span>
                                 <span class="text" id="studentEmail" style="font-size: 14px;"></span>
                                 <span>
-                                    <button class="standardButton" onclick=toProfile()>
+                                    <button class="standardButton" id="navProfileButton">
                                         View Profile
                                     </button>
                                 </span>
@@ -129,7 +129,7 @@
                         <br><br>
                         <div style="text-align: center; width: fit-content; margin: 0 auto;">
                             <div>
-                                <p class="bigButton" onclick=back()>
+                                <p class="bigButton" id="navBackButton">
                                     Back
                                 </p>
                             </div>
@@ -141,7 +141,26 @@
         <script type="module" src="{% static 'js/app.js' %}"></script>
         <script type="module">
             import { viewResolved } from "{% static 'js/app.js' %}";
+            import { loadData } from "{% static 'js/modules/dataModule.js' %}";
             viewResolved();
+
+            var navProfileButton = document.getElementById('navProfileButton');
+            function toProfile(){
+                loadData('/api/data/thread/?threadid=' + threadId, {})
+                    .then(data => {
+                        window.location.href = '/instructor/view-profile/' + data.student.user_id; 
+                    });
+            }
+            navProfileButton.addEventListener("click", toProfile);
+
+            var navBackButton = docuemnt.getElementById('navBackButton');
+            function back(){
+                loadData('/api/data/thread/' + threadId, {})
+                    .then(data => {
+                        window.location.href = '/instructor/view-reqs/' + data.threadinfo.thread.course_id;
+                    })
+            }
+            navBackButton.addEventListener("click", back);
         </script>
     </body>
 </html>

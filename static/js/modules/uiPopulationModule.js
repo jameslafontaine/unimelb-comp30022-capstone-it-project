@@ -153,13 +153,8 @@ export function fillCurrentRequestInformation(threadId, view) {
             document.getElementById("requestType").innerHTML = data.threadinfo.thread.request_type;
             document.getElementById("status").innerHTML = data.threadinfo.thread.current_status;
 
-            //document.getElementById("requestTitle").innerHTML = requestData.requestTitle
             document.getElementById("message").innerHTML = requestData.request_content;
-            // Place instructor notes (only exist for resolved requests)
-            //if (document.getElementById("notes") !== null) {
-            //    document.getElementById("notes").innerHTML = requestData.instructorNotes;
-            //}
-        })
+        });
 }
 
 export function generateSuppDocTable(requestList, number) {
@@ -817,28 +812,7 @@ export function generateSubjectBox(subject) {
 }
 
 export function handleComplexRequestFunctionality(thread) {
-    initialiseComplexButton(thread);
-    
-    // Modify the reserved status when mark as complex is clicked and change the 'Mark as complex' button
-    // to 'Unmark'. Vice versa if the unmark button is clicked
-    // Also update the star appropriately at the top of the page
 
-    // Perform the aforementioned steps on button click
-    reserveButton.addEventListener('click', function() {
-        setComplex(thread.thread_id) // when returns true it has worked
-            .then(response => {
-                if(response == true){
-                    // set successfully, change the DOM
-                    initialiseComplexButton(thread);
-                }
-                else{
-                    throw error;
-                }
-            })
-    });
-}
-
-function initialiseComplexButton(thread){
     // Get a reference to the reserveButton
     const reserveButton = document.getElementById('reserveButton');
     // If a case has already been reserved then we show the unmark button
@@ -853,6 +827,33 @@ function initialiseComplexButton(thread){
                 document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
             }
         })
+    
+    // Modify the reserved status when mark as complex is clicked and change the 'Mark as complex' button
+    // to 'Unmark'. Vice versa if the unmark button is clicked
+    // Also update the star appropriately at the top of the page
+
+    // Perform the aforementioned steps on button click
+    reserveButton.addEventListener('click', function() {
+        setComplex(thread.thread_id) // when returns true it has worked
+            .then(response => {
+                if(response == true){
+                    // set successfully, change the DOM
+                    const reserveButton = document.getElementById('reserveButton');
+                    // If a case has already been reserved then we show the unmark button
+                    loadData('/api/data/thread/' + thread.thread_id, {})
+                        .then(data => {
+                            let request = data.threadinfo.requests[0];
+                            if (thread.complex_case) { // it is complex now
+                                reserveButton.innerHTML = 'Unmark'
+                                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+                            } else { // it is not complex
+                                reserveButton.innerHTML = 'Mark as complex'
+                                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+                            }
+                        })
+                }
+            })
+    });
 }
 
 export function setupOpenClosePopupButtons() {
@@ -972,7 +973,7 @@ export function generateRequestTable(threads, type) {
 	
 	// Append the table to the container
 	tableContainer.appendChild(table);
-};
+}
 
 export function populatePopups(thread) {
 
@@ -1110,6 +1111,9 @@ export function populateAssessmentDropdown(assessmentList) {
         assessmentDropdown.appendChild(option);
     });
     assessmentDropdown.value = 'Global'
+
+    fixStyling();
+
 }
 
 function setComplex(threadId){

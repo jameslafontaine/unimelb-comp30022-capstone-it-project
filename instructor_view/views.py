@@ -25,12 +25,7 @@ def review_req_view(request, thread_id):
 
 def view_reqs_view(request, input_id):
     ''' View requests view '''
-    return render(request, 'viewRequests.html',
-                  {'course': json.dumps({
-                        'course_id': '31',
-                        'course_name': 'IT Project',
-                        'course_code': 'COMP30022',
-                    })})
+    return render(request, 'viewRequests.html', {'course_id': input_id})
 
 def view_resolved_view(request, thread_id):
     '''View resolved requests'''
@@ -40,12 +35,7 @@ def view_resolved_view(request, thread_id):
 def subj_settings_view(request, input_id):
     '''View for subject preferences'''
     # Check the ID exists
-    req = json.dumps({
-        'course_id': '31',
-        'course_name': 'IT Project',
-        'course_code': 'COMP30022',
-    })
-    return render(request, 'subjectSettings.html', {'req':req})
+    return render(request, 'subjectSettings.html', {'req': input_id})
 
 def view_profile_view(request, user_id):
     '''View for student profile'''

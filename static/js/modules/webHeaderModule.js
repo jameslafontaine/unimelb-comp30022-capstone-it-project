@@ -28,7 +28,7 @@ export function createHeader(instOrStudent) {
       setPreferences();
       checkAndChangePrefs();
     }).catch(error => {
-			console.error('Error:', error);
+			throw error;
 	});
 
 	fixStyling();

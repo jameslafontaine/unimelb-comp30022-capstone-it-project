@@ -12,15 +12,33 @@
         <select id="idSelection">
         </select>
 
-        <button onclick="setId()">set id</button>
-        <button onclick="login()">login</button>
+        <button id="setIdButton">set id</button>
+        <button id="loginButton">login</button>
         <p id="testSetUsr"></p>
 
     </body>
-
     <script type="module" src="{% static 'js/app.js' %}"></script>
     <script type="module">
         import { loginPage } from "{% static 'js/app.js' %}";
+        import { getGlobalAppHeadersValue, setGlobalAppHeaders } from "{% static 'js/modules/helperFunctionModule.js' %}";
+
         loginPage();
+
+        var setIdButton = document.getElementById('setIdButton');
+        function setId(){
+            var selectedElem = document.getElementById("idSelection");
+            var selectedIndex = selectedElem.selectedIndex;
+            var selectedOption = selectedElem.options[selectedIndex];
+            var selectedValue = selectedOption.value;
+            setGlobalAppHeaders('user_id', selectedValue);
+        }
+        setIdButton.addEventListener("click", setId);
+
+        var loginButton = document.getElementById("loginButton");
+        function login(){
+            var url = getGlobalAppHeadersValue('user_id') <= 2 ? '/student/' : '/instructor/';
+            window.location.href = url;
+        }
+        loginButton.addEventListener("click", login);
     </script>
 </html>
