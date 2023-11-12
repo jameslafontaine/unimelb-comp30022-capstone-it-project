@@ -9,15 +9,6 @@ import { getGlobalAppHeadersValue } from './helperFunctionModule.js';
 import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS, REQUEST_TABLE_HEADERS, SUPP_DOC_HEADERS } from './constantsModule.js'
 import { loadData, postData, putData } from './dataModule.js';
 
-/**
- * *****************
- * @param {JUN} header - *****************
- * @returns {JUN}
- */
-export function getGlobalAppHeadersValue(header) {
-    let tempHeaders = new Headers(JSON.parse(sessionStorage.getItem('globalAppHeaders')));
-    return tempHeaders.get(header);
-}
 
 /**
  * Dynamically generates the table which contains student cases
