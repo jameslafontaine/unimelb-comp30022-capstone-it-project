@@ -1064,17 +1064,18 @@ export function handleApprovalRejectionAnswer(thread) {
                     'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
                     'status' : 'Approved',
                     'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                    'assignmentName' : document.getElementById(`assessmentOverrideA${reqShort}`).value,
                 }
             } else {
                 responseJson = {
                     'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
                     'status' : 'Approved',
                     'extended by' : document.getElementById('extensionOverrideAExt').value,
+                    'assignmentName' : document.getElementById(`assessmentOverrideA${reqShort}`).value,
                 }
             }
 
             respond(thread.thread_id, responseJson);
-
             // return to view reqs (could make a confirmation page or just show confirmation message at top)
             window.location.href = '/instructor/view-reqs/' + thread.course_id;
         });
