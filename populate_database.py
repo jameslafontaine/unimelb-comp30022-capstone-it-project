@@ -67,13 +67,13 @@ def get_enrolled_users_with_roles(course_id, headers):
         # Loop through each enrollment in the response
         for enrollment in data:
             if enrollment['role'] == "StudentEnrollmet":
-                enrollmentname = "Student"
+                enrollmentname = "STUDENT"
             elif enrollment['role'] == "TeacherEnrollment":
-                enrollmentname = "Subject Coordinator"
+                enrollmentname = " SCOORD"
             elif enrollment['role'] == "TAEnrollment":
-                enrollmentname = "Tutor"
+                enrollmentname = "TUTOR"
             else:
-                enrollmentname = "Student"
+                enrollmentname = "STUDENT"
             all_enrollments.append((enrollment['id'], enrollment['user_id'], enrollmentname, enrollment['user']['name']))
         # Add the fetched URL to the set
         fetched_urls.add(base_url)

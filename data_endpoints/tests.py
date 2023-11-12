@@ -4,8 +4,10 @@ Unit Tests for data_endpoints
 """
 
 import requests
+import requests_mock, json
 from requests_mock.mocker import Mocker
-
+from django.http import HttpRequest, HttpResponseBadRequest, JsonResponse
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 LOCALHOST = 'http://localhost:8000'
 
@@ -306,7 +308,6 @@ def test_get_request_requestid():
 test_thread_1 = {
     "created_by": 1
 }
-
 test_thread_2 = {
     "threads": [
         {"thread_id": 11,
@@ -357,9 +358,6 @@ test_thread_3 = {
         ]
 
 }
-#http://localhost:8000/api/data/thread/?threadid=1
-#http://localhost:8000/api/data/thread/?courseid=7727409
-#http://localhost:8000/api/data/thread/?status=PENDING&userid=108998192
 
 def test_get_thread_threadid():
     '''
@@ -454,7 +452,6 @@ test_thread_4 = {
     }
   }
 }
-
 test_thread_5 = {
   "status": "PENDING"
 }
@@ -496,7 +493,6 @@ test_user_1 = {
   "email_preference": False,
   "darkmode_preference": False
 }
-
 test_user_2 = {
   "courses": [
     {
@@ -554,7 +550,6 @@ test_file_1 = {
         }
     ]
 }
-
 test_file_2 = {
     'supportingDocs': [
         {
@@ -597,3 +592,100 @@ def test_get_files():
         response = requests.get(LOCALHOST + endpoint, timeout = 5)
         assert response.status_code == 200 and response.json() == mock_response, \
             endpoint + "does not work"
+
+'''
+post_new_case
+make a dummy request body
+insert this into database
+check database if new requests have been registered
+
+post_file
+make dummy request body
+insert files into database
+call databaser to see if files are saved
+
+put_preferences
+fuck aroudn with subjectsettings.html?
+
+put_req_response
+check request before
+make the call
+check request after
+
+set_complex
+call the db
+check if complex_case has changed
+'''
+
+
+def test_put_files():
+   '''
+   Test /api/data/cases?userid=value
+   Acceptance criteria:
+       - Returns 200 and JSONs match
+   '''
+   endpoint = '/api/data/courses/setpreferences'
+   mock_response = {
+            "message": "Course preferences updates successfully"
+        }
+   request_body = {
+        "coursepreference_id": 1,
+        "course_id": 7677734,
+        "global_extension_length": 0,
+        "general_tutor": 1,
+        "extension_tutor": 1,
+        "quiz_tutor": 1,
+        "remark_tutor": 1,
+        "other_tutor": 1,
+        "general_scoord": 1,
+        "extension_scoord": 1,
+        "quiz_scoord": 1,
+        "remark_scoord": 1,
+        "other_scoord": 1,
+        "general_reject": "string",
+        "extension_approve": "string",
+        "extension_reject": "string",
+        "quiz_approve": "string",
+        "quiz_reject": "string",
+        "remark_approve": "string",
+        "remark_reject": "string"
+   }
+   with Mocker() as mocker:
+       mocker.put(LOCALHOST + endpoint, json = mock_response, status_code = 200)
+       response = requests.put(LOCALHOST + endpoint, json=request_body, timeout = 5)
+       assert response.status_code == 200, \
+           endpoint + "does not work"
+
+
+def test_put_case():
+   '''
+   Test /api/data/cases?userid=value
+   Acceptance criteria:
+       - Returns 200 and JSONs match
+   '''
+   endpoint = '/api/data/cases/new'
+   mock_response = {
+            "message": "Case created successfully"
+        }
+   request_body =     {   
+        "user_id":1,
+        "requests": [
+            {
+                "course_id": 7677734,
+                "request_type": "AAP",
+                "assignment_id": 40897567,
+                "request_content": "bla bla"
+            },
+            {
+                "course_id": 7677734,
+                "request_type": "QUERY",
+                "assignment_id": 40268278,
+                "request_content": "bla bla"
+            }
+        ]
+    }
+   with Mocker() as mocker:
+       mocker.put(LOCALHOST + endpoint, json = mock_response, status_code = 200)
+       response = requests.put(LOCALHOST + endpoint, json=request_body, timeout = 5)
+       assert response.status_code == 200, \
+           endpoint + "does not work"

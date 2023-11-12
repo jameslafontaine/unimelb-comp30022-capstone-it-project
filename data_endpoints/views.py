@@ -604,7 +604,7 @@ def get_user_endpoint(request, user_id):
     '''
     validate_headers(request)
     if not len(request.GET) in [0, 1]:
-        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        return JsonResponse({'message': 'Invalid request.'}, status=400)
 
     if len(request.GET) in [0, 1]:
         if not request.GET:
@@ -616,6 +616,11 @@ def get_user_endpoint(request, user_id):
             user_data = cursor.fetchone()
 
             if user_data:
+                # Query the Enrollment table to get enrollment role
+                enrollment_query = f"SELECT enrollment_role FROM Enrollment WHERE user_id = {user_id}"
+                cursor.execute(enrollment_query)
+                enrollment_data = cursor.fetchone()
+
                 # Create the JSON structure
                 result = {
                     "user_id": user_data['user_id'],
@@ -624,18 +629,19 @@ def get_user_endpoint(request, user_id):
                     "last_name": user_data['last_name'],
                     "email": user_data['email'],
                     "email_preference": user_data['email_preference'],
-                    "darkmode_preference": user_data['darkmode_preference']
+                    "darkmode_preference": user_data['darkmode_preference'],
+                    "enrollment_role": enrollment_data['enrollment_role'] if enrollment_data else None
                 }
                 return JsonResponse(result)
 
             if not user_data:
-                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+                return JsonResponse({'message': 'Invalid request.'}, status=400)
 
         if len(request.GET) == 1 and request.GET.get('courseid'):
             if check_param_not_integer(request.GET.get('courseid')):
-                return JsonResponse({'message': 'Invalid request.'}, status = 400)
+                return JsonResponse({'message': 'Invalid request.'}, status=400)
             if not check_param_not_integer(request.GET.get('courseid')):
-                # Some join magic between course, enrollment and user
+                # Some join magic between course, enrollment, and user
                 cursor = connection.cursor(dictionary=True)
 
                 # Query the Enrollment table to get enrolled courses for the user
@@ -659,7 +665,8 @@ def get_user_endpoint(request, user_id):
                 result = {"courses": course_list}
                 return JsonResponse(result)
 
-    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+    return JsonResponse({'message': 'Invalid request.'}, status=500)
+
 
 def get_files_endpoint(request, user_id):
     '''
