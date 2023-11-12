@@ -153,7 +153,7 @@ def get_cases_endpoint(request):
                             "course_id": 2,
                             "date_updated": "2000:01:01 00:00:00",
                             "request_type": "Extension",
-                            "complex_case": 0,
+                            "complex_case": 1,
                             "current_status": "REJECTED",
                             "assignment_id": 3
                         },
@@ -163,7 +163,7 @@ def get_cases_endpoint(request):
                             "course_id": 1,
                             "date_updated": "2000:01:01 00:00:00",
                             "request_type": "Quiz",
-                            "complex_case": 0,
+                            "complex_case": 1,
                             "current_status": "REJECTED",
                             "assignment_id": 1
                         }
@@ -354,7 +354,7 @@ def get_threads_user_endpoint(request):
                             'course_id': 31,
                             'date_updated': "01-19-2023",
                             'request_type':'Query',
-                            'complex_case':0,
+                            'complex_case':1,
                             'current_status':'PENDING',
                             'assignment_id':2,
                         },
@@ -387,7 +387,7 @@ def get_threads_user_endpoint(request):
                         "course_id": 2,
                         "date_updated": "2000:01:01 00:00:00",
                         "request_type": "Extension",
-                        "complex_case": 0,
+                        "complex_case": 1,
                         "current_status": "REJECTED",
                         "assignment_id": 3
                     },
@@ -397,7 +397,7 @@ def get_threads_user_endpoint(request):
                         "course_id": 1,
                         "date_updated": "2000:01:01 00:00:00",
                         "request_type": "Quiz",
-                        "complex_case": 0,
+                        "complex_case": 1,
                         "current_status": "REJECTED",
                         "assignment_id": 1
                     }
@@ -426,7 +426,7 @@ def get_threads_endpoint(request, thread_id):
                     "course_id": 1,
                     "date_updated": "2000:01:01 00:00:00",
                     "request_type": "Quiz",
-                    "complex_case": 0,
+                    "complex_case": 1,
                     "current_status": "REJECTED",
                     "assignment_id": 1
                 },

@@ -121,7 +121,7 @@ export function fillCurrentRequestInformation(threadId, view) {
     loadData('/api/data/thread/' + threadId, {})
         .then(data => {
             let requestData = data.threadinfo.requests[0];
-            if (requestData.reserved == true & view == 'Instructor') { // INSTRUCTOR COMPLEX
+            if (data.threadinfo.thread.complex_case == 1 & view == 'Instructor') { // INSTRUCTOR COMPLEX
                 document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
             } else if (view == 'Instructor') { // INSTRUCTOR NON-COMPLEX
                 document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; ">☆</span>'
@@ -821,7 +821,7 @@ export function handleComplexRequestFunctionality(thread) {
     loadData('/api/data/thread/' + thread.thread_id, {})
         .then(data => {
             let request = data.threadinfo.requests[0];
-            if (thread.complex_case) { // it is complex now
+            if (data.threadinfo.thread.complex_case) { // it is complex now
                 reserveButton.innerHTML = 'Unmark'
                 document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
             } else { // it is not complex
@@ -845,7 +845,7 @@ export function handleComplexRequestFunctionality(thread) {
                     loadData('/api/data/thread/' + thread.thread_id, {})
                         .then(data => {
                             let request = data.threadinfo.requests[0];
-                            if (thread.complex_case) { // it is complex now
+                            if (data.threadinfo.thread.complex_case) { // it is complex now
                                 reserveButton.innerHTML = 'Unmark'
                                 document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
                             } else { // it is not complex
@@ -1125,7 +1125,7 @@ export function populateAssessmentDropdown(assessmentList) {
 }
 
 function setComplex(threadId){
-    return putData(('/api/data/thread/complex'), {
+    return putData(('/api/data/thread/complex/'), {
         "thread_id": threadId
     }).then(() => {
             return true;
