@@ -763,8 +763,11 @@ def get_assessment_preferences(request):
             "extension_length": 4
         }
         return JsonResponse(result)
+
     if request.GET:
-        return JsonResponse({'message': 'Invalid request.'}, status = 500)
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def put_assessment_preferences(request):
     '''
@@ -777,9 +780,11 @@ def put_assessment_preferences(request):
     }
     '''
     if request.method == 'PUT':
-        data = json.loads(request.body)
-        # SET AssignmentExtensionLength 
+        # data = json.loads(request.body)
+        # SET AssignmentExtensionLength
         return JsonResponse({'message': 'Has been set successfully'}, status = 201)
     
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)

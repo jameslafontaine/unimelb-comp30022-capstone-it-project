@@ -8,7 +8,7 @@
  */
 
 import { CONTENT_TYPE, MAX_REQUESTS_IN_REQUEST } from './modules/constantsModule.js';
-import { loadData } from './modules/dataModule.js';
+import { loadData, putData } from './modules/dataModule.js';
 import { getGlobalAppHeadersValue } from './modules/helperFunctionModule.js';
 import { fillCurrentRequestInformation, fillStudentDetailsBox, generateAAPTable, generateRequestTable, generateStudentCases, generateStudentRequest, generateSubjectBox, generateSuppDocTable, generateVersionBox, handleApprovalRejectionAnswer, handleCaseSubmission, handleComplexRequestFunctionality, hideAndDisplayButtons, populateAssessmentDropdown, populatePopups, saveEdits, setupOpenClosePopupButtons } from './modules/uiPopulationModule.js';
 import { createHeader, fixStyling } from './modules/webHeaderModule.js';
@@ -533,7 +533,7 @@ export function subjectSettings() {
                             console.log(document.getElementById('extensionLengthInput').value);
                             break;
                         }
-                    }d
+                    }
                 });
         }
     });
