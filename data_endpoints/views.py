@@ -21,6 +21,7 @@ connection = mysql.connector.connect(
     password="admin"
 )
 
+
 def validate_headers(request):
     '''
     Deactivate temporarily for ease of development
@@ -629,50 +630,7 @@ def get_user_endpoint(request, user_id):
 
     return HttpResponseBadRequest('Invalid request, check input again.')
 
-def get_files_endpoint(request, user_id):
-    '''
-    GET /api/data/files/{user_id}/
-    Valid parameter combinations:
-        - No params
-        - ?aaps
-        - ?requestid
-    '''
-    if len(request.GET) == 0:
-        # Test
-        pass
-    elif len(request.GET) == 1:
-        if request.GET.get('aaps').lower() == 'true':
-            # Get all files that are AAPs from database
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", [user_id])
-                rows = cursor.fetchall()
-            files_list = []
-            for row in rows:
-                file_data = base64.b64encode(row[2]).decode()
-                files_list.append({
-                    'file_name': row[0],
-                    'file_type': row[1],
-                    'file_data': file_data 
-                })
-            return JsonResponse({'aaps': files_list})
-        if request.GET.get('requestid'):
-            if check_param_not_integer(request.GET.get('courseid')):
-                return HttpResponseBadRequest('Invalid request, check input again.')
-            # Get all files under request ID
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", [user_id])
-                rows = cursor.fetchall()
-            files_list = []
-            for row in rows:
-                file_data = base64.b64encode(row[2]).decode()
-                files_list.append({
-                    'file_name': row[0],
-                    'file_type': row[1],
-                    'file_data': file_data 
-                })
-            return JsonResponse({'supportingDocs': files_list})
-    else:
-        return HttpResponseBadRequest('Invalid request, check input again.')
+
 
 def get_files_endpoint(request, user_id):
     '''
@@ -684,11 +642,12 @@ def get_files_endpoint(request, user_id):
     '''
     if len(request.GET) == 0:
         # Test
-        pass
+        return HttpResponseBadRequest('Invalid request, check input again')
     elif len(request.GET) == 1:
-        if request.GET.get('aaps').lower() == 'true':
+        if request.GET.get('aaps') == True:
             # Get all files that are AAPs from database
             with connection.cursor() as cursor:
+                cursor.execute(f"USE {database_name}")
                 cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", [user_id])
                 rows = cursor.fetchall()
             files_list = []
@@ -701,10 +660,11 @@ def get_files_endpoint(request, user_id):
                 })
             return JsonResponse({'aaps': files_list})
         if request.GET.get('requestid'):
-            if check_param_not_integer(request.GET.get('courseid')):
-                return HttpResponseBadRequest('Invalid request, check input again.')
+            if not isinstance(request.GET.get('requestid'), int):
+                return HttpResponseBadRequest('Invalid request, check input again. requestID error')
             # Get all files under request ID
             with connection.cursor() as cursor:
+                cursor.execute(f"USE {database_name}")
                 cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", [user_id])
                 rows = cursor.fetchall()
             files_list = []
@@ -797,6 +757,7 @@ def post_file(request):
         #    file_data = file.read()
 
         cursor = connection.cursor()
+        cursor.execute(f"USE {database_name}")
         insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(insert_query, (file_data, fileName, user_id, request_id, file_type))
         connection.commit()
@@ -1025,19 +986,6 @@ def set_complex(request):
 
 
 ##################################################################testing block###########################
-'''import requests
-
-url = 'http://localhost:8000/api/data/cases/?userid=1'
-response = requests.get(url)
-
-if response.status_code == 200:
-    data = response.json()
-    # The 'data' variable now contains the information for assignment 1
-    print(data)
-else:
-    print(f"Failed to retrieve data. Status code: {response.status_code}")
-'''
-#################################################################################################
 from django.http import QueryDict
 from django.http import HttpRequest
 from django.test import RequestFactory
@@ -1053,6 +1001,7 @@ settings.configure()  #this messes up django
 #request = request_factory.get('/api/data/assessments/', {'courseid': '1', 'names': 'true'})
 #request = request_factory.get('/api/data/thread/', {'userid':109194991, 'status':'pending'})
 
+
 #request = request_factory.get('/api/data/thread/1/', {'checkstatus': 'true'})
 #request = request_factory.get('/api/data/user/1/', {'aaps': 'true'})
 #request = request_factory.get('/api/data/user/1/')
@@ -1063,69 +1012,6 @@ settings.configure()  #this messes up django
 #print(response.content)
 
 
-
-'''
-def call_set_preferences():
-
-    request_data = {
-        "coursepreference_id": 0,
-        "course_id": 0,
-        "global_extension_length": 0,
-        "general_tutor": 1,
-        "extension_tutor": 1,
-        "quiz_tutor": 1,
-        "remark_tutor": 1,
-        "other_tutor": 1,
-        "general_scoord": 1,
-        "extension_scoord": 1,
-        "quiz_scoord": 1,
-        "remark_scoord": 1,
-        "other_scoord": 1,
-        "general_reject": "string",
-        "extension_approve": "string",
-        "extension_reject": "string",
-        "quiz_approve": "string",
-        "quiz_reject": "string",
-        "remark_approve": "string",
-        "remark_reject": "string"
-    }
-
-
-    headers = {"Content-Type": "application/json"}
-
-    try:
-        response = requests.put('http://localhost:8000/api/data/courses/setpreferences/', data=json.dumps(request_data), headers=headers)
-        print(response.content)
-        if response.status_code == 200:
-            response_data = response.json()
-            print(response_data)
-        else:
-            print(f"Failed to update preferences. Status code: {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        print(f"Request error: {e}")
-
-
-def call_set_request():
-
-    request_data = {
-        "instructor_notes": "no!",
-        "status": "REJECTED"
-    }
-
-
-    headers = {"Content-Type": "application/json"}
-
-    try:
-        response = requests.put('http://localhost:8000/api/data/requests/respond/', data=json.dumps(request_data), headers=headers)
-        if response.status_code == 200:
-            response_data = response.json()
-            print(response_data)
-        else:
-            print(f"Failed to update request. Status code: {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        print(f"Request error: {e}")
-
-'''
 def test_put_preferences():
     # Create a mock request object
     request = HttpRequest()
@@ -1288,4 +1174,22 @@ def test_post_AAP():
     print(response.status_code)
     print(response.content)
 
-test_post_AAP()
+def test_get_files():
+    # Create a mock request object
+    request = HttpRequest()
+    request.method = 'GET'
+
+    # Define the request data and headers
+    user_id = 108998192
+    request_data = {
+        #"aaps":True
+        "requestid":1
+    }
+    request.GET = request_data
+
+    # Call the put_preferences function
+    response = get_files_endpoint(request,user_id)
+
+    # Check the response, e.g., response.status_code, response.content, etc.
+    print(response.status_code)
+    print(response.content)
