@@ -1227,8 +1227,6 @@ export function shouldDisplayRequest(requestType, isComplex, courseId) {
             if ((role == 'tutor') || (role == 'scoord' && isComplex == 1)) {
                 for (let key in prefs) {
                     if (key == keyName) {
-                        console.log(key);
-                        console.log(prefs[key]);
                         return prefs[key];
                     }
                 }
