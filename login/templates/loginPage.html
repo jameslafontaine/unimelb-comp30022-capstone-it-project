@@ -3,42 +3,18 @@
 <!DOCTYPE html>
 <html>
     <head>
-
     </head>
     <body>
-        <p>ids 1,2 are example students, ids 3,4 are example instructors</p>
-        <p>currently user2 does not have enough fake data to provive full experience</p>
-        <label>select id:</label>
-        <select id="idSelection">
-        </select>
-
-        <button id="setIdButton">set id</button>
+        <p>Choose your character:</p>
+        <p>Jun Youn - Student for IT Project, Models of Computation and Modern Applied Statistics</p>
+        <p>Callum Sharman - Tutor for IT Project, Subject Coordinator for MoC</p>
+        <p>Ryan Goh - Subject Coordinator for IT Project, Tutor for MoC</p>
+        <select id="idSelection"></select>
         <button id="loginButton">login</button>
-        <p id="testSetUsr"></p>
-
     </body>
     <script type="module" src="{% static 'js/app.js' %}"></script>
     <script type="module">
         import { loginPage } from "{% static 'js/app.js' %}";
-        import { getGlobalAppHeadersValue, setGlobalAppHeaders } from "{% static 'js/modules/helperFunctionModule.js' %}";
-
         loginPage();
-
-        var setIdButton = document.getElementById('setIdButton');
-        function setId(){
-            var selectedElem = document.getElementById("idSelection");
-            var selectedIndex = selectedElem.selectedIndex;
-            var selectedOption = selectedElem.options[selectedIndex];
-            var selectedValue = selectedOption.value;
-            setGlobalAppHeaders('user_id', selectedValue);
-        }
-        setIdButton.addEventListener("click", setId);
-
-        var loginButton = document.getElementById("loginButton");
-        function login(){
-            var url = getGlobalAppHeadersValue('user_id') <= 2 ? '/student/' : '/instructor/';
-            window.location.href = url;
-        }
-        loginButton.addEventListener("click", login);
     </script>
 </html>

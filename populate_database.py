@@ -54,9 +54,6 @@ def get_enrolled_users_with_roles(course_id, headers):
     all_enrollments = []
     fetched_urls = set()
 
-    print(f"Fetching from URL: {base_url}")
-    if base_url in fetched_urls:
-        print("URL already fetched. Breaking loop.")
     response = rq.get(base_url, headers=headers)
     if response.status_code == 200:
         data = response.json()
@@ -221,10 +218,6 @@ if __name__ == "__main__":
 
     # fetch all the matching rows 
     result = cursor.fetchall()
-
-    # loop through the rows
-    for row in result:
-        print(row)
 
     # Commit the changes to the database
     connection.commit()

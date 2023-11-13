@@ -14,13 +14,6 @@ from django.views.decorators.csrf import csrf_exempt
 # Replace these values with your MySQL server details
 DATABASE_NAME = "db"
 
-connection = mysql.connector.connect(
-    host="db",
-    port="3306",
-    user="root",
-    password="admin"
-)
-
 def validate_headers(request):
     '''
     Deactivate temporarily for ease of development
@@ -47,6 +40,12 @@ def get_assessments_endpoint(request):
         - ?courseid, get all assessments from courseid
         - ?courseid&?names, get only names of assessments from courseid
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     validate_headers(request)
 
     if request.GET.get('assignid') and len(request.GET) == 1:
@@ -145,6 +144,12 @@ def get_cases_endpoint(request):
         - ?caseid, get case details
         - ?caseid&?threads, get all threads belonging to case
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     validate_headers(request)
     if request.GET.get('userid') and len(request.GET) == 1:
         if check_param_not_integer(request.GET.get('userid')):
@@ -235,6 +240,12 @@ def get_courses_endpoint(request):
         - ?courseid
         - ?courseid&preferences
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     validate_headers(request)
 
     if len(request.GET) not in [1, 2]:
@@ -372,6 +383,13 @@ def get_requests_endpoint(request):
         - ?userid
         - ?requestid
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
+
     validate_headers(request)
 
     if len(request.GET) == 1:
@@ -453,6 +471,12 @@ def get_threads_user_endpoint(request):
         - ?courseid
         - ?userid&status
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     validate_headers(request)
 
     if len(request.GET) not in [1, 2]:
@@ -559,6 +583,12 @@ def get_threads_endpoint(request, thread_id):
         - No parameters
         - ?checkstatus
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     validate_headers(request)
 
     if len(request.GET) not in [0, 1]:
@@ -623,27 +653,24 @@ def get_user_endpoint(request, user_id):
     Valid parameter combinations:
         - ?courseid
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     validate_headers(request)
-    if not len(request.GET) in [0, 1]:
-        return JsonResponse({'message': 'Invalid request.'}, status=400)
 
     if len(request.GET) in [0, 1]:
         if not request.GET:
             cursor = connection.cursor(dictionary=True)
             # Query the User table
-            cursor.execute(f"USE {DATABASE_NAME}")
-            user_query = f"SELECT * FROM User WHERE user_id = {user_id}"
-            cursor.execute(user_query)
+            cursor.execute("SELECT * FROM `db`.`User` WHERE `User`.user_id = %s", (user_id,))
             user_data = cursor.fetchone()
 
             if user_data:
                 # Query the Enrollment table to get enrollment role
-                enrollment_query = (
-                    f"SELECT enrollment_role "
-                    f"FROM Enrollment "
-                    f"WHERE user_id = {user_id}"
-                )
-                cursor.execute(enrollment_query)
+                cursor.execute("SELECT enrollment_role FROM `db`.`Enrollment` WHERE `Enrollment`.user_id = %s", (user_id,))
                 enrollment_data = cursor.fetchone()
 
                 # Create the JSON structure
@@ -662,6 +689,7 @@ def get_user_endpoint(request, user_id):
 
             if not user_data:
                 return JsonResponse({'message': 'Invalid request.'}, status=400)
+            
         if len(request.GET) == 1 and request.GET.get('courseid'):
             if check_param_not_integer(request.GET.get('courseid')):
                 return JsonResponse({'message': 'Invalid request.'}, status=400)
@@ -699,6 +727,12 @@ def get_files_endpoint(request, user_id):
         - ?aaps
         - ?requestid
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     if len(request.GET) == 1:
         if request.GET.get('aaps').lower() == 'true':
             # Get all files that are AAPs from database
@@ -748,7 +782,7 @@ def get_files_endpoint(request, user_id):
 
 @csrf_exempt
 def post_new_case(request):
-    """
+    '''
     Handle POST request to create a new case.
 
     Parameters:
@@ -756,116 +790,64 @@ def post_new_case(request):
 
     Returns:
     - JsonResponse: JSON response indicating the success of the request or an error message.
-    """
-    def validate_request_body_case(data):
-        """
-        Validate the request body for the presence of 'user_id' and 'requests'.
-
-        Parameters:
-        - data (dict): The request body data.
-
-        Returns:
-        - JsonResponse: JSON response indicating validation success or failure.
-        """
-        if ('user_id' not in data or
-        'requests' not in data or 
-        not isinstance(data['requests'], list)):
-            return JsonResponse({'message': 'Invalid request.'}, status=400)
-        return None
-
-    def validate_request_item(item):
-        """
-        Validate an individual request item for the required fields and their types.
-
-        Parameters:
-        - item (dict): An individual request item.
-
-        Returns:
-        - JsonResponse: JSON response indicating validation success or failure.
-        """
-        all_fields = ['course_id', 'assignment_id', 'request_type', 'request_content']
-        if set(item.keys()) != set(all_fields):
-            return JsonResponse({'message': 'Invalid request.'}, status=400)
-
-        integer_fields = ['course_id', 'assignment_id']
-        string_fields = ['request_type', 'request_content']
-        for field in integer_fields:
-            if not isinstance(item[field], int):
-                return JsonResponse({'message': 'Invalid request.'}, status=400)
-
-        for field in string_fields:
-            if not isinstance(item[field], str):
-                return JsonResponse({'message': 'Invalid request.'}, status=400)
-
-        return None
-
-    def create_case(data):
-        """
-        Create a new case in the database.
-
-        Parameters:
-        - data (dict): The request body data.
-
-        Returns:
-        - None
-        """
-        with connection.cursor() as cursor:
-            cursor.execute(f"USE {DATABASE_NAME}")
-            user_id = data.get("user_id")
-            cursor.execute("INSERT INTO `db`.`Case` (`user_id`) VALUES (%s)", (user_id,))
-            case_id = cursor.lastrowid
-
-            for request_data in data.get("requests", []):
-                request_data.setdefault("instructor_notes", "-")
-                request_data.setdefault("complex_case", 0)
-                request_data.setdefault("current_status", "pending")
-
-                cursor.execute(
-                    "INSERT INTO `db`.`Thread` "
-                    "(`case_id`, `course_id`, `request_type`, "
-                    "`complex_case`, `current_status`, `assignment_id`, `date_updated`) "
-                    "VALUES (%s, %s, %s, %s, %s, %s, NOW())",
-                    (case_id, request_data['course_id'],
-                    request_data['request_type'], request_data['complex_case'],
-                    request_data['current_status'], request_data['assignment_id'])
-                )
-                thread_id = cursor.lastrowid
-
-                current_date_time = datetime.now()
-
-                cursor.execute(
-                    "INSERT INTO `db`.`Request` "
-                    "(`thread_id`, `request_content`, `instructor_notes`, `date_created`) "
-                    "VALUES (%s, %s, %s, %s)",
-                    (thread_id, request_data['request_content'], request_data['instructor_notes'],
-                    current_date_time.strftime('%Y-%m-%d %H:%M:%S'))
-                )
-
-        connection.commit()
-
+    '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({'message': 'Invalid JSON in the request body.'}, status=400)
 
-        validation_result = validate_request_body_case(data)
-        if validation_result:
-            return validation_result
-
+        if 'user_id' not in data or 'requests' not in data or not isinstance(data['requests'], list):
+            return JsonResponse({'message': 'Invalid request.'}, status=400)
+        
         for item in data['requests']:
-            validation_result = validate_request_item(item)
-            if validation_result:
-                return validation_result
-
+            all_fields = ['course_id', 'assignment_id', 'request_type', 'request_content']
+            if set(item.keys()) != set(all_fields):
+                return JsonResponse({'message': 'Invalid request.'}, status=400)
         try:
-            create_case(data)
+            with connection.cursor() as cursor:
+                cursor.execute(f"USE {DATABASE_NAME}")
+                user_id = data.get("user_id")
+                cursor.execute("INSERT INTO `db`.`Case` (`user_id`) VALUES (%s)", (user_id,))
+                case_id = cursor.lastrowid
+
+                for request_data in data.get("requests", []):
+                    request_data.setdefault("instructor_notes", "-")
+                    request_data.setdefault("complex_case", 0)
+                    request_data.setdefault("current_status", "pending")
+
+                    cursor.execute(
+                        "INSERT INTO `db`.`Thread` "
+                        "(`case_id`, `course_id`, `request_type`, "
+                        "`complex_case`, `current_status`, `assignment_id`, `date_updated`) "
+                        "VALUES (%s, %s, %s, %s, %s, %s, NOW())",
+                        (case_id, request_data['course_id'],
+                        request_data['request_type'], request_data['complex_case'],
+                        request_data['current_status'], request_data['assignment_id'])
+                    )
+                    thread_id = cursor.lastrowid
+
+                    current_date_time = datetime.now()
+
+                    cursor.execute(
+                        "INSERT INTO `db`.`Request` "
+                        "(`thread_id`, `request_content`, `instructor_notes`, `date_created`) "
+                        "VALUES (%s, %s, %s, %s)",
+                        (thread_id, request_data['request_content'], request_data['instructor_notes'],
+                        current_date_time.strftime('%Y-%m-%d %H:%M:%S'))
+                    )
+            connection.commit()
         finally:
             connection.close()
-
         return JsonResponse({"message": "Case created successfully"}, status=201)
-
     return JsonResponse({'message': 'Invalid request.'}, status=400)
+
 
 @csrf_exempt
 def post_file(request):
@@ -873,6 +855,12 @@ def post_file(request):
     POST /api/data/files/upload/
     Check API for request body
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     # Some request body validation code idk
     if request.method == 'POST':
         # Create a cursor to interact with the database
@@ -926,64 +914,6 @@ def validate_request_body(data, integer_fields, string_fields):
 
     return None
 
-def update_course_preferences(data):
-    """
-    Update the 'CoursePreferences' table in the database.
-
-    Parameters:
-    - data (dict): The request body data containing course preferences.
-
-    Returns:
-    - JsonResponse: JSON response indicating the success of the update.
-    """
-    cursor = connection.cursor()
-    cursor.execute(f"USE {DATABASE_NAME}")
-
-    fields = [
-        "global_extension_length", "general_tutor", "extension_tutor", "quiz_tutor",
-        "remark_tutor", "other_tutor", "general_scoord", "extension_scoord", "quiz_scoord",
-        "remark_scoord", "other_scoord", "general_reject", "extension_approve",
-        "extension_reject", "quiz_approve", "quiz_reject", "remark_approve", "remark_reject"
-    ]
-
-    # Extract data from the JSON
-    values = [data[field] for field in fields]
-
-    # Add coursepreference_id and course_id to the values list
-    values.extend([data["coursepreference_id"], data["course_id"]])
-
-    # Update the 'CoursePreferences' table in the database
-    cursor.execute("""
-        UPDATE CoursePreferences
-        SET
-            global_extension_length = %s,
-            general_tutor = %s,
-            extension_tutor = %s,
-            quiz_tutor = %s,
-            remark_tutor = %s,
-            other_tutor = %s,
-            general_scoord = %s,
-            extension_scoord = %s,
-            quiz_scoord = %s,
-            remark_scoord = %s,
-            other_scoord = %s,
-            general_reject = %s,
-            extension_approve = %s,
-            extension_reject = %s,
-            quiz_approve = %s,
-            quiz_reject = %s,
-            remark_approve = %s,
-            remark_reject = %s
-        WHERE
-            coursepreference_id = %s AND course_id = %s
-    """, tuple(values))
-
-
-    # Commit the changes
-    connection.commit()
-    print("CoursePreferences table updated successfully")
-    return JsonResponse({"message": "Course preferences updated successfully"}, status=201)
-
 @csrf_exempt
 def put_preferences(request):
     """
@@ -995,31 +925,68 @@ def put_preferences(request):
     Returns:
     - JsonResponse: JSON response indicating the success of the request.
     """
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     if request.method != 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status=400)
 
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return HttpResponseBadRequest("Invalid JSON in the request body.")
+    if request.method == 'PUT':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Invalid JSON in the request body.")
 
-    integer_fields = [
-        "coursepreference_id", "course_id", "global_extension_length",
-        "general_tutor", "extension_tutor", "quiz_tutor", "remark_tutor",
-        "other_tutor", "general_scoord", "extension_scoord", "quiz_scoord",
-        "remark_scoord", "other_scoord"
-    ]
+        cursor = connection.cursor()
+        cursor.execute(f"USE {DATABASE_NAME}")
 
-    string_fields = [
-        "general_reject", "extension_approve", "extension_reject",
-        "quiz_approve", "quiz_reject", "remark_approve", "remark_reject"
-    ]
+        fields = [
+            "global_extension_length", "general_tutor", "extension_tutor", "quiz_tutor",
+            "remark_tutor", "other_tutor", "general_scoord", "extension_scoord", "quiz_scoord",
+            "remark_scoord", "other_scoord", "general_reject", "extension_approve",
+            "extension_reject", "quiz_approve", "quiz_reject", "remark_approve", "remark_reject"
+        ]
 
-    validation_result = validate_request_body(data, integer_fields, string_fields)
-    if validation_result:
-        return validation_result
+        # Extract data from the JSON
+        values = [data[field] for field in fields]
 
-    return update_course_preferences(data)
+        # Add coursepreference_id and course_id to the values list
+        values.extend([data["coursepreference_id"], data["course_id"]])
+
+        # Update the 'CoursePreferences' table in the database
+        cursor.execute("""
+            UPDATE CoursePreferences
+            SET
+                global_extension_length = %s,
+                general_tutor = %s,
+                extension_tutor = %s,
+                quiz_tutor = %s,
+                remark_tutor = %s,
+                other_tutor = %s,
+                general_scoord = %s,
+                extension_scoord = %s,
+                quiz_scoord = %s,
+                remark_scoord = %s,
+                other_scoord = %s,
+                general_reject = %s,
+                extension_approve = %s,
+                extension_reject = %s,
+                quiz_approve = %s,
+                quiz_reject = %s,
+                remark_approve = %s,
+                remark_reject = %s
+            WHERE
+                coursepreference_id = %s AND course_id = %s
+        """, tuple(values))
+
+
+        # Commit the changes
+        connection.commit()
+        print("CoursePreferences table updated successfully")
+        return JsonResponse({"message": "Course preferences updated successfully"}, status=201)
 
 @csrf_exempt
 def put_req_response(request):
@@ -1040,6 +1007,12 @@ def put_req_response(request):
         "extended_by": 4
     }
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     if request.method == 'PUT':
         data = json.loads(request.body)
         all_fields = ["request_id", "instructor_notes", "status"]
@@ -1121,6 +1094,12 @@ def set_complex(request):
         "complex_case": 1
     }
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     if request.method == 'PUT':
         try:
             # Create a cursor to interact with the database
@@ -1166,6 +1145,12 @@ def put_user_preferences(request):
         "darkmode_preference": 1
     }
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     if request.method == 'PUT':
         #
         # UPDATE
@@ -1180,6 +1165,12 @@ def get_assessment_preferences(request):
     GET /api/data/preferences/{assignment_id}
     No parameters
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     if not request.GET:
         result = {
             "extension_length": 4
@@ -1201,6 +1192,12 @@ def put_assessment_preferences(request):
         "extension_length": 0
     }
     '''
+    connection = mysql.connector.connect(
+        host="db",
+        port="3306",
+        user="root",
+        password="admin"
+    )
     if request.method == 'PUT':
         # data = json.loads(request.body)
         # SET AssignmentExtensionLength

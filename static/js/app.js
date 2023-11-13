@@ -6,7 +6,7 @@
 
 import { CONTENT_TYPE, MAX_REQUESTS_IN_REQUEST } from './modules/constantsModule.js';
 import { loadData, putData } from './modules/dataModule.js';
-import { getGlobalAppHeadersValue } from './modules/helperFunctionModule.js';
+import { getGlobalAppHeadersValue, setGlobalAppHeaders } from './modules/helperFunctionModule.js';
 import { fillCurrentRequestInformation, fillStudentDetailsBox, generateAAPTable, generateRequestTable, generateStudentCases, generateStudentRequest, generateSubjectBox, generateSuppDocTable, generateVersionBox, handleApprovalRejectionAnswer, handleCaseSubmission, handleComplexRequestFunctionality, hideAndDisplayButtons, populateAssessmentDropdown, populatePopups, saveEdits, setupOpenClosePopupButtons } from './modules/uiPopulationModule.js';
 import { createHeader, fixStyling } from './modules/webHeaderModule.js';
 
@@ -16,11 +16,33 @@ export function loginPage() {
     globalAppHeaders.append('user_id', '');
     sessionStorage.setItem('globalAppHeaders', JSON.stringify(Object.fromEntries(globalAppHeaders.entries())));
 
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i < 4; i++) {
         const option = document.createElement('option');
-        option.textContent = i;
+        if (i == 1) {
+            option.textContent = 'Jun Youn';
+        }
+        if (i == 2) {
+            option.textContent = 'Callum Sharman';
+        }
+        if (i == 3) {
+            option.textContent = 'Ryan Goh';
+        }
         document.getElementById('idSelection').appendChild(option);
     }
+
+    var loginButton = document.getElementById("loginButton");
+    function login() {
+        var idDropdown = document.getElementById('idSelection');
+        setGlobalAppHeaders('user_id', idDropdown.selectedIndex + 1);
+        if (idDropdown.selectedIndex == 0) {
+            window.location.href = '/student/';
+        }
+        else {
+            window.location.href = '/instructor/';
+        }
+    }
+    loginButton.addEventListener("click", login);
+
 }
 
 /*

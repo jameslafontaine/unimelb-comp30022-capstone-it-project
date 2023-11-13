@@ -68,7 +68,7 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE TABLE IF NOT EXISTS `db`.`Case` (
   `case_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
-  PRIMARY KEY (`case_id`, `user_id`),
+  PRIMARY KEY (`case_id`),
   INDEX `fk_case_users1_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `fk_case_user`
     FOREIGN KEY (`user_id`)
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `db`.`Thread` (
   `current_status` VARCHAR(8) NOT NULL DEFAULT 'Pending',
   `assignment_id` INT NULL,
   `date_updated` DATE NOT NULL,
-  PRIMARY KEY (`thread_id`, `case_id`, `course_id`),
+  PRIMARY KEY (`thread_id`),
   INDEX `fk_thread_case1_idx` (`assignment_id` ASC) VISIBLE,
   INDEX `fk_thread_case2_idx` (`case_id` ASC) VISIBLE,
   INDEX `fk_Thread_Course1_idx` (`course_id` ASC) VISIBLE,
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `db`.`Request` (
   `request_content` VARCHAR(1000) NOT NULL,
   `instructor_notes` VARCHAR(1000) NULL,
   `date_created` DATE,
-  PRIMARY KEY (`request_id`, `thread_id`),
+  PRIMARY KEY (`request_id`),
   INDEX `fk_thread_idx` (`thread_id` ASC) VISIBLE,
   CONSTRAINT `fk_request_thread`
     FOREIGN KEY (`thread_id`)
@@ -139,7 +139,7 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `db`.`File` (
   `file_id` INT NOT NULL AUTO_INCREMENT,
-  `file` BLOB NOT NULL,
+  `file` LONGBLOB NOT NULL,
   `file_name` VARCHAR(45) NOT NULL,
   `file_type` VARCHAR(18) NOT NULL COMMENT 'aap or supportingDocument',
   `user_id` INT NULL DEFAULT NULL,
@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS `db`.`Enrollment` (
   `course_id` INT NOT NULL,
   `user_id` INT NOT NULL,
   `enrollment_role` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`enrollment_id`, `course_id`, `user_id`),
+  PRIMARY KEY (`enrollment_id`),
   INDEX `fk_Course (subject)_has_users_users1_idx` (`user_id` ASC) VISIBLE,
   INDEX `fk_Course (subject)_has_users_Course (subject)1_idx` (`course_id` ASC) VISIBLE,
   CONSTRAINT `fk_enrollment_course`
@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS `db`.`CoursePreferences` (
   `quiz_reject` VARCHAR(1000) NULL DEFAULT NULL,
   `remark_approve` VARCHAR(1000) NULL DEFAULT NULL,
   `remark_reject` VARCHAR(1000) NULL DEFAULT NULL,
-  PRIMARY KEY (`coursepreference_id`, `course_id`),
+  PRIMARY KEY (`coursepreference_id`),
   INDEX `fk_settings_course (subject)1_idx` (`course_id` ASC) VISIBLE,
   CONSTRAINT `fk_coursepreferences_course`
     FOREIGN KEY (`course_id`)
@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS `db`.`AssignmentExtensionLength` (
   `coursepreference_id` INT NOT NULL,
   `assignment_id` INT NOT NULL,
   `extension_length` INT NOT NULL,
-  PRIMARY KEY (`coursepreference_id`, `assignment_id`),
+  PRIMARY KEY (`assignment_id`),
   INDEX `fk_AssignmentExtensionLength_CoursePreferences1_idx` (`coursepreference_id` ASC) VISIBLE,
   CONSTRAINT `fk_assignmentlength_assignment`
     FOREIGN KEY (`assignment_id`)
