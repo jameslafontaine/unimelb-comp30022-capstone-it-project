@@ -179,7 +179,7 @@ export function fillCurrentRequestInformation(threadId, view) {
  * @param {array} requestList - list of student requests
  * @param {int} number - which version of the request this is (i.e. which supporting doc table this is)
  */
-export function generateSuppDocTable(requestList, number) {
+export function generateSuppDocTable(files, number) {
 	const tableContainer = document.getElementById(`suppDocContainer${number}`);
 	const table = document.createElement('table');
 
@@ -197,31 +197,80 @@ export function generateSuppDocTable(requestList, number) {
 	emptyHeader.textContent = '';
 	headerRow.appendChild(emptyHeader);
 	
+    var fileNum = 0;
 	// Create table data rows
-	requestList.forEach(request => {
+	files.forEach(file => {
+
+                
+        let file_name = file.file_name;
+        let file_type = file.file_type;
+        let file_data = file.file_data;
+
+
+        // Create a Blob from the base64 data
+        let blob = new Blob([atob(file_data)], {type: file_type});
+
+        // Calculate the file size and format it
+        let file_size = blob.size;
+        
+        let formatted_file_size = formatBytes(file_size);
+        
+        // Function to format size in bytes to KB, MB, GB, etc.
+        function formatBytes(bytes, decimals = 2) {
+            if (!+bytes) return '0 Bytes';
+            
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+            
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+        }
 		const row = table.insertRow();
 
         const fileNameCell = row.insertCell();
         fileNameCell.className = 'tableEntry';
-        fileNameCell.innerHTML = request.name;
+        fileNameCell.innerHTML = file_name;
 
         const fileSizeCell = row.insertCell();
         fileSizeCell.className = 'tableEntry';
-        fileSizeCell.innerHTML = request.size;
+        fileSizeCell.innerHTML = formatted_file_size;
 
 		const downloadCell = row.insertCell();
 		downloadCell.className = 'tableEntry';
 		const downloadButton = document.createElement('button');
 		downloadButton.className = 'standardButton';
+        downloadButton.id = `downloadButton_${number}_${fileNum}`
+
 		// Add the "Download" button to the last cell for each document
 		downloadButton.innerText = 'Download';
-		downloadButton.onclick = function () {
-			// Need to add functionality to download the file somehow
-        }
-        setupDownloadButton; // TODO: setupDownloadButton()
-		downloadCell.appendChild(downloadButton);
-	});
-	
+
+        downloadCell.appendChild(downloadButton);
+
+        // Handle download functionality for the download button
+
+        // Add an onclick event to the downloadButton
+        downloadButton.onclick = function() {
+            
+            // Create a URL for the Blob
+            let url = URL.createObjectURL(blob);
+            
+            // Create a link with a download attribute
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = file_name;
+            
+            // Append the link to the body
+            document.body.appendChild(a);
+            
+            // Trigger the download
+            a.click();
+
+        };
+        fileNum += 1;
+    });
+
 	// Append the table to the container
 	tableContainer.appendChild(table);
 }
@@ -294,7 +343,13 @@ export function generateVersionBox(version, number) {
 
     fixStyling();
 
-    //generateSuppDocTable(version.documents, number);
+    loadData(`/api/data/files/${getGlobalAppHeadersValue('user_id')}/?requestid=${version.request_id}`, {})
+        .then(data => {
+            let files = data;
+            generateSuppDocTable(files, number);
+        });
+
+    
     //container.appendChild(document.createElement("br"));
     //container.appendChild(document.createElement("br"));
     //container.appendChild(document.createElement("br"));
@@ -407,7 +462,7 @@ export function generateStudentRequest(number, courseList) {
 
     // // Event listener for the upload button
     // uploadButton.onclick = function () {
-    // 
+    //     // Programmatically trigger a click event on the file input element
     //     fileInput.click();
     // };
     
@@ -486,7 +541,7 @@ export function generateStudentRequest(number, courseList) {
  * @param {int} number - which request this is within the current case the student is making
  * @param {array} courseList - list of courses this student is enrolled in
  */
-function createAssignmentDropDown(number, courseList){
+ function createAssignmentDropDown(number, courseList){
     const assignment = document.getElementById(`assignment${number}`);
     assignment.textContent = "Assignment"; 
 
@@ -618,22 +673,22 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
  * @param {string} fileUrl - URL endpoint for downloading files
  * @param {string} fileName - Name of the file that the user will download
  */
-function setupDownloadButton(buttonId, fileUrl, fileName) {
-    document.getElementById(buttonId).addEventListener('click', function() {
-        fetch(fileUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            const objectUrl = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = objectUrl;
-            link.download = fileName;
-            link.click();
-        })
-        .catch(error => {
-            throw error;
-        });
-    });
-}
+// function setupDownloadButton(buttonId, fileUrl, fileName) {
+//     document.getElementById(buttonId).addEventListener('click', function() {
+//         fetch(fileUrl)
+//         .then(response => response.blob())
+//         .then(blob => {
+//             const objectUrl = URL.createObjectURL(blob);
+//             const link = document.createElement('a');
+//             link.href = objectUrl;
+//             link.download = fileName;
+//             link.click();
+//         })
+//         .catch(error => {
+//             throw error;
+//         });
+//     });
+// }
 
 /**
  * Pushes information to the database after a case is submitted
@@ -749,43 +804,61 @@ export function generateAAPTable(aapData) {
 	// Add two empty headers for the button columns
 	headerRow.appendChild(document.createElement('th'));
     headerRow.appendChild(document.createElement('th'));
+    
+    var aapNum = 0;
 	
-	aapData.forEach(item => {
+	aapData.forEach(aap => {
 		const row = table.insertRow();
 		
+        let file_name = aap.file_name;
+        let file_type = aap.file_type;
+        let file_data = aap.file_data;
+
+        
+
+        // Create a Blob from the base64 data
+        let blob = new Blob([atob(file_data)], {type: file_type});
+
+
 		const fileNameCell = row.insertCell();
 		fileNameCell.className = 'tableEntry';
-		fileNameCell.innerHTML = item.file_name;
+		fileNameCell.innerHTML = file_name;
 
 		const fileTypeCell = row.insertCell();
 		fileTypeCell.className = 'tableEntry';
-		fileTypeCell.innerHTML = item.file_type
+		fileTypeCell.innerHTML = file_type
 
 		// Download button
 		const downloadCell = row.insertCell();
 		downloadCell.className = 'tableEntry';
 		const downloadButton = document.createElement('button');
 		downloadButton.className = 'standardButton';
+        downloadButton.id = `downloadButton${aapNum}`
 		downloadButton.innerText = 'Download';
-		downloadButton.onclick = function () {
-			// NEED TO ADD DOWNLOAD FUNCTIONALITY HERE 
-            fetch('/api/data/files/' + item.user_id + '?aaps=true', {
-                method: 'GET',
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Handle the downloaded data
-                let blob = new Blob([atob(data.file_data)], { type: data.file_type });
-                let link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = data.file_name;
-                link.click();
-            })
-            .catch((error) => {
-                throw error;
-            });
-        }
+
         downloadCell.appendChild(downloadButton)
+
+               // Handle download functionality for the download button
+
+        // Add an onclick event to the downloadButton
+        downloadButton.onclick = function() {
+            
+            // Create a URL for the Blob
+            let url = URL.createObjectURL(blob);
+            
+            // Create a link with a download attribute
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = file_name;
+            
+            // Append the link to the body
+            document.body.appendChild(a);
+            
+            // Trigger the download
+            a.click();
+
+        };
+        aapNum += 1;
 
 		// Remove button
 		const removeCell = row.insertCell();
@@ -796,7 +869,7 @@ export function generateAAPTable(aapData) {
 		removeButton.onclick = function () {
 			// NEED TO ADD REMOVE FUNCTIONALITY HERE
             // Assuming that the item object has an id property
-            fetch('/api/data/files/remove?fileid=' + item.id, {
+            fetch('/api/data/files/remove?fileid=' + aap.id, {
                 method: 'DELETE',
             }).then(response => response.json())
                 .then(() => {
@@ -923,6 +996,8 @@ export function generateSubjectBox(subject) {
  * @param {JSON} thread - current version of a request
  */
 export function handleComplexRequestFunctionality(thread) {
+
+
 
     // Get a reference to the reserveButton
     const reserveButton = document.getElementById('reserveButton');
@@ -1122,7 +1197,6 @@ export function generateRequestTable(threads, type) {
 }
 
 /**
-
  * Checks whether the provided request should be display to the current instructor
  *
  * @param {string} requestType - Denotes the type of request this is [general, query, quiz, remark, other]
