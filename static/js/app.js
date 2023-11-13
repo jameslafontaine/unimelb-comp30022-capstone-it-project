@@ -1,10 +1,7 @@
 /** 
  * Author: Callum Sharman, James La Fontaine, Jun Youn
  * Date Last Modified: November 12, 2023
- * Description: The entrypoint of everything good and holy Javascript related. Contains scripts that run on
- * the associated HTML page with the same name as the function and specifically JS scripts which are not 
- * already covered by other JS modules.
- * No docstrings necessary for this file.
+ * Description: The entrypoint of everything good and holy Javascript related
  */
 
 import { CONTENT_TYPE, MAX_REQUESTS_IN_REQUEST } from './modules/constantsModule.js';

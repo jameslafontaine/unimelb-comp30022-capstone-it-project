@@ -5,10 +5,20 @@ All endpoints in data_endpoints
 # from django.shortcuts import render
 import base64
 import json
+import mysql.connector
 import os
 from django.db import connection
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
+DATABASE_NAME = "db"
+
+connection = mysql.connector.connect(
+    host="db",
+    port="3306",
+    user="root",
+    password="admin"
+)
 
 def validate_headers(request):
     '''
@@ -227,16 +237,16 @@ def get_courses_endpoint(request):
                         "coursepreference_id": 1,
                         "course_id": 1,
                         "global_extension_length": 3,
-                        "general_tutor": 0,
+                        "general_tutor": 1,
                         "extension_tutor": 1,
                         "quiz_tutor": 1,
                         "remark_tutor": 1,
-                        "other_tutor": 0,
+                        "other_tutor": 1,
                         "general_scoord": 1,
                         "extension_scoord": 1,
                         "quiz_scoord": 1,
-                        "remark_scoord": 0,
-                        "other_scoord": 0,
+                        "remark_scoord": 1,
+                        "other_scoord": 1,
                         "general_reject": "",
                         "extension_approve": "",
                         "extension_reject": "",
@@ -505,7 +515,8 @@ def get_user_endpoint(request, user_id):
                 "last_name": "Sharman",
                 "email": "12345@gmail.com",
                 "email_preference": 0,
-                "darkmode_preference": 1
+                "darkmode_preference": 1,
+                "enrollment_role": "TUTOR"
             }
             return JsonResponse(result)
         if len(request.GET) == 1 and request.GET.get('courseid'):
@@ -542,8 +553,8 @@ def get_files_endpoint(request, user_id):
         if request.GET.get('aaps').lower() == 'true':
             # Get all files that are AAPs from database
             with connection.cursor() as cursor:
-                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", \
-                               [user_id])
+                cursor.execute(f"USE {DATABASE_NAME}")
+                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s AND file_type IN ('aap', 'AAP')", [user_id])
                 rows = cursor.fetchall()
             files_list = []
             for row in rows:
@@ -555,12 +566,12 @@ def get_files_endpoint(request, user_id):
                 })
             return JsonResponse({'aaps': files_list})
         if request.GET.get('requestid'):
-            if check_param_not_integer(request.GET.get('courseid')):
-                return HttpResponseBadRequest('Invalid request, check input again.')
+            if not isinstance(request.GET.get('requestid'), int):
+                return HttpResponseBadRequest('Invalid request, check input again. requestID error')
             # Get all files under request ID
             with connection.cursor() as cursor:
-                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", \
-                               [user_id])
+                cursor.execute(f"USE {DATABASE_NAME}")
+                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", [user_id])
                 rows = cursor.fetchall()
             files_list = []
             for row in rows:
@@ -628,16 +639,20 @@ def post_file(request):
     Check API for request body
     '''
     if request.method == 'POST':
-        with connection.cursor() as cursor:
-            for file in request.FILES.items():
-                file_data = file.read()
-                file_extension = os.path.splitext(file.name)[1][1:]
-                cursor.execute("""
-                    INSERT INTO File (file, file_name, file_type, user_id, request_id)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, [file_data, file.name, file_extension, request.POST.get('user_id'), \
-                      request.POST.get('request_id')])
-        return JsonResponse({'message': 'Files uploaded successfully'}, status=201)
+        # Create a cursor to interact with the database
+        cursor = connection.cursor()
+        cursor.execute(f"USE {DATABASE_NAME}")
+        # Extract data from the JSON
+        user_id = request.POST.get('user_id')
+        file_type = 'AAP'
+        file_data = request.FILES['file'].read()
+        fileName = request.FILES['file'].name
+        cursor = connection.cursor()
+        cursor.execute(f"USE {DATABASE_NAME}")
+        insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(insert_query, (file_data, fileName, user_id, None, file_type))
+        connection.commit()
+        return JsonResponse({"message": "Uploaded successfully"}, status = 201)
     if not request.method == 'POST':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
     return JsonResponse({'message': 'Invalid request.'}, status = 500)

@@ -475,7 +475,7 @@ export function generateStudentRequest(number, courseList) {
 
     // CHANGE UPLOAD URL TO WHATEVER IS CORRECT FOR OUR DATABASE
     setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 
-    '/api/data/files/upload');
+    '/api/data/files/upload/');
 
     fixStyling();
 
@@ -569,6 +569,7 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
     document.getElementById(fileInputId).addEventListener('change', function(event) {
         const file = event.target.files[0];
         const formData = new FormData();
+        formData.append('user_id', getGlobalAppHeadersValue('user_id'));
         formData.append('file', file);
         
         fetch(uploadUrl, {
@@ -1046,72 +1047,72 @@ export function generateRequestTable(threads, type) {
     threads.forEach(thread => {
         
         // Check if this thread is meant to be displayed for this instructor or not, if not then skip this request
-        if (!shouldDisplayRequest(thread.request_type, thread.complex_case, thread.course_id)) {
-            return;
-        }
-        
+        if (shouldDisplayRequest(thread.request_type, thread.complex_case, thread.course_id) == 1) {
+            // Otherwise proceeding with displaying the relevant information in this table row
+            const row = table.insertRow();
+            
+            const complexCaseCell = row.insertCell();
+            complexCaseCell.className = 'tableEntry';
+            if (thread.complex_case == 0) {
+                const hollowStar = '<span style="font-size: 300%; ">☆</span>';
+                complexCaseCell.innerHTML = hollowStar;
+            } else if (thread.complex_case == 1) {
+                const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
+                complexCaseCell.innerHTML = yellowStar;
+            }
 
-        // Otherwise proceeding with displaying the relevant information in this table row
-        const row = table.insertRow();
-        
-        const complexCaseCell = row.insertCell();
-        complexCaseCell.className = 'tableEntry';
-        if (thread.complex_case == 0) {
-            const hollowStar = '<span style="font-size: 300%; ">☆</span>';
-            complexCaseCell.innerHTML = hollowStar;
-        } else if (thread.complex_case == 1) {
-            const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
-            complexCaseCell.innerHTML = yellowStar;
-        }
+            const requestTypeCell = row.insertCell();
+            requestTypeCell.className = 'tableEntry';
+            requestTypeCell.innerHTML = thread.request_type;
 
-        const requestTypeCell = row.insertCell();
-        requestTypeCell.className = 'tableEntry';
-        requestTypeCell.innerHTML = thread.request_type;
+            const assessmentNameCell = row.insertCell();
+            assessmentNameCell.className = 'tableEntry';
+            if (thread.assignment_id != null) {
+                loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
+                    .then(assignmentData => {
+                        assessmentNameCell.innerHTML = assignmentData.assignment_name;
+                    });
+            } else {
+                assessmentNameCell.innerHTML = "None";
+            }
 
-        const assessmentNameCell = row.insertCell();
-        assessmentNameCell.className = 'tableEntry';
-        if (thread.assignment_id != null) {
-            loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
-                .then(assignmentData => {
-                    assessmentNameCell.innerHTML = assignmentData.assignment_name;
+            const currentStatusCell = row.insertCell();
+            currentStatusCell.className = 'tableEntry';
+            currentStatusCell.innerHTML = thread.current_status;
+
+            const dateUpdatedCell = row.insertCell();
+            dateUpdatedCell.className = 'tableEntry';
+            dateUpdatedCell.innerHTML = thread.date_updated;
+
+            const instructorNotesCell = row.insertCell();
+            instructorNotesCell.className = 'tableEntry';
+            loadData('/api/data/thread/' + thread.thread_id, {})
+                .then(data => {
+                    return data.threadinfo.requests[0].instructor_notes;
                 });
-        } else {
-            assessmentNameCell.innerHTML = "None";
+
+            const reviewCell = row.insertCell();
+            reviewCell.className = 'tableEntry';
+            const requestButton = document.createElement('button');
+            requestButton.className = 'standardButton';
+            // Add the "Review" button to the last cell if this is the awaiting action table
+            if (type === 'Awaiting') {
+                requestButton.innerText = 'Review';
+                requestButton.onclick = function () {
+                    window.location.href = '/instructor/review-req/' + thread.thread_id; // id needs to be fetched and put in here 
+                };
+            // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
+            } else if (type === 'Resolved') {
+                requestButton.innerText = 'View details';
+                requestButton.onclick = function () {
+                    window.location.href = '/instructor/view-resolved/' + thread.thread_id; 
+                };
+            }
+            reviewCell.appendChild(requestButton);
         }
+        
 
-        const currentStatusCell = row.insertCell();
-        currentStatusCell.className = 'tableEntry';
-        currentStatusCell.innerHTML = thread.current_status;
 
-        const dateUpdatedCell = row.insertCell();
-        dateUpdatedCell.className = 'tableEntry';
-        dateUpdatedCell.innerHTML = thread.date_updated;
-
-        const instructorNotesCell = row.insertCell();
-        instructorNotesCell.className = 'tableEntry';
-        loadData('/api/data/thread/' + thread.thread_id, {})
-            .then(data => {
-                return data.threadinfo.requests[0].instructor_notes;
-            });
-
-        const reviewCell = row.insertCell();
-        reviewCell.className = 'tableEntry';
-        const requestButton = document.createElement('button');
-        requestButton.className = 'standardButton';
-        // Add the "Review" button to the last cell if this is the awaiting action table
-        if (type === 'Awaiting') {
-            requestButton.innerText = 'Review';
-            requestButton.onclick = function () {
-                window.location.href = '/instructor/review-req/' + thread.thread_id; // id needs to be fetched and put in here 
-            };
-        // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
-        } else if (type === 'Resolved') {
-            requestButton.innerText = 'View details';
-            requestButton.onclick = function () {
-                window.location.href = '/instructor/view-resolved/' + thread.thread_id; 
-            };
-        }
-        reviewCell.appendChild(requestButton);
 
 
     });
@@ -1142,15 +1143,23 @@ export function shouldDisplayRequest(requestType, isComplex, courseId) {
             let role = data.enrollment_role.toLowerCase();
     
             // Use the course preferences of their role to determine which requests to display to them
-            let keyName = requestType.toLowerCase() + `_${role}`;
-        
-            if (role == 'tutor') {
-                return prefs[keyName];
-            } else if (role == 'scoord' && isComplex == 1) {
-                return prefs[keyName];
+            let keyName;
+            if (requestType == "QUIZCODE") {
+                keyName = "quiz" + `_${role}`;
             } else {
-                return false;
+                keyName = requestType.toLowerCase() + `_${role}`;
             }
+        
+            if ((role == 'tutor') || (role == 'scoord' && isComplex == 1)) {
+                for (let key in prefs) {
+                    if (key == keyName) {
+                        console.log(key);
+                        console.log(prefs[key]);
+                        return prefs[key];
+                    }
+                }
+            } 
+
         });
     });
 }

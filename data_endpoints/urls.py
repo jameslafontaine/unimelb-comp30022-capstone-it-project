@@ -30,7 +30,7 @@ urlpatterns = [
     path('thread/<int:thread_id>/', get_threads_endpoint, name='get_threads'),
     path('user/<int:user_id>/', get_user_endpoint, name = 'get_user'),
     path('files/<int:user_id>/', get_files_endpoint, name = 'get_files'),
-    path('preferences/<int:assignment_id>', get_assessment_preferences, \
+    path('preferences/<int:assignment_id>/', get_assessment_preferences, \
          name = 'get_assessment_extension_length'),
 
     # POST requests
