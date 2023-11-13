@@ -5,9 +5,8 @@ All endpoints in data_endpoints
 # from django.shortcuts import render
 import base64
 import json
-import mysql.connector
-import os
 from datetime import datetime, time, timedelta
+import mysql.connector
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -200,9 +199,6 @@ def get_cases_endpoint(request):
                 threads = []
 
                 for thread_data in cursor:
-                    # Check if date_updated or assignment_id is None and provide default values
-                    if thread_data[3] is None:  # Using integer index for date_updated
-                        date_updated_str = "N/A"  # Or any other value you prefer
                     if not thread_data[3] is None:
                         print(thread_data)
                         datetime_with_time = datetime.combine(thread_data[7], time(0, 0, 0))
@@ -323,8 +319,8 @@ def get_courses_endpoint(request):
                 }
                 return JsonResponse(result)
 
-                if not course_data:
-                    return JsonResponse({'message': 'Invalid request.'}, status = 400)
+            if not course_data:
+                return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
             if len(request.GET) == 2 and request.GET.get('preferences') and \
                 request.GET.get('preferences').lower() == 'true':
@@ -486,7 +482,6 @@ def get_threads_user_endpoint(request):
             if check_param_not_integer(request.GET.get('courseid')):
                 return JsonResponse({'message': 'Invalid request.'}, status = 400)
             if not check_param_not_integer(request.GET.get('courseid')):
-                # TODO: Return all threads belonging to a Course ID
                 result = {
                     "threads": [
                         {
@@ -643,7 +638,11 @@ def get_user_endpoint(request, user_id):
 
             if user_data:
                 # Query the Enrollment table to get enrollment role
-                enrollment_query = f"SELECT enrollment_role FROM Enrollment WHERE user_id = {user_id}"
+                enrollment_query = (
+                    f"SELECT enrollment_role "
+                    f"FROM Enrollment "
+                    f"WHERE user_id = {user_id}"
+                )
                 cursor.execute(enrollment_query)
                 enrollment_data = cursor.fetchone()
 
@@ -656,7 +655,8 @@ def get_user_endpoint(request, user_id):
                     "email": user_data['email'],
                     "email_preference": user_data['email_preference'],
                     "darkmode_preference": user_data['darkmode_preference'],
-                    "enrollment_role": enrollment_data['enrollment_role'] if enrollment_data else None
+                    "enrollment_role": 
+                    enrollment_data['enrollment_role'] if enrollment_data else None
                 }
                 return JsonResponse(result)
 
@@ -704,7 +704,12 @@ def get_files_endpoint(request, user_id):
             # Get all files that are AAPs from database
             with connection.cursor() as cursor:
                 cursor.execute(f"USE {DATABASE_NAME}")
-                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s AND file_type IN ('aap', 'AAP')", [user_id])
+                cursor.execute(
+                    "SELECT file_name, file_type, file "
+                    "FROM File "
+                    "WHERE user_id = %s AND file_type IN ('aap', 'AAP')",
+                    [user_id]
+                )
                 rows = cursor.fetchall()
             files_list = []
             for row in rows:
@@ -721,7 +726,12 @@ def get_files_endpoint(request, user_id):
             # Get all files under request ID
             with connection.cursor() as cursor:
                 cursor.execute(f"USE {DATABASE_NAME}")
-                cursor.execute("SELECT file_name, file_type, file FROM File WHERE user_id = %s", [user_id])
+                cursor.execute(
+                    "SELECT file_name, file_type, file "
+                    "FROM File "
+                    "WHERE user_id = %s",
+                    [user_id]
+                )
                 rows = cursor.fetchall()
             files_list = []
             for row in rows:
@@ -738,92 +748,124 @@ def get_files_endpoint(request, user_id):
 
 @csrf_exempt
 def post_new_case(request):
-    '''
-    POST /api/data/cases/new/
-    Request body takes this format:
-    {   
-        "user_id":1,
-        "requests": [
-            {
-                "course_id": 7677734,
-                "request_type": "AAP",
-                "assignment_id": 40897567,
-                "request_content": "bla bla"
-            },
-            {
-                "course_id": 7677734,
-                "request_type": "QUERY",
-                "assignment_id": 40268278,
-                "request_content": "bla bla"
-            }
-        ]
-    }
-    '''
-    if request.method == 'POST':
-        data = json.loads(request.body)
+    """
+    Handle POST request to create a new case.
+
+    Parameters:
+    - request: Django HttpRequest object.
+
+    Returns:
+    - JsonResponse: JSON response indicating the success of the request or an error message.
+    """
+    def validate_request_body_case(data):
+        """
+        Validate the request body for the presence of 'user_id' and 'requests'.
+
+        Parameters:
+        - data (dict): The request body data.
+
+        Returns:
+        - JsonResponse: JSON response indicating validation success or failure.
+        """
+        if ('user_id' not in data or
+        'requests' not in data or 
+        not isinstance(data['requests'], list)):
+            return JsonResponse({'message': 'Invalid request.'}, status=400)
+        return None
+
+    def validate_request_item(item):
+        """
+        Validate an individual request item for the required fields and their types.
+
+        Parameters:
+        - item (dict): An individual request item.
+
+        Returns:
+        - JsonResponse: JSON response indicating validation success or failure.
+        """
+        all_fields = ['course_id', 'assignment_id', 'request_type', 'request_content']
+        if set(item.keys()) != set(all_fields):
+            return JsonResponse({'message': 'Invalid request.'}, status=400)
+
         integer_fields = ['course_id', 'assignment_id']
         string_fields = ['request_type', 'request_content']
-        all_fields = integer_fields + string_fields
-        if 'user_id' not in data:
-            return JsonResponse({'message': 'Invalid request.'}, status = 400)
-        if 'requests' not in data or not isinstance(data['requests'], list):
-            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        for field in integer_fields:
+            if not isinstance(item[field], int):
+                return JsonResponse({'message': 'Invalid request.'}, status=400)
+
+        for field in string_fields:
+            if not isinstance(item[field], str):
+                return JsonResponse({'message': 'Invalid request.'}, status=400)
+
+        return None
+
+    def create_case(data):
+        """
+        Create a new case in the database.
+
+        Parameters:
+        - data (dict): The request body data.
+
+        Returns:
+        - None
+        """
+        with connection.cursor() as cursor:
+            cursor.execute(f"USE {DATABASE_NAME}")
+            user_id = data.get("user_id")
+            cursor.execute("INSERT INTO `db`.`Case` (`user_id`) VALUES (%s)", (user_id,))
+            case_id = cursor.lastrowid
+
+            for request_data in data.get("requests", []):
+                request_data.setdefault("instructor_notes", "-")
+                request_data.setdefault("complex_case", 0)
+                request_data.setdefault("current_status", "pending")
+
+                cursor.execute(
+                    "INSERT INTO `db`.`Thread` "
+                    "(`case_id`, `course_id`, `request_type`, "
+                    "`complex_case`, `current_status`, `assignment_id`, `date_updated`) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, NOW())",
+                    (case_id, request_data['course_id'],
+                    request_data['request_type'], request_data['complex_case'],
+                    request_data['current_status'], request_data['assignment_id'])
+                )
+                thread_id = cursor.lastrowid
+
+                current_date_time = datetime.now()
+
+                cursor.execute(
+                    "INSERT INTO `db`.`Request` "
+                    "(`thread_id`, `request_content`, `instructor_notes`, `date_created`) "
+                    "VALUES (%s, %s, %s, %s)",
+                    (thread_id, request_data['request_content'], request_data['instructor_notes'],
+                    current_date_time.strftime('%Y-%m-%d %H:%M:%S'))
+                )
+
+        connection.commit()
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'message': 'Invalid JSON in the request body.'}, status=400)
+
+        validation_result = validate_request_body_case(data)
+        if validation_result:
+            return validation_result
+
         for item in data['requests']:
-            if not set(item.keys()) == set(all_fields):
-                return JsonResponse({'message': 'Invalid request.'}, status = 400)
-            if set(item.keys()) == set(all_fields):
-                for field in integer_fields:
-                    if not isinstance(item[field], int):
-                        return JsonResponse({'message': 'Invalid request.'}, status = 400)
-                for field in string_fields:
-                    if not isinstance(item[field], str):
-                        return JsonResponse({'message': 'Invalid request.'}, status = 400)
-        # Create a new case
+            validation_result = validate_request_item(item)
+            if validation_result:
+                return validation_result
 
         try:
-            with connection.cursor() as cursor:
-                cursor.execute(f"USE {DATABASE_NAME}")
-                user_ID = data.get("user_id",)
-                cursor.execute(
-                    "INSERT INTO `db`.`Case` (`user_id`) VALUES (%s)",
-                    (user_ID,)
-                )
-                case_id = cursor.lastrowid
-
-                # Iterate through the requests in the JSON
-                for request_data in data.get("requests", []):
-                    # Fill in default values for missing keys
-                    request_data.setdefault("instructor_notes", "-")
-                    request_data.setdefault("complex_case", 0)
-                    request_data.setdefault("current_status", "pending")
-
-                    # Create a new thread
-                    cursor.execute(
-                        "INSERT INTO `db`.`Thread` (`case_id`, `course_id`, `request_type`, `complex_case`, `current_status`, `assignment_id`, `date_updated`) VALUES (%s, %s, %s, %s, %s, %s, NOW())",
-                        (case_id, request_data['course_id'], request_data['request_type'], request_data['complex_case'], request_data['current_status'], request_data['assignment_id'])
-                    )
-                    thread_id = cursor.lastrowid
-
-                    # Get the current date and time in Python
-                    current_date_time = datetime.now()
-
-                    # Create a new request
-                    cursor.execute(
-                        "INSERT INTO `db`.`Request` (`thread_id`, `request_content`, `instructor_notes`, `date_created`) VALUES (%s, %s, %s, %s)",
-                        (thread_id, request_data['request_content'], request_data['instructor_notes'], current_date_time.strftime('%Y-%m-%d %H:%M:%S'))
-                    )
-
-            # Commit the changes to the database
-            connection.commit()
-
+            create_case(data)
         finally:
             connection.close()
-        return JsonResponse({
-            "message": "Case created successfully"
-        }, status = 201)
-    if not request.method == 'POST':
-        return JsonResponse({'message': 'Invalid request.'}, status = 400)
-    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+        return JsonResponse({"message": "Case created successfully"}, status=201)
+
+    return JsonResponse({'message': 'Invalid request.'}, status=400)
 
 @csrf_exempt
 def post_file(request):
@@ -840,132 +882,144 @@ def post_file(request):
         user_id = request.POST.get('user_id')
         file_type = 'AAP'
         file_data = request.FILES['file'].read()
-        fileName = request.FILES['file'].name
+        file_name = request.FILES['file'].name
         cursor = connection.cursor()
         cursor.execute(f"USE {DATABASE_NAME}")
-        insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(insert_query, (file_data, fileName, user_id, None, file_type))
+        insert_query = (
+            "INSERT INTO db.File "
+            "(file, file_name, user_id, request_id, file_type) "
+            "VALUES (%s, %s, %s, %s, %s)"
+        )
+        cursor.execute(insert_query, (file_data, file_name, user_id, None, file_type))
         connection.commit()
         return JsonResponse({"message": "Uploaded successfully"}, status = 201)
     if not request.method == 'POST':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
+def validate_request_body(data, integer_fields, string_fields):
+    """
+    Validate the request body against the expected integer and string fields.
+
+    Parameters:
+    - data (dict): The request body data.
+    - integer_fields (list): List of fields expected to be integers.
+    - string_fields (list): List of fields expected to be strings.
+
+    Returns:
+    - HttpResponseBadRequest: If the validation fails.
+    - None: If the validation succeeds.
+    """
+    all_fields = integer_fields + string_fields
+    data_keys = list(data.keys())
+
+    if all_fields != data_keys:
+        return HttpResponseBadRequest("Request body does not have correct fields")
+
+    for field in integer_fields:
+        if not isinstance(data[field], int):
+            return HttpResponseBadRequest("Request body does not have correct fields")
+
+    for field in string_fields:
+        if not isinstance(data[field], str):
+            return HttpResponseBadRequest("Request body does not have correct fields")
+
+    return None
+
+def update_course_preferences(data):
+    """
+    Update the 'CoursePreferences' table in the database.
+
+    Parameters:
+    - data (dict): The request body data containing course preferences.
+
+    Returns:
+    - JsonResponse: JSON response indicating the success of the update.
+    """
+    cursor = connection.cursor()
+    cursor.execute(f"USE {DATABASE_NAME}")
+
+    fields = [
+        "global_extension_length", "general_tutor", "extension_tutor", "quiz_tutor",
+        "remark_tutor", "other_tutor", "general_scoord", "extension_scoord", "quiz_scoord",
+        "remark_scoord", "other_scoord", "general_reject", "extension_approve",
+        "extension_reject", "quiz_approve", "quiz_reject", "remark_approve", "remark_reject"
+    ]
+
+    # Extract data from the JSON
+    values = [data[field] for field in fields]
+
+    # Add coursepreference_id and course_id to the values list
+    values.extend([data["coursepreference_id"], data["course_id"]])
+
+    # Update the 'CoursePreferences' table in the database
+    cursor.execute("""
+        UPDATE CoursePreferences
+        SET
+            global_extension_length = %s,
+            general_tutor = %s,
+            extension_tutor = %s,
+            quiz_tutor = %s,
+            remark_tutor = %s,
+            other_tutor = %s,
+            general_scoord = %s,
+            extension_scoord = %s,
+            quiz_scoord = %s,
+            remark_scoord = %s,
+            other_scoord = %s,
+            general_reject = %s,
+            extension_approve = %s,
+            extension_reject = %s,
+            quiz_approve = %s,
+            quiz_reject = %s,
+            remark_approve = %s,
+            remark_reject = %s
+        WHERE
+            coursepreference_id = %s AND course_id = %s
+    """, tuple(values))
+
+
+    # Commit the changes
+    connection.commit()
+    print("CoursePreferences table updated successfully")
+    return JsonResponse({"message": "Course preferences updated successfully"}, status=201)
+
 @csrf_exempt
 def put_preferences(request):
-    '''
-    PUT /api/data/courses/setpreferences/
-    Request body takes this format:
-    {
-        "coursepreference_id": 0,
-        "course_id": 0,
-        "global_extension_length": 0,
-        "general_tutor": 1,
-        "extension_tutor": 1,
-        "quiz_tutor": 1,
-        "remark_tutor": 1,
-        "other_tutor": 1,
-        "general_scoord": 1,
-        "extension_scoord": 1,
-        "quiz_scoord": 1,
-        "remark_scoord": 1,
-        "other_scoord": 1,
-        "general_reject": "string",
-        "extension_approve": "string",
-        "extension_reject": "string",
-        "quiz_approve": "string",
-        "quiz_reject": "string",
-        "remark_approve": "string",
-        "remark_reject": "string"
-    }
-    '''
-    if request.method == 'PUT':
+    """
+    Handle PUT request to update course preferences.
+
+    Parameters:
+    - request: Django HttpRequest object.
+
+    Returns:
+    - JsonResponse: JSON response indicating the success of the request.
+    """
+    if request.method != 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status=400)
+
+    try:
         data = json.loads(request.body)
-        integer_fields = ["coursepreference_id", "course_id", "global_extension_length",
-                          "general_tutor", "extension_tutor", "quiz_tutor", "remark_tutor",
-                          "other_tutor", "general_scoord", "extension_scoord", "quiz_scoord",
-                          "remark_scoord", "other_scoord"]
-        string_fields = ["general_reject", "extension_approve", "extension_reject",
-                         "quiz_approve", "quiz_reject", "remark_approve", "remark_reject"]
-        
-        all_fields = integer_fields + string_fields
-        data_keys = list(data.keys())
-        if not all_fields == data_keys:
-            return HttpResponseBadRequest("Request body does not have correct fields")
-        for field in integer_fields:
-            if not isinstance(data[field], int):
-                return HttpResponseBadRequest("Request body does not have correct fields")
-        for field in string_fields:
-            if not isinstance(data[field], str):
-                return HttpResponseBadRequest("Request body does not have correct fields")
-        # Update course preferences table
-        
-        # Create a cursor to interact with the database
-        cursor = connection.cursor()
-        
-        cursor.execute(f"USE {DATABASE_NAME}")
-        # Extract data from the JSON
-        coursepreference_id = data["coursepreference_id"]
-        course_id = data["course_id"]
-        global_extension_length = data["global_extension_length"]
-        general_tutor = data["general_tutor"]
-        extension_tutor = data["extension_tutor"]
-        quiz_tutor = data["quiz_tutor"]
-        remark_tutor = data["remark_tutor"]
-        other_tutor = data["other_tutor"]
-        general_scoord = data["general_scoord"]
-        extension_scoord = data["extension_scoord"]
-        quiz_scoord = data["quiz_scoord"]
-        remark_scoord = data["remark_scoord"]
-        other_scoord = data["other_scoord"]
-        general_reject = data["general_reject"]
-        extension_approve = data["extension_approve"]
-        extension_reject = data["extension_reject"]
-        quiz_approve = data["quiz_approve"]
-        quiz_reject = data["quiz_reject"]
-        remark_approve = data["remark_approve"]
-        remark_reject = data["remark_reject"]
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest("Invalid JSON in the request body.")
 
-        # Update the 'CoursePreferences' table in the database
-        cursor.execute("""
-            UPDATE CoursePreferences
-            SET
-                global_extension_length = %s,
-                general_tutor = %s,
-                extension_tutor = %s,
-                quiz_tutor = %s,
-                remark_tutor = %s,
-                other_tutor = %s,
-                general_scoord = %s,
-                extension_scoord = %s,
-                quiz_scoord = %s,
-                remark_scoord = %s,
-                other_scoord = %s,
-                general_reject = %s,
-                extension_approve = %s,
-                extension_reject = %s,
-                quiz_approve = %s,
-                quiz_reject = %s,
-                remark_approve = %s,
-                remark_reject = %s
-            WHERE
-                coursepreference_id = %s AND course_id = %s
-        """, (
-            global_extension_length, general_tutor, extension_tutor, quiz_tutor, remark_tutor, other_tutor,
-            general_scoord, extension_scoord, quiz_scoord, remark_scoord, other_scoord,
-            general_reject, extension_approve, extension_reject, quiz_approve, quiz_reject,
-            remark_approve, remark_reject, coursepreference_id, course_id
-        ))
+    integer_fields = [
+        "coursepreference_id", "course_id", "global_extension_length",
+        "general_tutor", "extension_tutor", "quiz_tutor", "remark_tutor",
+        "other_tutor", "general_scoord", "extension_scoord", "quiz_scoord",
+        "remark_scoord", "other_scoord"
+    ]
 
-        # Commit the changes
-        connection.commit()
-        print("CoursePreferences table updated successfully")
-        return JsonResponse({
-            "message": "Course preferences updates successfully"
-        }, status = 201)
-    if not request.method == 'PUT':
-        return JsonResponse({'message': 'Invalid request.'}, status = 400)
-    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+    string_fields = [
+        "general_reject", "extension_approve", "extension_reject",
+        "quiz_approve", "quiz_reject", "remark_approve", "remark_reject"
+    ]
+
+    validation_result = validate_request_body(data, integer_fields, string_fields)
+    if validation_result:
+        return validation_result
+
+    return update_course_preferences(data)
 
 @csrf_exempt
 def put_req_response(request):
@@ -989,14 +1043,16 @@ def put_req_response(request):
     if request.method == 'PUT':
         data = json.loads(request.body)
         all_fields = ["request_id", "instructor_notes", "status"]
-        extension_fields = ["request_id", "assignment_id", "instructor_notes", "status", "extended_by"]
+        extension_fields = [
+            "request_id", 
+            "assignment_id", 
+            "instructor_notes", 
+            "status", 
+            "extended_by"
+        ]
         data_keys = list(data.keys())
-        
-        print(data_keys)
-        if not ((all_fields == data_keys) or (extension_fields == data_keys)):
+        if data_keys in (all_fields, extension_fields):
             return HttpResponseBadRequest("Request body does not have correct fields")
-        
-        # Update course preferences table
 
         # Create a cursor to interact with the database
         cursor = connection.cursor()
@@ -1005,7 +1061,7 @@ def put_req_response(request):
         instructor_notes = data["instructor_notes"]
         status = data["status"]
         request_id = data["request_id"]
-        
+
         # Check if "assignment_id" is in data
         if "assignment_id" in data:
             assignment_id = data["assignment_id"]
@@ -1016,7 +1072,7 @@ def put_req_response(request):
                 SELECT start_date, due_date FROM db.Assignment
                 WHERE assignment_id = %s
             """, (assignment_id,))
-            
+
             assignment_data = cursor.fetchone()
             due_date = assignment_data[1]
 
@@ -1030,7 +1086,10 @@ def put_req_response(request):
                 """, (new_due_date, assignment_id))
             else:
                 # If due_date is null, return an error
-                return JsonResponse({"message": "Due date is null. Cannot extend assignment."}, status=400)
+                return JsonResponse(
+                    {"message": "Due date is null. Cannot extend assignment."},
+                    status=400
+                )
 
         # Update the 'CoursePreferences' table in the database
         cursor.execute("""
@@ -1068,9 +1127,7 @@ def set_complex(request):
             cursor = connection.cursor()
             cursor.execute(f"USE {DATABASE_NAME}")
             data = json.loads(request.body)
-            
-            # Check the current value of 'complex_case' for the given 'request_id'
-            
+
             cursor.execute(f"SELECT complex_case FROM Thread WHERE thread_id = {data['thread_id']}")
             current_complex_case = cursor.fetchall()[0][0]
             print(current_complex_case)
@@ -1078,7 +1135,11 @@ def set_complex(request):
             new_complex_case = 1 if current_complex_case == 0 else 0
 
             # Update the 'complex_case' value in the database
-            cursor.execute(f"UPDATE Thread SET complex_case = {new_complex_case} WHERE thread_id = {data['thread_id']}")
+            cursor.execute(
+                f"UPDATE Thread "
+                f"SET complex_case = {new_complex_case} "
+                f"WHERE thread_id = {data['thread_id']}"
+            )
 
             # Commit the changes
             connection.commit()
@@ -1087,7 +1148,7 @@ def set_complex(request):
             return JsonResponse({
                 "message": "Updated successfully"
             }, status = 201)
-        except mysql.connector.Error as error: 
+        except mysql.connector.Error as error:
             print(error)
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
     if not request.method == 'PUT':
