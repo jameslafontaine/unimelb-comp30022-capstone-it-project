@@ -343,7 +343,7 @@ export function generateVersionBox(version, number) {
 
     fixStyling();
 
-    loadData(`/api/data/files/${getGlobalAppHeadersValue('user_id')}/?requestid=${version.request_id}` + threadId, {})
+    loadData(`/api/data/files/${getGlobalAppHeadersValue('user_id')}/?requestid=${version.request_id}`, {})
         .then(data => {
             let files = data;
             generateSuppDocTable(files, number);
@@ -672,22 +672,22 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
  * @param {string} fileUrl - URL endpoint for downloading files
  * @param {string} fileName - Name of the file that the user will download
  */
-function setupDownloadButton(buttonId, fileUrl, fileName) {
-    document.getElementById(buttonId).addEventListener('click', function() {
-        fetch(fileUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            const objectUrl = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = objectUrl;
-            link.download = fileName;
-            link.click();
-        })
-        .catch(error => {
-            throw error;
-        });
-    });
-}
+// function setupDownloadButton(buttonId, fileUrl, fileName) {
+//     document.getElementById(buttonId).addEventListener('click', function() {
+//         fetch(fileUrl)
+//         .then(response => response.blob())
+//         .then(blob => {
+//             const objectUrl = URL.createObjectURL(blob);
+//             const link = document.createElement('a');
+//             link.href = objectUrl;
+//             link.download = fileName;
+//             link.click();
+//         })
+//         .catch(error => {
+//             throw error;
+//         });
+//     });
+// }
 
 /**
  * Pushes information to the database after a case is submitted
