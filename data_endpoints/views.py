@@ -293,8 +293,8 @@ def get_courses_endpoint(request):
                             "course_name": course_data["course_name"],
                             "course_code": course_data["course_code"]
                         }
-                }
-                return JsonResponse(result)
+                    }
+                    return JsonResponse(course_info)
             if len(request.GET) == 2 and request.GET.get('preferences') \
                 and request.GET.get('preferences').lower() == 'true':
                 result = {
@@ -320,7 +320,8 @@ def get_courses_endpoint(request):
                         "remark_approve": "",
                         "remark_reject": ""
                     }
-                    return JsonResponse(course_info)
+                }
+                return JsonResponse(result)
 
                 if not course_data:
                     return JsonResponse({'message': 'Invalid request.'}, status = 400)
