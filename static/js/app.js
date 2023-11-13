@@ -213,9 +213,7 @@ export function viewAAPs() {
             generateAAPTable(data.aaps);
             fixStyling();
         })
-        .catch(error => {
-            // Log the error
-            console.error('Error:', error);
+        .catch(() => {
     
             // Use a dummy placeholder JSON
             let dummyData = {
@@ -225,6 +223,7 @@ export function viewAAPs() {
             // Generate the AAP table with the dummy data
             generateAAPTable(dummyData.aaps);
             fixStyling();
+
         });
 }
 
@@ -540,7 +539,6 @@ export function subjectSettings() {
                                 'assignment_id': assessments[i].assignment_id,
                                 'extension_length': document.getElementById('extensionLengthInput').value
                             });
-                            console.log(document.getElementById('extensionLengthInput').value);
                             break;
                         }
                     }
@@ -576,10 +574,7 @@ export function viewProfile() {
     loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id')+ '?aaps=true', {})
         .then(data => {
             generateAAPTable(data.aaps);
-        }).catch(error => {
-            // Log the error
-            console.error('Error:', error);
-    
+        }).catch(() => {
             // Use a dummy placeholder JSON
             let dummyData = {
                 aaps: []
@@ -588,7 +583,7 @@ export function viewProfile() {
             // Generate the AAP table with the dummy data
             generateAAPTable(dummyData.aaps);
             fixStyling();
-        });;
+        });
 
 }
 
