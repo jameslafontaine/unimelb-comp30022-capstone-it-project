@@ -58,7 +58,6 @@ def get_enrolled_users_with_roles(course_id, headers):
     if base_url in fetched_urls:
         print("URL already fetched. Breaking loop.")
     response = rq.get(base_url, headers=headers)
-        
     if response.status_code == 200:
         data = response.json()
         if not data:
@@ -87,7 +86,7 @@ def fetch_courses(base_url_courses, headers, params):
 
     while base_url_courses:
         response_courses = rq.get(base_url_courses, headers=headers, params=params)
-        
+
         if response_courses.status_code == 200 and response_courses.text:
             data_courses = response_courses.json()
             
@@ -121,7 +120,7 @@ if __name__ == "__main__":
 
     #populate courses table
     cursor = connection.cursor()
-    
+
     table_name = "`db`.`Course`"
     data_to_upload = all_courses
     insert_query = f"INSERT INTO {table_name} VALUES (%s, %s, %s)"
@@ -141,7 +140,7 @@ if __name__ == "__main__":
 
     # Upload all courses
     cursor.executemany(insert_query, data_to_upload)
-    
+
     # Prepare the SQL query for inserting into the request table
     insert_request_query = "INSERT INTO `db`.`request` (request_ID, proposed_due_date, documentation_ID, content, threadID) VALUES (%s, %s, %s, %s, %s)"
 
@@ -181,7 +180,7 @@ if __name__ == "__main__":
                           (assignment_id, course_id, assignment_name, 
                            ''.join([str(item) for item in assignment_type]), 
                            assignment_weightage, start_date, due_date))   
-        
+
         # Fetch enrolled users with roles for the current course
         # Loop through each user and print their details
         all_users = get_enrolled_users_with_roles(course_id, headers)
@@ -200,7 +199,6 @@ if __name__ == "__main__":
             # Insert into Enrollment table
             cursor.execute(f"INSERT INTO `db`.`Enrollment` VALUES (%s, %s, %s, %s)", 
                            (enrollment_id, course_id, user_id, role))   
-            
 
     # Now, fetch the global_extension_length from CoursePreferences
     cursor.execute("SELECT course_id, global_extension_length, coursepreference_id FROM `db`.`CoursePreferences`")
@@ -219,10 +217,11 @@ if __name__ == "__main__":
 
     # execute your query
     cursor.execute(f"SELECT * FROM `db`.`User`")
-    
+
+
     # fetch all the matching rows 
     result = cursor.fetchall()
-    
+
     # loop through the rows
     for row in result:
         print(row)
@@ -231,3 +230,4 @@ if __name__ == "__main__":
     connection.commit()
     cursor.close()
     connection.close()
+

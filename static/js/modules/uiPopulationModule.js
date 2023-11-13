@@ -1,8 +1,19 @@
+/** 
+ * Author: James La Fontaine, Callum Sharman, Jun Youn
+ * Date Last Modified: November 12, 2023
+ * Description: Functions which generate and deal with the user interface
+ */
+
 import { fixStyling } from './webHeaderModule.js';
 import { getGlobalAppHeadersValue } from './helperFunctionModule.js';
 import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS, REQUEST_TABLE_HEADERS, SUPP_DOC_HEADERS } from './constantsModule.js'
 import { loadData, postData, putData } from './dataModule.js';
 
+
+/**
+ * Dynamically generates the table which contains student cases
+ * @param {array} cases - list of student cases
+ */
 export function generateStudentCases(cases) {
     let numCases = cases.length;
     const container = document.getElementById("caseContainer");
@@ -110,17 +121,23 @@ export function generateStudentCases(cases) {
                     container.appendChild(document.createElement("br"));
                 
                 });
+                fixStyling();
             });
     }
     
 }
 
+/**
+ * Inserts the required information into the most recent updated version of a request (top of page)
+ * @param {int} threadId - identifier for version of request
+ * @param {JUN} view - ******************
+ */
 export function fillCurrentRequestInformation(threadId, view) {
 
     loadData('/api/data/thread/' + threadId, {})
         .then(data => {
             let requestData = data.threadinfo.requests[0];
-            if (requestData.reserved == true & view == 'Instructor') { // INSTRUCTOR COMPLEX
+            if (data.threadinfo.thread.complex_case == 1 & view == 'Instructor') { // INSTRUCTOR COMPLEX
                 document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
             } else if (view == 'Instructor') { // INSTRUCTOR NON-COMPLEX
                 document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; ">☆</span>'
@@ -157,7 +174,12 @@ export function fillCurrentRequestInformation(threadId, view) {
         });
 }
 
-export function generateSuppDocTable(requestList, number) {
+/**
+ * Dynamically generates the supporting documentation table
+ * @param {array} requestList - list of student requests
+ * @param {int} number - which version of the request this is (i.e. which supporting doc table this is)
+ */
+export function generateSuppDocTable(files, number) {
 	const tableContainer = document.getElementById(`suppDocContainer${number}`);
 	const table = document.createElement('table');
 
@@ -175,35 +197,89 @@ export function generateSuppDocTable(requestList, number) {
 	emptyHeader.textContent = '';
 	headerRow.appendChild(emptyHeader);
 	
+    var fileNum = 0;
 	// Create table data rows
-	requestList.forEach(request => {
+	files.forEach(file => {
+
+                
+        let file_name = file.file_name;
+        let file_type = file.file_type;
+        let file_data = file.file_data;
+
+
+        // Create a Blob from the base64 data
+        let blob = new Blob([atob(file_data)], {type: file_type});
+
+        // Calculate the file size and format it
+        let file_size = blob.size;
+        
+        let formatted_file_size = formatBytes(file_size);
+        
+        // Function to format size in bytes to KB, MB, GB, etc.
+        function formatBytes(bytes, decimals = 2) {
+            if (!+bytes) return '0 Bytes';
+            
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+            
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+        }
 		const row = table.insertRow();
 
         const fileNameCell = row.insertCell();
         fileNameCell.className = 'tableEntry';
-        fileNameCell.innerHTML = request.name;
+        fileNameCell.innerHTML = file_name;
 
         const fileSizeCell = row.insertCell();
         fileSizeCell.className = 'tableEntry';
-        fileSizeCell.innerHTML = request.size;
+        fileSizeCell.innerHTML = formatted_file_size;
 
 		const downloadCell = row.insertCell();
 		downloadCell.className = 'tableEntry';
 		const downloadButton = document.createElement('button');
 		downloadButton.className = 'standardButton';
+        downloadButton.id = `downloadButton_${number}_${fileNum}`
+
 		// Add the "Download" button to the last cell for each document
 		downloadButton.innerText = 'Download';
-		downloadButton.onclick = function () {
-			// Need to add functionality to download the file somehow
-        }
-        setupDownloadButton; // TODO: setupDownloadButton()
-		downloadCell.appendChild(downloadButton);
-	});
-	
+
+        downloadCell.appendChild(downloadButton);
+
+        // Handle download functionality for the download button
+
+        // Add an onclick event to the downloadButton
+        downloadButton.onclick = function() {
+            
+            // Create a URL for the Blob
+            let url = URL.createObjectURL(blob);
+            
+            // Create a link with a download attribute
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = file_name;
+            
+            // Append the link to the body
+            document.body.appendChild(a);
+            
+            // Trigger the download
+            a.click();
+
+        };
+        fileNum += 1;
+    });
+
 	// Append the table to the container
 	tableContainer.appendChild(table);
 }
 
+/**
+ * Dynamically generates the boxes which contain past versions of requests and their details
+ * @param {JSON} version - past request
+ * @param {int} number - which version of the request this is (i.e. which past request this is relative to others)
+ */
 export function generateVersionBox(version, number) {
     const container = document.getElementById("requestHistoryContainer");
 
@@ -265,12 +341,25 @@ export function generateVersionBox(version, number) {
     container.appendChild(expandableBoxSection);
     container.appendChild(document.createElement("br"));
 
-    //generateSuppDocTable(version.documents, number);
+    fixStyling();
+
+    loadData(`/api/data/files/${getGlobalAppHeadersValue('user_id')}/?requestid=${version.request_id}`, {})
+        .then(data => {
+            let files = data;
+            generateSuppDocTable(files, number);
+        });
+
+    
     //container.appendChild(document.createElement("br"));
     //container.appendChild(document.createElement("br"));
     //container.appendChild(document.createElement("br"));
 }
 
+/**
+ * Creates a student request form to be filled when a student is submitting a request
+ * @param {int} number - which request this is within the current case the student is making
+ * @param {array} courseList - list of courses this student is enrolled in
+ */
 export function generateStudentRequest(number, courseList) {
     const caseContainer = document.getElementById("caseContainer");
 
@@ -441,13 +530,18 @@ export function generateStudentRequest(number, courseList) {
 
     // CHANGE UPLOAD URL TO WHATEVER IS CORRECT FOR OUR DATABASE
     setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 
-    '/api/data/files/upload');
+    '/api/data/files/upload/');
 
     fixStyling();
 
 }
 
-function createAssignmentDropDown(number, courseList){
+/**
+ * Creates the assignment dropdown for a student submitting a request
+ * @param {int} number - which request this is within the current case the student is making
+ * @param {array} courseList - list of courses this student is enrolled in
+ */
+ function createAssignmentDropDown(number, courseList){
     const assignment = document.getElementById(`assignment${number}`);
     assignment.textContent = "Assignment"; 
 
@@ -486,6 +580,11 @@ function createAssignmentDropDown(number, courseList){
         });
 }
 
+/**
+ * Checks whether the assignment dropdown needs to be displayed or not
+ * @param {int} number - which request this is within the current case the student is making
+ * @param {array} courseList - list of courses this student is enrolled in
+ */
 function assignmentDropDownListener(number, courseList){
 
     const requestDropDown = document.getElementById(`requestTypeDropdown${number}`);
@@ -510,6 +609,13 @@ function assignmentDropDownListener(number, courseList){
     });
 }
 
+/**
+ * Handles functionality relating to the upload button for supporting documentation
+ * @param {int} buttonId - HTML id for the upload button
+ * @param {array} fileInputId - HTML id for the fileinput element
+ * @param {int} fileContainerId - HTML id for the container which will display file information
+ * @param {array} uploadUrl - URL endpoint for uploading files
+ */
 function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
     document.getElementById(buttonId).addEventListener('click', function() {
         document.getElementById(fileInputId).click();
@@ -518,6 +624,7 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
     document.getElementById(fileInputId).addEventListener('change', function(event) {
         const file = event.target.files[0];
         const formData = new FormData();
+        formData.append('user_id', getGlobalAppHeadersValue('user_id'));
         formData.append('file', file);
         
         fetch(uploadUrl, {
@@ -560,39 +667,87 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
     });
 }
 
-function setupDownloadButton(buttonId, fileUrl, fileName) {
-    document.getElementById(buttonId).addEventListener('click', function() {
-        fetch(fileUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            const objectUrl = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = objectUrl;
-            link.download = fileName;
-            link.click();
-        })
-        .catch(error => {
-            throw error;
-        });
-    });
-}
+/**
+ * Handles functionality relating to the download button for supporting documentation
+ * @param {int} buttonId - HTML id for the download button
+ * @param {string} fileUrl - URL endpoint for downloading files
+ * @param {string} fileName - Name of the file that the user will download
+ */
+// function setupDownloadButton(buttonId, fileUrl, fileName) {
+//     document.getElementById(buttonId).addEventListener('click', function() {
+//         fetch(fileUrl)
+//         .then(response => response.blob())
+//         .then(blob => {
+//             const objectUrl = URL.createObjectURL(blob);
+//             const link = document.createElement('a');
+//             link.href = objectUrl;
+//             link.download = fileName;
+//             link.click();
+//         })
+//         .catch(error => {
+//             throw error;
+//         });
+//     });
+// }
 
+/**
+ * Pushes information to the database after a case is submitted
+ * @param {int} numRequests - number of requests in this case
+ */
 export function handleCaseSubmission(numRequests) {
+
     let requestsData = new Array();
+    let requestsPromises = [];
+
     for (let i=1; i <= numRequests; i++) {
-        let requestData = {
-            'courseId': document.getElementById(`courseDropdown${i}`).value,
-            'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
-            'assignmentId': -1,
-            'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
-            'message': document.getElementById(`messageTextBox${i}`).value,
-            'supportingDocuments': -1,
-        }
-        requestsData.push(requestData);
+
+        let promise = loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
+            .then(data => {
+                let courses = data.courses;
+                for (let course of courses) {
+                    if (course.course_code == document.getElementById(`courseDropdown${i}`).value) {
+                        loadData('/api/data/assessments/?courseid=' + course.course_id, {})
+                            .then(data => {
+                                let assignments = data.assessments;
+                                let assignmentId = -1;
+
+                                assignments.forEach(assignment => {
+                                    if(assignment.assignment_name == document.getElementById(`assignmentDropdown${i}`).value){
+                                        assignmentId = assignment.assignment_id;
+                                    }
+                                });
+
+                                let requestData = {
+                                    'courseId': course.course_id,
+                                    'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
+                                    'assignmentId': assignmentId,
+                                    'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
+                                    'message': document.getElementById(`messageTextBox${i}`).value,
+                                    'supportingDocuments': -1,
+                                }
+                                requestsData.push(requestData);
+
+                            });
+                        break;
+                    }
+                }
+            });
+        requestsPromises.push(promise);
     }
-    postNewCase({'requests': requestsData});
+
+    Promise.all(requestsPromises)
+        .then(() => {
+            // All requests are completed
+            postNewCase({'requests': requestsData});
+        });
+
 }
 
+/**
+ * Pushes edits made to a request
+ * @param {JSON} currRequest - JSON containing information about the 'current' version of the request (before edits are made)
+ * @param {array} prevVersions - list of previous versions of the request
+ */
 export function saveEdits(currRequest, prevVersions) {
 
     const suppDocs = [
@@ -629,6 +784,10 @@ export function saveEdits(currRequest, prevVersions) {
     //currRequest.suppDocs = document.getElementById('suppDocContainer')
 }
 
+/**
+ * Generates the table which contains AAPs and the ability to upload and download them
+ * @param {array} aapData - list of AAP JSONs
+ */
 export function generateAAPTable(aapData) {
     const tableContainer = document.getElementById('aapTableContainer');
 	const table = document.createElement('table');
@@ -645,43 +804,61 @@ export function generateAAPTable(aapData) {
 	// Add two empty headers for the button columns
 	headerRow.appendChild(document.createElement('th'));
     headerRow.appendChild(document.createElement('th'));
+    
+    var aapNum = 0;
 	
-	aapData.forEach(item => {
+	aapData.forEach(aap => {
 		const row = table.insertRow();
 		
+        let file_name = aap.file_name;
+        let file_type = aap.file_type;
+        let file_data = aap.file_data;
+
+        
+
+        // Create a Blob from the base64 data
+        let blob = new Blob([atob(file_data)], {type: file_type});
+
+
 		const fileNameCell = row.insertCell();
 		fileNameCell.className = 'tableEntry';
-		fileNameCell.innerHTML = item.file_name;
+		fileNameCell.innerHTML = file_name;
 
 		const fileTypeCell = row.insertCell();
 		fileTypeCell.className = 'tableEntry';
-		fileTypeCell.innerHTML = item.file_type
+		fileTypeCell.innerHTML = file_type
 
 		// Download button
 		const downloadCell = row.insertCell();
 		downloadCell.className = 'tableEntry';
 		const downloadButton = document.createElement('button');
 		downloadButton.className = 'standardButton';
+        downloadButton.id = `downloadButton${aapNum}`
 		downloadButton.innerText = 'Download';
-		downloadButton.onclick = function () {
-			// NEED TO ADD DOWNLOAD FUNCTIONALITY HERE 
-            fetch('/api/data/files/' + item.user_id + '?aaps=true', {
-                method: 'GET',
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Handle the downloaded data
-                let blob = new Blob([atob(data.file_data)], { type: data.file_type });
-                let link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = data.file_name;
-                link.click();
-            })
-            .catch((error) => {
-                throw error;
-            });
-        }
+
         downloadCell.appendChild(downloadButton)
+
+               // Handle download functionality for the download button
+
+        // Add an onclick event to the downloadButton
+        downloadButton.onclick = function() {
+            
+            // Create a URL for the Blob
+            let url = URL.createObjectURL(blob);
+            
+            // Create a link with a download attribute
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = file_name;
+            
+            // Append the link to the body
+            document.body.appendChild(a);
+            
+            // Trigger the download
+            a.click();
+
+        };
+        aapNum += 1;
 
 		// Remove button
 		const removeCell = row.insertCell();
@@ -692,7 +869,7 @@ export function generateAAPTable(aapData) {
 		removeButton.onclick = function () {
 			// NEED TO ADD REMOVE FUNCTIONALITY HERE
             // Assuming that the item object has an id property
-            fetch('/api/data/files/remove?fileid=' + item.id, {
+            fetch('/api/data/files/remove?fileid=' + aap.id, {
                 method: 'DELETE',
             }).then(response => response.json())
                 .then(() => {
@@ -755,6 +932,10 @@ export function generateAAPTable(aapData) {
 	tableContainer.appendChild(table);
 }
 
+/**
+ * Generates a subject box which instructors can use to access subjects from the home page
+ * @param {JSON} subject - contains information about the subject relevant to the subject box UI element
+ */
 export function generateSubjectBox(subject) {
 	// Create a new expandable box element
 	const standardBox  = document.createElement('div');
@@ -810,23 +991,44 @@ export function generateSubjectBox(subject) {
 	fixStyling();
 }
 
+/**
+ * Handles the display of request complexity and the ability to toggle request complexity
+ * @param {JSON} thread - current version of a request
+ */
 export function handleComplexRequestFunctionality(thread) {
+
+
 
     // Get a reference to the reserveButton
     const reserveButton = document.getElementById('reserveButton');
-    // If a case has already been reserved then we show the unmark button
+
     loadData('/api/data/thread/' + thread.thread_id, {})
-        .then(data => {
-            let request = data.threadinfo.requests[0];
-            if (thread.complex_case) { // it is complex now
-                reserveButton.innerHTML = 'Unmark'
-                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
-            } else { // it is not complex
-                reserveButton.innerHTML = 'Mark as complex'
-                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+    .then(data => {
+         
+        let request = data.threadinfo.requests[0];
+
+        // If these types of requests aren't reservable for Scoord, we hide the reserve button
+        // Retrieve the request permissions for the role of the current instructor
+        loadData('/api/data/courses/?courseid=' + thread.course_id + '&preferences=true', {})
+        .then(prefs => {
+            let keyName = `scoord_${thread.request_type}`.toLowerCase();
+
+            if (prefs[keyName] == false) {
+                reserveButton.style.display = 'none';
             }
-        })
-    
+
+        });
+
+        // If a case has already been reserved then we show the unmark button
+        if (data.threadinfo.thread.complex_case) { // it is complex now
+            reserveButton.innerHTML = 'Unmark'
+            document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+        } else { // it is not complex
+            reserveButton.innerHTML = 'Mark as complex'
+            document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+        }
+    })
+
     // Modify the reserved status when mark as complex is clicked and change the 'Mark as complex' button
     // to 'Unmark'. Vice versa if the unmark button is clicked
     // Also update the star appropriately at the top of the page
@@ -842,7 +1044,7 @@ export function handleComplexRequestFunctionality(thread) {
                     loadData('/api/data/thread/' + thread.thread_id, {})
                         .then(data => {
                             let request = data.threadinfo.requests[0];
-                            if (thread.complex_case) { // it is complex now
+                            if (data.threadinfo.thread.complex_case) { // it is complex now
                                 reserveButton.innerHTML = 'Unmark'
                                 document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
                             } else { // it is not complex
@@ -855,6 +1057,9 @@ export function handleComplexRequestFunctionality(thread) {
     });
 }
 
+/**
+ * Sets up the buttons that allow popups to be opened and closed for approving and rejecting requests
+ */
 export function setupOpenClosePopupButtons() {
     const buttons = document.querySelectorAll('#approveButton, #rejectButton, #answerButton');
     const popups = document.querySelectorAll('.popupBox');
@@ -881,12 +1086,21 @@ export function setupOpenClosePopupButtons() {
     });
 }
 
+/**
+ * Fills in the information for the student details box on a view request page
+ * @param {JSON} student - contains information about the student who made the request
+ */
 export function fillStudentDetailsBox(student) {
     document.getElementById('studentName').innerHTML = student.first_name + ' ' + student.last_name
     document.getElementById('studentId').innerHTML = student.user_id
     document.getElementById('studentEmail').innerHTML = student.email
 }
 
+/**
+ * Creates the table of requests which instructors view for a particular subject
+ * @param {array} threads - list of request JSONs
+ * @param {string} type - denotes whether this is the table for active requests or resolved requests ('Awaiting' or 'Resolved)
+ */
 export function generateRequestTable(threads, type) {
 	const tableContainer = document.getElementById('tableContainer' + type);
 	const table = document.createElement('table');
@@ -906,66 +1120,74 @@ export function generateRequestTable(threads, type) {
 
     // Add thread data
     threads.forEach(thread => {
-        const row = table.insertRow();
         
-        const complexCaseCell = row.insertCell();
-        complexCaseCell.className = 'tableEntry';
-        if (thread.complex_case == 0) {
-            const hollowStar = '<span style="font-size: 300%; ">☆</span>';
-            complexCaseCell.innerHTML = hollowStar;
-        } else if (thread.complex_case == 1) {
-            const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
-            complexCaseCell.innerHTML = yellowStar;
-        }
+        // Check if this thread is meant to be displayed for this instructor or not, if not then skip this request
+        if (shouldDisplayRequest(thread.request_type, thread.complex_case, thread.course_id) == 1) {
+            // Otherwise proceeding with displaying the relevant information in this table row
+            const row = table.insertRow();
+            
+            const complexCaseCell = row.insertCell();
+            complexCaseCell.className = 'tableEntry';
+            if (thread.complex_case == 0) {
+                const hollowStar = '<span style="font-size: 300%; ">☆</span>';
+                complexCaseCell.innerHTML = hollowStar;
+            } else if (thread.complex_case == 1) {
+                const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
+                complexCaseCell.innerHTML = yellowStar;
+            }
 
-        const requestTypeCell = row.insertCell();
-        requestTypeCell.className = 'tableEntry';
-        requestTypeCell.innerHTML = thread.request_type;
+            const requestTypeCell = row.insertCell();
+            requestTypeCell.className = 'tableEntry';
+            requestTypeCell.innerHTML = thread.request_type;
 
-        const assessmentNameCell = row.insertCell();
-        assessmentNameCell.className = 'tableEntry';
-        if (thread.assignment_id != null) {
-            loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
-                .then(assignmentData => {
-                    assessmentNameCell.innerHTML = assignmentData.assignment_name;
+            const assessmentNameCell = row.insertCell();
+            assessmentNameCell.className = 'tableEntry';
+            if (thread.assignment_id != null) {
+                loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
+                    .then(assignmentData => {
+                        assessmentNameCell.innerHTML = assignmentData.assignment_name;
+                    });
+            } else {
+                assessmentNameCell.innerHTML = "None";
+            }
+
+            const currentStatusCell = row.insertCell();
+            currentStatusCell.className = 'tableEntry';
+            currentStatusCell.innerHTML = thread.current_status;
+
+            const dateUpdatedCell = row.insertCell();
+            dateUpdatedCell.className = 'tableEntry';
+            dateUpdatedCell.innerHTML = thread.date_updated;
+
+            const instructorNotesCell = row.insertCell();
+            instructorNotesCell.className = 'tableEntry';
+            loadData('/api/data/thread/' + thread.thread_id, {})
+                .then(data => {
+                    return data.threadinfo.requests[0].instructor_notes;
                 });
-        } else {
-            assessmentNameCell.innerHTML = "None";
+
+            const reviewCell = row.insertCell();
+            reviewCell.className = 'tableEntry';
+            const requestButton = document.createElement('button');
+            requestButton.className = 'standardButton';
+            // Add the "Review" button to the last cell if this is the awaiting action table
+            if (type === 'Awaiting') {
+                requestButton.innerText = 'Review';
+                requestButton.onclick = function () {
+                    window.location.href = '/instructor/review-req/' + thread.thread_id; // id needs to be fetched and put in here 
+                };
+            // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
+            } else if (type === 'Resolved') {
+                requestButton.innerText = 'View details';
+                requestButton.onclick = function () {
+                    window.location.href = '/instructor/view-resolved/' + thread.thread_id; 
+                };
+            }
+            reviewCell.appendChild(requestButton);
         }
+        
 
-        const currentStatusCell = row.insertCell();
-        currentStatusCell.className = 'tableEntry';
-        currentStatusCell.innerHTML = thread.current_status;
 
-        const dateUpdatedCell = row.insertCell();
-        dateUpdatedCell.className = 'tableEntry';
-        dateUpdatedCell.innerHTML = thread.date_updated;
-
-        const instructorNotesCell = row.insertCell();
-        instructorNotesCell.className = 'tableEntry';
-        loadData('/api/data/thread/' + thread.thread_id, {})
-            .then(data => {
-                return data.threadinfo.requests[0].instructor_notes;
-            });
-
-        const reviewCell = row.insertCell();
-        reviewCell.className = 'tableEntry';
-        const requestButton = document.createElement('button');
-        requestButton.className = 'standardButton';
-        // Add the "Review" button to the last cell if this is the awaiting action table
-        if (type === 'Awaiting') {
-            requestButton.innerText = 'Review';
-            requestButton.onclick = function () {
-                window.location.href = '/instructor/review-req/' + thread.thread_id; // id needs to be fetched and put in here 
-            };
-        // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
-        } else if (type === 'Resolved') {
-            requestButton.innerText = 'View details';
-            requestButton.onclick = function () {
-                window.location.href = '/instructor/view-resolved/' + thread.thread_id; 
-            };
-        }
-        reviewCell.appendChild(requestButton);
 
 
     });
@@ -974,7 +1196,66 @@ export function generateRequestTable(threads, type) {
 	tableContainer.appendChild(table);
 }
 
+/**
+ * Checks whether the provided request should be display to the current instructor
+ *
+ * @param {string} requestType - Denotes the type of request this is [general, query, quiz, remark, other]
+ * @param {int} isComplex - 1 to note that a case is complex, 0 for not
+ * @param {int} courseId - Identifier for the course to allow retrieval of subject settings
+ * @returns {boolean} - Describes whether we should display this request for the instructor or not
+ *
+ */
+export function shouldDisplayRequest(requestType, isComplex, courseId) {
+    
+    // Retrieve the request permissions for the role of the current instructor
+    loadData('/api/data/courses/?courseid=' + courseId + '&preferences=true', {})
+    .then(prefs => {
+
+         // Get the role of the instructor (are they a tutor or a subject coordinator)
+        loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
+            .then(data => {
+            let role = data.enrollment_role.toLowerCase();
+    
+            // Use the course preferences of their role to determine which requests to display to them
+            let keyName;
+            if (requestType == "QUIZCODE") {
+                keyName = "quiz" + `_${role}`;
+            } else {
+                keyName = requestType.toLowerCase() + `_${role}`;
+            }
+        
+            if ((role == 'tutor') || (role == 'scoord' && isComplex == 1)) {
+                for (let key in prefs) {
+                    if (key == keyName) {
+                        console.log(key);
+                        console.log(prefs[key]);
+                        return prefs[key];
+                    }
+                }
+            } 
+
+        });
+    });
+}
+
+/*
+ * Populates the popups with required information when instructors are reviewing a request
+ * @param {JSON} thread - contains information about the current version of the request being reviewed
+ */
 export function populatePopups(thread) {
+
+    // Retrieve the template response and put it into the value of the instructor notes box
+    loadData('/api/data/courses/?courseid=' + thread.course_id + '&preferences=true', {})
+    .then(data => {
+        document.getElementById('instructorNotesAExt').value = data.coursepreferences.extension_approve;
+        document.getElementById('instructorNotesRExt').value = data.coursepreferences.extension_reject;
+        document.getElementById('instructorNotestARem').value = data.coursepreferences.remark_approve;
+        document.getElementById('instructorNotesRRem').value = data.coursepreferences.remark_reject;
+        document.getElementById('instructorNotesAQui').value = data.coursepreferences.quiz_approve;
+        document.getElementById('instructorNotesRQui').value = data.coursepreferences.quiz_reject;
+        document.getElementById('instructorNotesAns').value = data.coursepreferences.general_reject;
+    });
+
 
     loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
         .then(assignment => {
@@ -1005,8 +1286,24 @@ export function populatePopups(thread) {
             document.getElementById('extensionOverrideAExt').value = prefs.global_extension_length;
         })
 
+    // Populate the assignment override dropDown
+    loadData('/api/data/assessments/?courseid=' + thread.course_id, {})
+        .then(data => {
+            let assignments = data.assessments;
+            assignments.forEach(assignment => {
+                const option = document.createElement('option');
+                option.textContent = assignment.assignment_name;
+                let dropDownId = "assessmentOverrideA" + document.getElementById("requestType").innerHTML.substring(0,3);
+                document.getElementById(dropDownId).appendChild(option);
+            });
+        });
+
 }
 
+/**
+ * Handles the displaying and hiding of buttons as needed depending on the type of request being reviewed
+ * @param {JSON} thread - contains information about the request currently being reviewed
+ */
 export function hideAndDisplayButtons(thread) {
 
     const reqShort = thread.request_type.substring(0,3);
@@ -1029,6 +1326,10 @@ export function hideAndDisplayButtons(thread) {
     }
 }
 
+/**
+ * Updates the relevant information and performs required operations when a request is resolved
+ * @param {JSON} thread - contains information about the request currently being reviewed
+ */
 export function handleApprovalRejectionAnswer(thread) {
 
     // First 3 letters of request type used for HTML identifiers
@@ -1042,25 +1343,47 @@ export function handleApprovalRejectionAnswer(thread) {
         
         // Add click event listener to Approve Request button
         popupApproveButton.addEventListener('click', function() {
-            // Quiz has the extra field of quiz password to return and doesn't need extension
-            if (thread.request_type == "Quiz") {
-                responseJson = {
-                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                    'status' : 'Approved',
-                    'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                }
-            } else {
-                responseJson = {
-                    'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
-                    'status' : 'Approved',
-                    'extended by' : document.getElementById('extensionOverrideAExt').value,
-                }
-            }
 
-            respond(thread.thread_id, responseJson);
 
-            // return to view reqs (could make a confirmation page or just show confirmation message at top)
-            window.location.href = '/instructor/view-reqs/' + thread.course_id;
+            let assignmentName = document.getElementById(`assessmentOverrideA${reqShort}`).value
+            let assignmentId = -1; //placeholder
+            
+            // find the assignment id to return by matching to the name in backend
+            loadData('/api/data/assessments/?courseid=' + thread.course_id, {})
+                .then(data => {
+                    let assignments = data.assessments;
+                    assignments.forEach(assignment => {
+                        if(assignment.assignment_name == assignmentName){
+                            assignmentId = assignment.assignment_id;
+                        }
+                    });
+                    // assignment id found, organise response json now
+
+                    // Quiz has the extra field of quiz password to return and doesn't need extension
+                    if (thread.request_type == "Quiz") {
+                        responseJson = {
+                            'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'status' : 'Approved',
+                            'quizPassword' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'assignmentId' : assignmentId,
+                        }
+                    } else {
+                        responseJson = {
+                            'instructorNotes' : document.getElementById(`instructorNotesA${reqShort}`).value,
+                            'status' : 'Approved',
+                            'extended by' : document.getElementById('extensionOverrideAExt').value,
+                            'assignmentId' : assignmentId,
+                        }
+                    }
+
+                    respond(thread.thread_id, responseJson);
+                    // return to view reqs (could make a confirmation page or just show confirmation message at top)
+                    window.location.href = '/instructor/view-reqs/' + thread.course_id;
+
+
+
+
+                });
         });
         
         // Get the Reject Request button
@@ -1099,6 +1422,10 @@ export function handleApprovalRejectionAnswer(thread) {
     }
 }
 
+/**
+ * Populates the assessment dropdown for instructor popups
+ * @param {array} assessmentList - list of assesssments for the subject of the request currently being reviewed
+ */
 export function populateAssessmentDropdown(assessmentList) {
     
     const assessmentDropdown = document.getElementById('assessmentDropdown');
@@ -1121,8 +1448,12 @@ export function populateAssessmentDropdown(assessmentList) {
 
 }
 
+/**
+ * Sets a request to complex in the database
+ * @param {int} threadId - numeric identifier for the current request
+ */
 function setComplex(threadId){
-    return putData(('/api/data/thread/complex'), {
+    return putData(('/api/data/thread/complex/'), {
         "thread_id": threadId
     }).then(() => {
             return true;
@@ -1132,6 +1463,10 @@ function setComplex(threadId){
         });
 }
 
+/**
+ * ******************************* JUN ************************************
+ * @param {int} threadId - numeric identifier for the current request
+ */
 function respond(threadId, response){
     return putData('/api/data/requests/respond/', {
         "thread_id": threadId,
@@ -1145,8 +1480,12 @@ function respond(threadId, response){
         });
 }
 
+/**
+ * Posts a new case to the database ******************************* JUN ************************************
+ * @param {JSON} dataToSend - contains information about a case that needs to be submitted to the database
+ */
 function postNewCase(dataToSend){
-    return postData(('/api/data/requests/respond/'), dataToSend)
+    return postData(('/api/data/cases/new/'), dataToSend)
         .then(() => {
             return true;
         })

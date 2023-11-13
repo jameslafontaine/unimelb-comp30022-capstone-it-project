@@ -98,6 +98,12 @@
                         <p class="text">Student Selected Assessment</p>
                         <textarea class="textBox" id="selectedAssessmentAExt" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
+                    <br>
+                    <div style="text-align:center">
+                        <label for="assessmentOverride" class="text">Override Assessment:</label>
+                        <select class="assessmentOverride" id="assessmentOverrideAExt">
+                        </select>
+                    </div>
                     <br><br>
                     <div class="popupButton" id="popupApproveButtonExt">Approve</div>
                     <br>
@@ -173,6 +179,12 @@
                         <textarea class="textBox" id="selectedAssessmentARem" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
+                    <div style="text-align:center">
+                        <label for="assessmentOverride" class="text">Override Assessment:</label>
+                        <select class="assessmentOverride" id="assessmentOverrideARem">
+                        </select>
+                    </div>
+                    <br><br>
                     <div class="popupButton" id="popupApproveButtonRem">Approve</div>
                     <br>
                 </div>
@@ -230,6 +242,12 @@
                         <textarea class="textBox" id="selectedAssessmentAQui" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
+                    <div style="text-align:center">
+                        <label for="assessmentOverride" class="text">Override Assessment:</label>
+                        <select class="assessmentOverride" id="assessmentOverrideAQui">
+                        </select>
+                    </div>
+                    <br><br>
                     <div class="popupButton" id="popupApproveButtonQui">Approve</div>
                     <br>
                 </div>
@@ -358,6 +376,8 @@
             import { reviewRequest } from "{% static 'js/app.js' %}";
             import { loadData } from "{% static 'js/modules/dataModule.js' %}";
             reviewRequest();
+
+            let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
 
             var navProfileButton = document.getElementById('navProfileButton');
             function toProfile(){

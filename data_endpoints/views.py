@@ -5,15 +5,15 @@ All endpoints in data_endpoints
 # from django.shortcuts import render
 import base64
 import json
-from datetime import datetime, time, timedelta
 import mysql.connector
+import os
+from datetime import datetime, time, timedelta
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # Create a connection
 # Replace these values with your MySQL server details
-
-DATABASE_NAME = 'db'
+DATABASE_NAME = "db"
 
 connection = mysql.connector.connect(
     host="db",
@@ -293,6 +293,32 @@ def get_courses_endpoint(request):
                             "course_name": course_data["course_name"],
                             "course_code": course_data["course_code"]
                         }
+                }
+                return JsonResponse(result)
+            if len(request.GET) == 2 and request.GET.get('preferences') \
+                and request.GET.get('preferences').lower() == 'true':
+                result = {
+                    "coursepreferences": {
+                        "coursepreference_id": 1,
+                        "course_id": 1,
+                        "global_extension_length": 3,
+                        "general_tutor": 1,
+                        "extension_tutor": 1,
+                        "quiz_tutor": 1,
+                        "remark_tutor": 1,
+                        "other_tutor": 1,
+                        "general_scoord": 1,
+                        "extension_scoord": 1,
+                        "quiz_scoord": 1,
+                        "remark_scoord": 1,
+                        "other_scoord": 1,
+                        "general_reject": "",
+                        "extension_approve": "",
+                        "extension_reject": "",
+                        "quiz_approve": "",
+                        "quiz_reject": "lmao",
+                        "remark_approve": "",
+                        "remark_reject": ""
                     }
                     return JsonResponse(course_info)
 
@@ -478,7 +504,7 @@ def get_threads_user_endpoint(request):
                             'course_id': 31,
                             'date_updated': "01-19-2023",
                             'request_type':'Query',
-                            'complex_case':0,
+                            'complex_case':1,
                             'current_status':'PENDING',
                             'assignment_id':2,
                         },
@@ -528,7 +554,6 @@ def get_threads_user_endpoint(request):
                 threads.append(row)
             json_result = {"threads": threads}
             return JsonResponse(json_result)
-
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_threads_endpoint(request, thread_id):
@@ -636,7 +661,6 @@ def get_user_endpoint(request, user_id):
 
             if not user_data:
                 return JsonResponse({'message': 'Invalid request.'}, status=400)
-
         if len(request.GET) == 1 and request.GET.get('courseid'):
             if check_param_not_integer(request.GET.get('courseid')):
                 return JsonResponse({'message': 'Invalid request.'}, status=400)
@@ -808,25 +832,18 @@ def post_file(request):
     '''
     # Some request body validation code idk
     if request.method == 'POST':
-        data = json.loads(request.body)
-        data_keys = list(data.keys())
-        all_fields = ["user_id","request_id","fileName"]
-        if not (all_fields == data_keys):
-            return HttpResponseBadRequest("Request body does not have correct fields")
         # Create a cursor to interact with the database
         cursor = connection.cursor()
         cursor.execute(f"USE {DATABASE_NAME}")
         # Extract data from the JSON
-        user_id = data["user_id"]
-        fileName = data["fileName"]
-        request_id= data["request_id"]
+        user_id = request.POST.get('user_id')
         file_type = 'AAP'
-        
-        file_data = request.FILES[fileName].read()
+        file_data = request.FILES['file'].read()
+        fileName = request.FILES['file'].name
         cursor = connection.cursor()
         cursor.execute(f"USE {DATABASE_NAME}")
         insert_query = "INSERT INTO db.File (file, file_name, user_id, request_id, file_type) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(insert_query, (file_data, fileName, user_id, request_id, file_type))
+        cursor.execute(insert_query, (file_data, fileName, user_id, None, file_type))
         connection.commit()
         return JsonResponse({"message": "Uploaded successfully"}, status = 201)
     if not request.method == 'POST':
@@ -1074,4 +1091,60 @@ def set_complex(request):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+@csrf_exempt
+def put_user_preferences(request):
+    '''
+    PUT /api/data/user/
+    Request body is
+    {
+        "user_id": 0,
+        "email_preference": 0,
+        "darkmode_preference": 1
+    }
+    '''
+    if request.method == 'PUT':
+        #
+        # UPDATE
+        #
+        return JsonResponse({'message': 'Has been set successfully'}, status = 201)
+    if not request.method == 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+def get_assessment_preferences(request):
+    '''
+    GET /api/data/preferences/{assignment_id}
+    No parameters
+    '''
+    if not request.GET:
+        result = {
+            "extension_length": 4
+        }
+        return JsonResponse(result)
+
+    if request.GET:
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
+
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+def put_assessment_preferences(request):
+    '''
+    PUT /api/data/assessments/setpreferences
+    Request body
+    {
+        "coursepreference_id": 0,
+        "assignment_id": 0,
+        "extension_length": 0
+    }
+    '''
+    if request.method == 'PUT':
+        # data = json.loads(request.body)
+        # SET AssignmentExtensionLength
+        return JsonResponse({'message': 'Has been set successfully'}, status = 201)
+
+    if not request.method == 'PUT':
+        return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
     return JsonResponse({'message': 'Invalid request.'}, status = 500)

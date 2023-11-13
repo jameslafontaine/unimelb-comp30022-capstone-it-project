@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `db`.`Thread` (
   `complex_case` BIT(1) NOT NULL,
   `current_status` VARCHAR(8) NOT NULL DEFAULT 'Pending',
   `assignment_id` INT NULL,
-  `date_updated` DATE NOT NULL, -- Add the date_updated column here
+  `date_updated` DATE NOT NULL,
   PRIMARY KEY (`thread_id`, `case_id`, `course_id`),
   INDEX `fk_thread_case1_idx` (`assignment_id` ASC) VISIBLE,
   INDEX `fk_thread_case2_idx` (`case_id` ASC) VISIBLE,
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `db`.`Request` (
   `thread_id` INT NOT NULL,
   `request_content` VARCHAR(1000) NOT NULL,
   `instructor_notes` VARCHAR(1000) NULL,
-  `date_created` DATE,  -- Add the date_created column with DATE data type here
+  `date_created` DATE,
   PRIMARY KEY (`request_id`, `thread_id`),
   INDEX `fk_thread_idx` (`thread_id` ASC) VISIBLE,
   CONSTRAINT `fk_request_thread`
