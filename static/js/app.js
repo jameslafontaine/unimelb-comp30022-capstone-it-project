@@ -215,6 +215,19 @@ export function viewAAPs() {
         .then(data => {
             generateAAPTable(data.aaps);
             fixStyling();
+        })
+        .catch(error => {
+            // Log the error
+            console.error('Error:', error);
+    
+            // Use a dummy placeholder JSON
+            let dummyData = {
+                aaps: []
+            };
+    
+            // Generate the AAP table with the dummy data
+            generateAAPTable(dummyData.aaps);
+            fixStyling();
         });
 }
 
@@ -566,7 +579,19 @@ export function viewProfile() {
     loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id')+ '?aaps=true', {})
         .then(data => {
             generateAAPTable(data.aaps);
-        });
+        }).catch(error => {
+            // Log the error
+            console.error('Error:', error);
+    
+            // Use a dummy placeholder JSON
+            let dummyData = {
+                aaps: []
+            };
+    
+            // Generate the AAP table with the dummy data
+            generateAAPTable(dummyData.aaps);
+            fixStyling();
+        });;
 
 }
 
