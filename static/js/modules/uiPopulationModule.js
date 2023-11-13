@@ -130,7 +130,7 @@ export function generateStudentCases(cases) {
 /**
  * Inserts the required information into the most recent updated version of a request (top of page)
  * @param {int} threadId - identifier for version of request
- * @param {JUN} view - ******************
+ * @param {string} view - Student or Instructor
  */
 export function fillCurrentRequestInformation(threadId, view) {
 
@@ -1378,9 +1378,6 @@ export function handleApprovalRejectionAnswer(thread) {
                     // return to view reqs (could make a confirmation page or just show confirmation message at top)
                     window.location.href = '/instructor/view-reqs/' + thread.course_id;
 
-
-
-
                 });
         });
         
@@ -1462,7 +1459,7 @@ function setComplex(threadId){
 }
 
 /**
- * ******************************* JUN ************************************
+ * Send response to a thread
  * @param {int} threadId - numeric identifier for the current request
  */
 function respond(threadId, response){
@@ -1479,7 +1476,7 @@ function respond(threadId, response){
 }
 
 /**
- * Posts a new case to the database ******************************* JUN ************************************
+ * Posts a new case to the database 
  * @param {JSON} dataToSend - contains information about a case that needs to be submitted to the database
  */
 function postNewCase(dataToSend){
