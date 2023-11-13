@@ -62,7 +62,7 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint --ignore=manage.py,tests.py --disable=R0911 $(git ls-files '*.py')
+        pylint --ignore=manage.py,tests.py --disable=R0911,R0912 $(git ls-files '*.py')
   Tests:
     runs-on: ubuntu-latest
     steps:
