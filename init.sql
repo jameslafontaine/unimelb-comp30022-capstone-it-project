@@ -111,6 +111,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 
+
 -- -----------------------------------------------------
 -- Table `db`.`Request`
 -- -----------------------------------------------------
@@ -130,6 +131,7 @@ CREATE TABLE IF NOT EXISTS `db`.`Request` (
 )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
+
 
 
 -- -----------------------------------------------------
@@ -232,7 +234,6 @@ CREATE TABLE IF NOT EXISTS `db`.`AssignmentExtensionLength` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
-
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

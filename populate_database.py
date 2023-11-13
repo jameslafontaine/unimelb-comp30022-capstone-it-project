@@ -58,7 +58,6 @@ def get_enrolled_users_with_roles(course_id, headers):
     if base_url in fetched_urls:
         print("URL already fetched. Breaking loop.")
     response = rq.get(base_url, headers=headers)
-
     if response.status_code == 200:
         data = response.json()
         if not data:
@@ -67,13 +66,13 @@ def get_enrolled_users_with_roles(course_id, headers):
         # Loop through each enrollment in the response
         for enrollment in data:
             if enrollment['role'] == "StudentEnrollmet":
-                enrollmentname = "Student"
+                enrollmentname = "STUDENT"
             elif enrollment['role'] == "TeacherEnrollment":
-                enrollmentname = "Subject Coordinator"
+                enrollmentname = " SCOORD"
             elif enrollment['role'] == "TAEnrollment":
-                enrollmentname = "Tutor"
+                enrollmentname = "TUTOR"
             else:
-                enrollmentname = "Student"
+                enrollmentname = "STUDENT"
             all_enrollments.append((enrollment['id'], enrollment['user_id'], enrollmentname, enrollment['user']['name']))
         # Add the fetched URL to the set
         fetched_urls.add(base_url)
@@ -90,11 +89,11 @@ def fetch_courses(base_url_courses, headers, params):
 
         if response_courses.status_code == 200 and response_courses.text:
             data_courses = response_courses.json()
-
+            
             for course in data_courses:
                 if 'id' in course and 'name' in course:
                     all_courses.append((course['id'], course['name'], course['course_code']))
-
+            
             if 'next' in response_courses.links:
                 base_url_courses = response_courses.links['next']['url']
             else:
@@ -201,7 +200,6 @@ if __name__ == "__main__":
             cursor.execute(f"INSERT INTO `db`.`Enrollment` VALUES (%s, %s, %s, %s)", 
                            (enrollment_id, course_id, user_id, role))   
 
-
     # Now, fetch the global_extension_length from CoursePreferences
     cursor.execute("SELECT course_id, global_extension_length, coursepreference_id FROM `db`.`CoursePreferences`")
     course_preferences = cursor.fetchall()
@@ -220,6 +218,7 @@ if __name__ == "__main__":
     # execute your query
     cursor.execute(f"SELECT * FROM `db`.`User`")
 
+
     # fetch all the matching rows 
     result = cursor.fetchall()
 
@@ -231,3 +230,4 @@ if __name__ == "__main__":
     connection.commit()
     cursor.close()
     connection.close()
+
