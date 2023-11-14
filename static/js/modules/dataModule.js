@@ -15,7 +15,6 @@ import { getGlobalAppHeadersValue } from "./helperFunctionModule.js";
 export function loadData(url, reqHeaders) {
     return fetch(url, {
         method: 'GET',
-        headers: reqHeaders
     }).then(response => response.json())
         .then(data => {
             return data;

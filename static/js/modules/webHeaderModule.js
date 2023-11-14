@@ -27,9 +27,12 @@ export function createHeader(instOrStudent) {
 			let headerText = document.querySelector('.headerText');
             loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
 				.then(usr => {
-					headerText.innerHTML = "Signed in as: " + usr.first_name + " " + usr.last_name;
+					console.log(usr);
+					headerText.innerHTML = "Signed in as: " + usr.name;
 					setPreferences();
 					checkAndChangePrefs();
+				}).catch(error => {
+					throw error;
 				});
     }).catch(error => {
 			throw error;

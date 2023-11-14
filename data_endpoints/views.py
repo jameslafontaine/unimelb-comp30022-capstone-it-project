@@ -21,10 +21,7 @@ def validate_headers(request):
     Check if request has the necessary headers
         1. "Authorization": "Bearer <access_token>"
     '''
-    authorization = request.META.get('Authorization')
-    if authorization is None:
-        # return HttpResponse('Unauthorized', status = 401)
-        pass
+    #authorization = request.META.get('Authorization')
 
 def check_param_not_integer(value):
     '''
@@ -661,62 +658,56 @@ def get_user_endpoint(request, user_id):
     )
     validate_headers(request)
 
-    if len(request.GET) in [0, 1]:
-        if not request.GET:
+    if len(request.GET) == 0:
+        cursor = connection.cursor()
+        # Query the User table
+        cursor.execute("SELECT * FROM `db`.`User` WHERE `User`.user_id = %s", (user_id,))
+        user_data = cursor.fetchone()
+        cursor.execute("SELECT enrollment_role FROM `db`.`Enrollment` WHERE `Enrollment`.user_id = %s", (user_id,))
+        enrollment_data = cursor.fetchone()
+
+        if user_data and enrollment_data:
+            # Create the JSON structure
+            result = {
+                "user_id": user_data['user_id'],
+                "name": user_data['name'],
+                "first_name": user_data['first_name'],
+                "last_name": user_data['last_name'],
+                "email": user_data['email'],
+                "email_preference": user_data['email_preference'],
+                "darkmode_preference": user_data['darkmode_preference'],
+                "enrollment_role": 
+                enrollment_data['enrollment_role'] if enrollment_data else None
+            }
+            return JsonResponse(result)
+
+        if not user_data or not enrollment_data:
+            return JsonResponse({'message': "Data wasn't able to be pulled, try again."}, status=400)
+
+    if len(request.GET) == 1 and request.GET.get('courseid'):
+        if check_param_not_integer(request.GET.get('courseid')):
+            return JsonResponse({'message': 'Invalid request.'}, status=400)
+        if not check_param_not_integer(request.GET.get('courseid')):
+            # Some join magic between course, enrollment, and user
             cursor = connection.cursor(dictionary=True)
-            # Query the User table
-            cursor.execute("SELECT * FROM `db`.`User` WHERE `User`.user_id = %s", (user_id,))
-            user_data = cursor.fetchone()
 
-            if user_data:
-                # Query the Enrollment table to get enrollment role
-                cursor.execute("SELECT enrollment_role FROM `db`.`Enrollment` WHERE `Enrollment`.user_id = %s", (user_id,))
-                enrollment_data = cursor.fetchone()
+            # Query the Enrollment table to get enrolled courses for the user
+            cursor.execute("SELECT (course_id, course_name, course_code) FROM `db`.`Course INNER JOIN `db`.`Enrollment` ON `db`.`Course`.course_id = `db`.`Enrollment`.course_id WHERE `db`.`Enrollment`.user_id = %s", (user_id, ))
+            courses_data = cursor.fetchall()
 
-                # Create the JSON structure
-                result = {
-                    "user_id": user_data['user_id'],
-                    "name": user_data['name'],
-                    "first_name": user_data['first_name'],
-                    "last_name": user_data['last_name'],
-                    "email": user_data['email'],
-                    "email_preference": user_data['email_preference'],
-                    "darkmode_preference": user_data['darkmode_preference'],
-                    "enrollment_role": 
-                    enrollment_data['enrollment_role'] if enrollment_data else None
+            # Create a list of course dictionaries
+            course_list = []
+            for course in courses_data:
+                course_info = {
+                    "course_id": course['course_id'],
+                    "course_name": course['course_name'],
+                    "course_code": course['course_code']
                 }
-                return JsonResponse(result)
+                course_list.append(course_info)
 
-            if not user_data:
-                return JsonResponse({'message': 'Invalid request.'}, status=400)
-            
-        if len(request.GET) == 1 and request.GET.get('courseid'):
-            if check_param_not_integer(request.GET.get('courseid')):
-                return JsonResponse({'message': 'Invalid request.'}, status=400)
-            if not check_param_not_integer(request.GET.get('courseid')):
-                # Some join magic between course, enrollment, and user
-                cursor = connection.cursor(dictionary=True)
-
-                # Query the Enrollment table to get enrolled courses for the user
-                courses_query = f"SELECT Course.course_id, course_name, course_code" \
-                                f"FROM Course INNER JOIN Enrollment ON Course.course_id " \
-                                f"= Enrollment.course_id WHERE user_id = {user_id}"
-                cursor.execute(courses_query)
-                courses_data = cursor.fetchall()
-
-                # Create a list of course dictionaries
-                course_list = []
-                for course in courses_data:
-                    course_info = {
-                        "course_id": course['course_id'],
-                        "course_name": course['course_name'],
-                        "course_code": course['course_code']
-                    }
-                    course_list.append(course_info)
-
-                # Create the JSON structure
-                result = {"courses": course_list}
-                return JsonResponse(result)
+            # Create the JSON structure
+            result = {"courses": course_list}
+            return JsonResponse(result)
 
     return JsonResponse({'message': 'Invalid request.'}, status=500)
 
