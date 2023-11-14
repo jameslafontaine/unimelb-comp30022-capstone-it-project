@@ -33,14 +33,12 @@ export function createHeader(instOrStudent) {
 					emailNotifCheckBox.addEventListener("change", function() {
 						changePrefs(document.getElementById('emailNotifCheckBox').checked, 
 											document.getElementById('darkModeCheckBox').checked);
-						setPreferences();
 					})
 
 					const darkModeCheckBox = document.getElementById('darkModeCheckBox');
 					darkModeCheckBox.addEventListener("change", function() {
 						changePrefs(document.getElementById('emailNotifCheckBox').checked, 
 											document.getElementById('darkModeCheckBox').checked);
-						setPreferences();
 					})
 				}).catch(error => {
 					throw error;
@@ -274,7 +272,6 @@ function changePrefs(emailPref, darkModePref){
     })
         .then(() => {
 			setPreferences();
-
         })
         .catch(error => {
             throw error;
