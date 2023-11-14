@@ -596,6 +596,7 @@ export function viewRequests() {
     // Put subject code at start of title
     var courseId = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
 
+    
     loadData('/api/data/courses?courseid=' + courseId, {})
         .then(data => {
             let subjectCode = data.course.course_code;
