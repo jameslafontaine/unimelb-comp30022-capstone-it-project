@@ -71,13 +71,14 @@
                 </span>
             </div>
             <br>
-            <span>Default extension length: &nbsp;&nbsp;&nbsp;&nbsp;<input id="extensionLengthInput" type="text" size="2">
+            <span>Default extension length: &nbsp;&nbsp;&nbsp;&nbsp;
+            <p></p>
+            <input id="extensionLengthInput" type="text" size="2">
                 days&nbsp;&nbsp;&nbsp;
                 <button class="standardButton" id="saveExtensionLength">
                     Save
                 </button>
             </span>
-            <p></p>
             <br><br><br>
             <p class="h4" style="font-weight:bold">Instructor Permissions & Response Templates</p>
             <p></p>
@@ -101,14 +102,10 @@
                             <br>
                             <textarea class="textBox" id="extensionApproveMsg" placeholder="Your extension has been approved"></textarea>
                             <br>
-                            <button class="standardButton" id="extensionApproveSave">Save</button>
-                            <br>
                             <br>
                             Reject
                             <br>
                             <textarea class="textBox" id="extensionRejectMsg" placeholder="Your extension has been rejected"></textarea>
-                            <br>
-                            <button class="standardButton" id="extensionRejectSave">Save</button>
                         </td>
                     </tr>
                     <!--row3-->
@@ -120,8 +117,6 @@
                             Reject
                             <br>
                             <textarea class="textBox" id="generalRejectMsg" placeholder="Lorem ipsum dolor sit amet"></textarea>
-                            <br>
-                            <button class="standardButton" id="generalRejectSave">Save</button>
                         </td>
                     </tr>
                     <!--row4-->
@@ -134,14 +129,10 @@
                             <br>
                             <textarea class="textBox" id="remarkApproveMsg" placeholder="Lorem ipsum dolor sit amet"></textarea>
                             <br>
-                            <button class="standardButton" id="remarkApproveSave">Save</button>
-                            <br>
                             <br>
                             Reject
                             <br>
                             <textarea class="textBox" id="remarkRejectMsg" placeholder="Lorem ipsum dolor sit amet"></textarea>
-                            <br>
-                            <button class="standardButton" id="remarkRejectSave">Save</button>
                         </td>
                     </tr>
                     <!--row5-->
@@ -154,14 +145,10 @@
                             <br>
                             <textarea class="textBox" id="quizApproveMsg" placeholder="Lorem ipsum dolor sit amet"></textarea>
                             <br>
-                            <button class="standardButton" id="quizApproveSave">Save</button>
-                            <br>
                             <br>
                             Reject
                             <br>
                             <textarea class="textBox" id="quizRejectMsg" placeholder="Lorem ipsum dolor sit amet"></textarea>
-                            <br>
-                            <button class="standardButton" id="quizRejectSave">Save</button>
                         </td>
                     </tr>
                     <!--row6-->
@@ -173,13 +160,12 @@
                             Reject
                             <br>
                             <textarea class="textBox" id="otherRejectMsg" placeholder="Lorem ipsum dolor sit amet"></textarea>
-                            <br>
-                            <button class="standardButton" id="otherRejectSave" >Save</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
             <p></p>
+            <button class="standardButton" id="coursePreferencesSave">Save</button>
         </div>
         <script type="module" src="{% static 'js/app.js' %}"></script>
         <script type="module">

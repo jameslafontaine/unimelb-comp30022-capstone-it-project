@@ -152,88 +152,67 @@ def get_cases_endpoint(request):
         if check_param_not_integer(request.GET.get('userid')):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
         if not check_param_not_integer(request.GET.get('userid')):
-            # SELECT * FROM 'Case' WHERE 'Case'.user_id == int(request.GET.get('userid'))
-            cursor = connection.cursor()
-            cursor.execute(f"USE {DATABASE_NAME}")
-            # Execute a query to fetch case_id values for the given user_id
-            query = "SELECT case_id FROM `Case` WHERE user_id = %s"
-            cursor.execute(query, (request.GET.get('userid'),))
+            cursor = connection.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM `db`.`Case` WHERE `Case`.user_id = %s", (request.GET.get('userid'),))
+            returnCases = []
+            for row in cursor:
+                returnCases.append({
+                    "case_id": row['case_id'],
+                    "user_id": row["user_id"]
+                })
+            cursor.close()
+            return JsonResponse({
+                "cases": returnCases
+            })
 
-            case_ids = [row[0] for row in cursor]
-
-            cases = [{"case_id": case_id, "user_id": request.GET.get('userid')} \
-                      for case_id in case_ids]
-
-            json_data = {"cases": cases}
-            return JsonResponse(json_data)
-    if not request.GET.get('userid') and request.GET.get('caseid'):
+    if len(request.GET) == 1 and request.GET.get('caseid'):
         if check_param_not_integer(request.GET.get('caseid')):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
         if not check_param_not_integer(request.GET.get('caseid')):
             if len(request.GET) == 1:
                 cursor = connection.cursor(dictionary=True)
-                cursor.execute(f"USE {DATABASE_NAME}")
                 # Execute a query to fetch case data for the given case_id
-                query = "SELECT * FROM `Case` WHERE case_id = %s"
-                cursor.execute(query, (request.GET.get('caseid'),))
-
+                cursor.execute("SELECT * FROM `db`.`Case` WHERE `Case`.case_id = %s", (request.GET.get('caseid'),))
                 case_data = cursor.fetchone()
-
                 if case_data:
-                    json_data = {
+                    return JsonResponse({
                         "case": {
                             "case_id": case_data["case_id"],
                             "user_id": case_data["user_id"]
                         }
-                    }
-                    return JsonResponse(json_data)
+                    })
 
                 if not case_data:
                     return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
-            if len(request.GET) == 2 and request.GET.get('threads').lower() == 'true':
-                cursor = connection.cursor()
-                cursor.execute(f"USE {DATABASE_NAME}")
-                # Execute a query to fetch threads for the given case_id
-                query = "SELECT * FROM Thread WHERE case_id = %s"
-                cursor.execute(query, (request.GET.get('caseid'),))
+    if len(request.GET) == 2 and request.GET.get('caseid') and request.GET.get('threads').lower() == 'true':
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM `db`.`Thread` WHERE `Thread`.case_id = %s", (request.GET.get('caseid'),))
+        threads = []
+        for row in cursor:
+            threads.append({
+                "thread_id": row['thread_id'],
+                "case_id": row['case_id'],
+                "course_id": row['course_id'],
+                "date_updated": row['date_updated'],
+                "request_type": row['request_type'],
+                "complex_case": row['complex_case'],
+                "current_status": row['current_status'],
+                "assignment_id": row['assignment_id'] 
+            })
+        cursor.close()
+        return JsonResponse({
+            "threads": threads
+        })
 
-                threads = []
-
-                for thread_data in cursor:
-                    if not thread_data[3] is None:
-                        print(thread_data)
-                        datetime_with_time = datetime.combine(thread_data[7], time(0, 0, 0))
-                        # Format the datetime
-                        formatted_datetime = datetime_with_time.strftime("%Y:%m:%d %H:%M:%S")
-
-                    if thread_data[6] is None:  # Using integer index for assignment_id
-                        assignment_id = "N/A"  # Or any other value you prefer
-                    if not thread_data[6] is None:
-                        assignment_id = thread_data[6]
-
-                    thread = {
-                        "thread_id": thread_data[0],  # Using integer indices
-                        "case_id": thread_data[1],
-                        "course_id": thread_data[2],
-                        "date_updated": formatted_datetime,
-                        "request_type": thread_data[3],
-                        "complex_case": thread_data[4],
-                        "current_status": thread_data[5],
-                        "assignment_id": assignment_id
-                    }
-
-                    threads.append(thread)
-
-                json_data = {"threads": threads}
-                return JsonResponse(json_data)
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
+# TODO:
 def get_courses_endpoint(request):
     '''
     GET /api/data/courses/
     Valid parameter combinations:
-        - ?userid
+        - ?userid/get_
         - ?courseid
         - ?courseid&preferences
     '''
@@ -256,9 +235,7 @@ def get_courses_endpoint(request):
             cursor.execute(f"USE {DATABASE_NAME}")
 
             # Execute a query to fetch the courses for the given user_id
-            query = "SELECT c.course_id, c.course_name, c.course_code FROM Course c " \
-                    "INNER JOIN Enrollment e ON c.course_id = e.course_id " \
-                    "WHERE e.user_id = %s"
+            query = "SELECT c.course_id, c.course_name, c.course_code FROM Course c INNER JOIN Enrollment e ON c.course_id = e.course_id WHERE e.user_id = %s"
             cursor.execute(query, (request.GET.get('userid'),))
 
             courses = []
@@ -301,30 +278,34 @@ def get_courses_endpoint(request):
                     return JsonResponse(course_info)
             if len(request.GET) == 2 and request.GET.get('preferences') \
                 and request.GET.get('preferences').lower() == 'true':
+                cursor = connection.cursor(dictionary=True)
+                cursor.execute("SELECT * FROM `db`.`CoursePreferences` WHERE `CoursePreferences`.course_id = %s", (request.GET.get('courseid'),))
+                row = cursor.fetchone()
                 result = {
                     "coursepreferences": {
-                        "coursepreference_id": 1,
-                        "course_id": 1,
-                        "global_extension_length": 3,
-                        "general_tutor": 1,
-                        "extension_tutor": 1,
-                        "quiz_tutor": 1,
-                        "remark_tutor": 1,
-                        "other_tutor": 1,
-                        "general_scoord": 1,
-                        "extension_scoord": 1,
-                        "quiz_scoord": 1,
-                        "remark_scoord": 1,
-                        "other_scoord": 1,
-                        "general_reject": "",
-                        "extension_approve": "",
-                        "extension_reject": "",
-                        "quiz_approve": "",
-                        "quiz_reject": "lmao",
-                        "remark_approve": "",
-                        "remark_reject": ""
+                        "coursepreference_id": row['coursepreference_id'],
+                        "course_id": request.GET.get('course_id'),
+                        "global_extension_length": row['global_extension_length'],
+                        "general_tutor": row['general_tutor'],
+                        "extension_tutor": row['extension_tutor'],
+                        "quiz_tutor": row['quiz_tutor'],
+                        "remark_tutor": row['remark_tutor'],
+                        "other_tutor": row['other_tutor'],
+                        "general_scoord": row['general_scoord'],
+                        "extension_scoord": row['general_scoord'],
+                        "quiz_scoord": row['general_scoord'],
+                        "remark_scoord": row['remark_scoord'],
+                        "other_scoord": row['other_scoord'],
+                        "general_reject": row['general_reject'],
+                        "extension_approve": row['extension_approve'],
+                        "extension_reject": row['extension_reject'],
+                        "quiz_approve": row['quiz_approve'],
+                        "quiz_reject": row['quiz_reject'],
+                        "remark_approve": row['remark_approve'],
+                        "remark_reject": row['remark_reject']
                     }
                 }
+                cursor.close()
                 return JsonResponse(result)
 
             if not course_data:
@@ -644,6 +625,36 @@ def get_threads_endpoint(request, thread_id):
         if not thread_info:
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
+def get_user_enrollment(request):
+    '''
+    GET /api/data/user/enrollment/
+    Request body:
+    {
+        'course_id': int
+        'user_id': int
+    }
+    Returns enrollment_role
+    '''
+    if len(request.GET) == 2:
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM `db`.`Enrollment` WHERE `Enrollment`.course_id = %s AND `Enrollment`.user_id = %s", (request.GET.get('courseid'), request.GET.get('userid')))
+        row = cursor.fetchone()
+        if row:
+            result = {
+                "enrollment_role": row['enrollment_role']
+            }
+            cursor.close()
+            return JsonResponse(result)
+        return JsonResponse({'message': 'Invalid request.'}, status=400)
+
+    return JsonResponse({'message': 'Invalid request.'}, status=500)
+
 def get_user_endpoint(request, user_id):
     '''
     GET /api/data/user/{user_id}/
@@ -659,14 +670,12 @@ def get_user_endpoint(request, user_id):
     validate_headers(request)
 
     if len(request.GET) == 0:
-        cursor = connection.cursor()
+        cursor = connection.cursor(dictionary=True)
         # Query the User table
         cursor.execute("SELECT * FROM `db`.`User` WHERE `User`.user_id = %s", (user_id,))
         user_data = cursor.fetchone()
-        cursor.execute("SELECT enrollment_role FROM `db`.`Enrollment` WHERE `Enrollment`.user_id = %s", (user_id,))
-        enrollment_data = cursor.fetchone()
 
-        if user_data and enrollment_data:
+        if user_data:
             # Create the JSON structure
             result = {
                 "user_id": user_data['user_id'],
@@ -676,12 +685,10 @@ def get_user_endpoint(request, user_id):
                 "email": user_data['email'],
                 "email_preference": user_data['email_preference'],
                 "darkmode_preference": user_data['darkmode_preference'],
-                "enrollment_role": 
-                enrollment_data['enrollment_role'] if enrollment_data else None
             }
             return JsonResponse(result)
 
-        if not user_data or not enrollment_data:
+        if not user_data:
             return JsonResponse({'message': "Data wasn't able to be pulled, try again."}, status=400)
 
     if len(request.GET) == 1 and request.GET.get('courseid'):
@@ -782,63 +789,26 @@ def post_new_case(request):
     Returns:
     - JsonResponse: JSON response indicating the success of the request or an error message.
     '''
-    connection = mysql.connector.connect(
-        host="db",
-        port="3306",
-        user="root",
-        password="admin"
-    )
     if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({'message': 'Invalid JSON in the request body.'}, status=400)
-
-        if 'user_id' not in data or 'requests' not in data or not isinstance(data['requests'], list):
-            return JsonResponse({'message': 'Invalid request.'}, status=400)
-        
-        for item in data['requests']:
-            all_fields = ['course_id', 'assignment_id', 'request_type', 'request_content']
-            if set(item.keys()) != set(all_fields):
-                return JsonResponse({'message': 'Invalid request.'}, status=400)
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute(f"USE {DATABASE_NAME}")
-                user_id = data.get("user_id")
-                cursor.execute("INSERT INTO `db`.`Case` (`user_id`) VALUES (%s)", (user_id,))
-                case_id = cursor.lastrowid
-
-                for request_data in data.get("requests", []):
-                    request_data.setdefault("instructor_notes", "-")
-                    request_data.setdefault("complex_case", 0)
-                    request_data.setdefault("current_status", "pending")
-
-                    cursor.execute(
-                        "INSERT INTO `db`.`Thread` "
-                        "(`case_id`, `course_id`, `request_type`, "
-                        "`complex_case`, `current_status`, `assignment_id`, `date_updated`) "
-                        "VALUES (%s, %s, %s, %s, %s, %s, NOW())",
-                        (case_id, request_data['course_id'],
-                        request_data['request_type'], request_data['complex_case'],
-                        request_data['current_status'], request_data['assignment_id'])
-                    )
-                    thread_id = cursor.lastrowid
-
-                    current_date_time = datetime.now()
-
-                    cursor.execute(
-                        "INSERT INTO `db`.`Request` "
-                        "(`thread_id`, `request_content`, `instructor_notes`, `date_created`) "
-                        "VALUES (%s, %s, %s, %s)",
-                        (thread_id, request_data['request_content'], request_data['instructor_notes'],
-                        current_date_time.strftime('%Y-%m-%d %H:%M:%S'))
-                    )
-            connection.commit()
-        finally:
-            connection.close()
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        data = json.loads(request.body)
+        cursor = connection.cursor()
+        user_id = data.get("user_id")
+        cursor.execute("INSERT INTO `db`.`Case` (user_id) VALUES (%s)", (user_id,))
+        case_id = cursor.lastrowid
+        for request_data in data.get("requests"):
+            cursor.execute("INSERT INTO `db`.`Thread` (case_id, course_id, date_updated, request_type, complex_case, current_status, assignment_id) VALUES (%s, %s, %s, %s, %s, %s, %s)", (case_id, request_data['course_id'], request_data['date_created'], request_data['request_type'], 0, "PENDING", request_data['assignment_id']))
+            thread_id = cursor.lastrowid
+            cursor.execute("INSERT INTO `db`.`Request` (thread_id, date_created, request_content, instructor_notes) VALUES (%s, %s, %s, %s)", (thread_id, request_data['date_created'], request_data['request_content'], ""))
+        connection.commit()
+        cursor.close()
         return JsonResponse({"message": "Case created successfully"}, status=201)
     return JsonResponse({'message': 'Invalid request.'}, status=400)
-
 
 @csrf_exempt
 def post_file(request):
@@ -875,35 +845,6 @@ def post_file(request):
     if not request.method == 'POST':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
-
-def validate_request_body(data, integer_fields, string_fields):
-    """
-    Validate the request body against the expected integer and string fields.
-
-    Parameters:
-    - data (dict): The request body data.
-    - integer_fields (list): List of fields expected to be integers.
-    - string_fields (list): List of fields expected to be strings.
-
-    Returns:
-    - HttpResponseBadRequest: If the validation fails.
-    - None: If the validation succeeds.
-    """
-    all_fields = integer_fields + string_fields
-    data_keys = list(data.keys())
-
-    if all_fields != data_keys:
-        return HttpResponseBadRequest("Request body does not have correct fields")
-
-    for field in integer_fields:
-        if not isinstance(data[field], int):
-            return HttpResponseBadRequest("Request body does not have correct fields")
-
-    for field in string_fields:
-        if not isinstance(data[field], str):
-            return HttpResponseBadRequest("Request body does not have correct fields")
-
-    return None
 
 @csrf_exempt
 def put_preferences(request):
@@ -951,7 +892,10 @@ def put_preferences(request):
         cursor.execute("""
             UPDATE CoursePreferences
             SET
-                global_extension_length = %s,
+                global_extension_length = CASE 
+                    WHEN global_extension_length != -1 THEN %s
+                    ELSE global_extension_length
+                END,
                 general_tutor = %s,
                 extension_tutor = %s,
                 quiz_tutor = %s,
@@ -972,7 +916,6 @@ def put_preferences(request):
             WHERE
                 coursepreference_id = %s AND course_id = %s
         """, tuple(values))
-
 
         # Commit the changes
         connection.commit()
@@ -1082,45 +1025,24 @@ def set_complex(request):
     Request body should take form:
     {
         "thread_id": 0,
-        "complex_case": 1
     }
     '''
-    connection = mysql.connector.connect(
-        host="db",
-        port="3306",
-        user="root",
-        password="admin"
-    )
     if request.method == 'PUT':
-        try:
-            # Create a cursor to interact with the database
-            cursor = connection.cursor()
-            cursor.execute(f"USE {DATABASE_NAME}")
-            data = json.loads(request.body)
-
-            cursor.execute(f"SELECT complex_case FROM Thread WHERE thread_id = {data['thread_id']}")
-            current_complex_case = cursor.fetchall()[0][0]
-            print(current_complex_case)
-            # Toggle the 'complex_case' value (0 to 1 or 1 to 0)
-            new_complex_case = 1 if current_complex_case == 0 else 0
-
-            # Update the 'complex_case' value in the database
-            cursor.execute(
-                f"UPDATE Thread "
-                f"SET complex_case = {new_complex_case} "
-                f"WHERE thread_id = {data['thread_id']}"
-            )
-
-            # Commit the changes
-            connection.commit()
-
-            print(f"Complex_case for thread_id {data['thread_id']} updated to {new_complex_case}")
-            return JsonResponse({
-                "message": "Updated successfully"
-            }, status = 201)
-        except mysql.connector.Error as error:
-            print(error)
-            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor()
+        data = json.loads(request.body)
+        cursor.execute()
+        cursor.execute("UPDATE `db`.`Thread` SET `Thread`.complex_case = CASE WHEN complex_case = 0 THEN 1 WHEN complex_case = 1 THEN 0 ELSE complex_case END WHERE `Thread`.thread_id = %s", (data.get('thread_id')))
+        connection.commit()
+        cursor.close()
+        return JsonResponse({
+            "message": "Updated successfully"
+        }, status = 201)
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
@@ -1136,43 +1058,53 @@ def put_user_preferences(request):
         "darkmode_preference": 1
     }
     '''
-    connection = mysql.connector.connect(
-        host="db",
-        port="3306",
-        user="root",
-        password="admin"
-    )
     if request.method == 'PUT':
-        #
-        # UPDATE
-        #
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor()
+        data = json.loads(request.body)
+        cursor.execute("UPDATE `db`.`User` SET email_preference = %s, darkmode_preference = %s WHERE `User`.user_id = %s", (data.get('email_preference'), data.get('darkmode_preference'), data.get('user_id')) )
+        connection.commit()
+        cursor.close()
         return JsonResponse({'message': 'Has been set successfully'}, status = 201)
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
-def get_assessment_preferences(request):
+def get_assessment_preferences(request, assignment_id):
     '''
     GET /api/data/preferences/{assignment_id}
     No parameters
     '''
-    connection = mysql.connector.connect(
-        host="db",
-        port="3306",
-        user="root",
-        password="admin"
-    )
+
     if not request.GET:
-        result = {
-            "extension_length": 4
-        }
-        return JsonResponse(result)
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM `db`.`AssignmentExtensionLength` WHERE `AssignmentExtensionLength`.assignment_id = %s", (assignment_id,))
+        row = cursor.fetchone()
+        if row:
+            result = {
+                "extension_length": row['extension_length']
+            }
+            cursor.close()
+            return JsonResponse(result)
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
     if request.GET:
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
+@csrf_exempt
 def put_assessment_preferences(request):
     '''
     PUT /api/data/assessments/setpreferences
@@ -1183,18 +1115,43 @@ def put_assessment_preferences(request):
         "extension_length": 0
     }
     '''
-    connection = mysql.connector.connect(
-        host="db",
-        port="3306",
-        user="root",
-        password="admin"
-    )
+
     if request.method == 'PUT':
-        # data = json.loads(request.body)
-        # SET AssignmentExtensionLength
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor(dictionary=True)
+        data = json.loads(request.body)
+        cursor.execute("UPDATE `db`.`AssignmentExtensionLength` SET extension_length = %s WHERE `AssignmentExtensionLength`.coursepreference_id = %s, `AssignmentExtensionLength`.assignment_id = %s", (data.get('extension_length'), data.get('coursepreference_id'), data.get('assignment_id')))
+        connection.commit()
+        cursor.close()
         return JsonResponse({'message': 'Has been set successfully'}, status = 201)
 
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+@csrf_exempt
+def delete_file(request):
+    '''
+    DELETE a file
+    '''
+    if request.method == 'DELETE':
+        data = json.loads(request.body)
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM `db`.`File` WHERE `File`.file_name = %s", (data.get('filename'),))
+        connection.commit()
+        cursor.close()
+        return JsonResponse({'message': 'Has been set successfully'}, status = 201)
 
     return JsonResponse({'message': 'Invalid request.'}, status = 500)

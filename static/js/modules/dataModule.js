@@ -55,24 +55,17 @@ export function putData(url, json){
 
 export function postData(url, json){
     return fetch(url, {
-        method: 'POST',
-        headers: {
-            CONTENT_TYPE: getGlobalAppHeadersValue(CONTENT_TYPE)
-        },
-        body: JSON.stringify(json)
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(json)
         })
-        .then(response => {
-            if (response.ok) {
-                // Parse the response JSON if successful
-                return response.json();
-            }
-            throw new Error('Network response was not ok');
-        })
+        .then(response => response.json())
         .then(data => {
-            // Process the response data
             return data;
         })
-        .catch(error => {
-            throw error;
+        .catch(() => {
+            throw new Error('Network response was not ok');
         });
 }

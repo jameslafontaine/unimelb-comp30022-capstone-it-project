@@ -4,7 +4,6 @@
  * Description: Functions which generate and deal with the user interface
  */
 
-import { fixStyling } from './webHeaderModule.js';
 import { getGlobalAppHeadersValue } from './helperFunctionModule.js';
 import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS, REQUEST_TABLE_HEADERS, SUPP_DOC_HEADERS } from './constantsModule.js'
 import { loadData, postData, putData } from './dataModule.js';
@@ -52,26 +51,20 @@ export function generateStudentCases(cases) {
 
         // Create table header row
         const headerRow = table.insertRow();
+        for (const key in CASE_TABLE_HEADERS) {
+            const th = document.createElement('th');
+            th.innerText = CASE_TABLE_HEADERS[key];
+            headerRow.appendChild(th);
+        }
+        const emptyHeader = document.createElement('th');
+        emptyHeader.textContent = '';
+        headerRow.appendChild(emptyHeader);
 
-        // wait for the requests to load in and then continue
+        // Create table data rows
         loadData('/api/data/cases/?caseid=' + cases[i].case_id + '&threads=true', {})
             .then(data => {                
-                let threads = data.threads;
-
-                // Make the table headers
-
-                for (const key in CASE_TABLE_HEADERS) {
-                    const th = document.createElement('th');
-                    th.innerText = CASE_TABLE_HEADERS[key];
-                    headerRow.appendChild(th);
-                }
-
-                const emptyHeader = document.createElement('th');
-                emptyHeader.textContent = '';
-                headerRow.appendChild(emptyHeader);
-
-                // Create table data rows
-                threads.forEach(thread => {
+                console.log(data);
+                data.threads.forEach(thread => {
                   
                     const row = table.insertRow();
 
@@ -121,7 +114,9 @@ export function generateStudentCases(cases) {
                     container.appendChild(document.createElement("br"));
                 
                 });
-                fixStyling();
+            })
+            .catch(error => {
+                throw error;
             });
     }
     
@@ -206,6 +201,10 @@ export function generateSuppDocTable(files, number) {
         let file_type = file.file_type;
         let file_data = file.file_data;
 
+        // 'Pad' the base64 data so i don't get error (?)
+        while (file_data.length % 4 !== 0) {
+            file_data += '=';
+        }
 
         // Create a Blob from the base64 data
         let blob = new Blob([atob(file_data)], {type: file_type});
@@ -215,22 +214,10 @@ export function generateSuppDocTable(files, number) {
         
         let formatted_file_size = formatBytes(file_size);
         
-        // Function to format size in bytes to KB, MB, GB, etc.
-        function formatBytes(bytes, decimals = 2) {
-            if (!+bytes) return '0 Bytes';
-            
-            const k = 1024;
-            const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-            
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            
-            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-        }
 		const row = table.insertRow();
 
         const fileNameCell = row.insertCell();
-        fileNameCell.className = 'tableEntry';
+        fileNameCell.className = 'tableEntry fileNameCell';
         fileNameCell.innerHTML = file_name;
 
         const fileSizeCell = row.insertCell();
@@ -341,7 +328,6 @@ export function generateVersionBox(version, number) {
     container.appendChild(expandableBoxSection);
     container.appendChild(document.createElement("br"));
 
-    fixStyling();
 
     loadData(`/api/data/files/${getGlobalAppHeadersValue('user_id')}/?requestid=${version.request_id}`, {})
         .then(data => {
@@ -353,6 +339,97 @@ export function generateVersionBox(version, number) {
     //container.appendChild(document.createElement("br"));
     //container.appendChild(document.createElement("br"));
     //container.appendChild(document.createElement("br"));
+}
+
+/**
+ * Pushes information to the database after a case is submitted
+ * @param {int} numRequests - number of requests in this case
+ */
+export function handleCaseSubmission(numRequests) {
+
+    // Current time
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = ("0" + (date.getMonth() + 1)).slice(-2);
+    var day = ("0" + date.getDate()).slice(-2);
+    var hours = ("0" + date.getHours()).slice(-2);
+    var minutes = ("0" + date.getMinutes()).slice(-2);
+    var seconds = ("0" + date.getSeconds()).slice(-2);
+    var formattedDate = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+
+    let submissionData = [];
+
+    let requestPromises = [];
+
+    if (numRequests > 0) {
+
+        for (let i = 0; i <= numRequests; i++) {
+            requestPromises.push(loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
+                .then(data => {
+                    let submissionTemplate;
+                    submissionTemplate = {
+                        'date_created': formattedDate,
+                        'course_id': -1,
+                        'request_type': '',
+                        'assignment_id': null,
+                        'request_content': document.getElementById(`messageTextBox${i}`).value
+                    }
+                    for (let course of data.courses) {
+                        if (course.course_code == document.getElementById(`courseDropdown${i}`).value) {
+                            submissionTemplate.course_id = course.course_id;
+                            let requestType = document.getElementById(`requestTypeDropdown${i}`).value
+                            if ((requestType == 'General Query') || (requestType == 'Other')) {
+                                if (requestType == 'General Query') {
+                                    submissionTemplate.request_type = "QUERY";
+                                }
+                                if (requestType == 'Other') {
+                                    submissionTemplate.request_type = "OTHER";
+                                }
+                                submissionData.push(submissionTemplate);
+                            }
+                            if ((requestType == 'Extension') || (requestType == 'Remark') || (requestType == 'Quiz Code')) {
+                                if (requestType == 'Extension') {
+                                    submissionTemplate.request_type = "EXTENSION";
+                                }
+                                if (requestType == 'Remark') {
+                                    submissionTemplate.request_type = "REMARK";
+                                }
+                                if (requestType == 'Quiz Code') {
+                                    submissionTemplate.request_type = "QUIZCODE";
+                                }
+                                loadData('/api/data/assessments/?courseid=' + course.course_id, {})
+                                    .then(data => {
+                                        let assignments = data.assessments;
+                                        for (let assignment of assignments) {
+                                            if (assignment.assignment_name == document.getElementById(`assignmentDropdown${i}`).value) {
+                                                submissionTemplate.assignment_id = assignment.assignment_id;
+                                                submissionData.push(submissionTemplate);
+                                                break;
+                                            }
+                                        }
+                                    })
+                                    .catch(error => {
+                                        throw error
+                                    });
+                            }
+                            break;
+                        }
+                    }
+                }));
+        }
+        Promise.allSettled(requestPromises)
+            .then(() => {
+                postData(('/api/data/cases/new/'), {
+                    'user_id': getGlobalAppHeadersValue('user_id'),
+                    'requests': submissionData
+                }).then(() => {
+                    window.location.href = '/student/'
+                }).catch(error => {
+                    throw error;
+                });
+            });
+    }
+
 }
 
 /**
@@ -415,15 +492,6 @@ export function generateStudentRequest(number, courseList) {
     const requestTypeTextBox = document.createElement("textarea");
     requestTypeTextBox.className = "textBox";
 
-    const requestTitle = document.createElement("span");
-    requestTitle.className = "text";
-    requestTitle.textContent = "Request Title";
-    
-    const requestTitleTextBox = document.createElement("textarea");
-    requestTitleTextBox.className = "textBox";
-    requestTitleTextBox.style = 'height:30px; resize:none'
-    requestTitleTextBox.id = `requestTitleTextBox${number}`
-
     const message = document.createElement("span");
     message.className = "text";
     message.textContent = "Message";
@@ -435,28 +503,40 @@ export function generateStudentRequest(number, courseList) {
     const suppDoc = document.createElement("p");
     suppDoc.className = "text";
     suppDoc.textContent = "Supporting Documents";
-
+    
     const supDocContainer = document.createElement("div");
     supDocContainer.id = `suppDocContainer${number}`;
-
+    
+    const table = document.createElement('table');
+    table.style.tableLayout = 'fixed'; // set the table layout to fixed
+    table.id = `table${number}`;
+    
+    const headerRow = table.insertRow();
+    for (const key in SUPP_DOC_HEADERS) {
+        const th = document.createElement('th');
+        th.innerText = SUPP_DOC_HEADERS[key];
+        headerRow.appendChild(th);
+    }
+    const emptyHeader = document.createElement('th');
+    emptyHeader.textContent = '';
+    headerRow.appendChild(emptyHeader);
+    
+    supDocContainer.appendChild(table);
+    
     const uploadButton = document.createElement('button');
     uploadButton.className = 'standardButton';
     uploadButton.id = `uploadBtn${number}`;
     uploadButton.innerText = 'Upload';
-
+    
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.id = `fileInput${number}`;
     fileInput.style.display = 'none'; // Hide the file input element
-
-    const fileContainer = document.createElement('div');
-    fileContainer.id = `fileContainer${number}`;
-
-    supDocContainer.appendChild(fileContainer)
-
+    
     supDocContainer.appendChild(fileInput);
-
-    // Append the upload button to the document body 
+    
+    supDocContainer.appendChild(document.createElement('br'));
+    
     supDocContainer.appendChild(uploadButton);
 
 
@@ -476,10 +556,6 @@ export function generateStudentRequest(number, courseList) {
     expandableBoxSection.appendChild(requestTypeDropdown);
     expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(assignment);
-    expandableBoxSection.appendChild(document.createElement("br"));
-    expandableBoxSection.appendChild(requestTitle);
-    expandableBoxSection.appendChild(document.createElement("br"));
-    expandableBoxSection.appendChild(requestTitleTextBox);
     expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(message);
     expandableBoxSection.appendChild(document.createElement("br"));
@@ -529,10 +605,8 @@ export function generateStudentRequest(number, courseList) {
     // Setup upload button and make sure the files uploaded are displayed correctly and are allowed to be removed
 
     // CHANGE UPLOAD URL TO WHATEVER IS CORRECT FOR OUR DATABASE
-    setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 
-    '/api/data/files/upload/');
-
-    fixStyling();
+    setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `table${number}`, 
+    '/api/data/files/upload/', '/api/data/files/remove/');
 
 }
 
@@ -552,17 +626,28 @@ export function generateStudentRequest(number, courseList) {
     assignment.appendChild(assignmentDropdown);
     assignment.appendChild(document.createElement("br"));
 
-    let courseCode = courseList[0]; // use the first course unless it has been changed
+    let courseCode;
+    if (courseList.length > 0) {
+        courseCode = courseList[0];
+    } else {
+        courseCode = "";
+    }
     const courseDropDown = document.getElementById(`courseDropdown${number}`);
-    
-    courseDropDown.addEventListener("change", function() {
-        courseCode = courseDropDown.value;
-    });
-
-    // Populate the dropdown
     loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
         .then(data => {
+            courseCode = courseDropDown.value;
             let courses = data.courses;
+            const requestDropdown = document.getElementById(`requestTypeDropdown${number}`);
+            const selectedRequestType = requestDropdown.value;
+            console.log(`first assessment dropdown population run, request type = ${selectedRequestType}`)
+            if (selectedRequestType == 'General Query' || selectedRequestType == 'Other') {
+                document.getElementById(`assignment${number}`).style.visibility = 'hidden';
+                //document.getElementById(`assignmentDropdown${number}`).style.visibility = 'hidden';
+                return;
+            } else {
+                document.getElementById(`assignment${number}`).style.visibility = 'visible';
+                //document.getElementById(`assignmentDropdown${number}`).style.visibility = 'visible';
+            }
             for (let course of courses) {
                 if (courseCode == course.course_code) {
                     loadData('/api/data/assessments/?courseid=' + course.course_id, {})
@@ -578,6 +663,41 @@ export function generateStudentRequest(number, courseList) {
                 }
             }
         });
+    
+    courseDropDown.addEventListener("change", function() {
+        loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
+            .then(data => {
+                
+                courseCode = courseDropDown.value;
+                let courses = data.courses;
+                const requestDropdown = document.getElementById(`requestTypeDropdown${number}`);
+                const selectedRequestType = requestDropdown.value;
+                console.log(`event listener triggered, request type = ${selectedRequestType}`)
+                if (selectedRequestType == 'General Query' || selectedRequestType == 'Other') {
+                    document.getElementById(`assignment${number}`).style.visibility = 'hidden';
+                    return;
+                } else {
+                    document.getElementById(`assignment${number}`).style.visibility = 'visible';
+                    //document.getElementById(`assignmentDropdown${number}`).style.visibility = 'visible';
+                }
+                for (let course of courses) {
+                    if (courseCode == course.course_code) {
+                        loadData('/api/data/assessments/?courseid=' + course.course_id, {})
+                            .then(data => {
+                                let assignments = data.assessments;
+                                document.getElementById(`assignmentDropdown${number}`).options.length = 0;
+                                assignments.forEach(assignment => {
+                                    const option = document.createElement('option');
+                                    option.textContent = assignment.assignment_name;
+                                    document.getElementById(`assignmentDropdown${number}`).appendChild(option);
+                                });
+                            });
+                        break;
+                    }
+                }
+            });
+    });
+
 }
 
 /**
@@ -593,6 +713,8 @@ function assignmentDropDownListener(number, courseList){
     requestDropDown.addEventListener("change", function() {
         const selectedValue = requestDropDown.value;
 
+        console.log(`selected request type = ${selectedValue}`)
+        
         // when the request type is any of these the user must pick the assignment as well
         if((selectedValue == "Extension") || 
            (selectedValue == "Remark") || 
@@ -602,9 +724,8 @@ function assignmentDropDownListener(number, courseList){
         // if the request type is any of the following any assignment dropdown much be removed
         else if((selectedValue == "General Query") ||
                   (selectedValue == "Other")){
-            while (assignment.firstChild) {
-                assignment.removeChild(assignment.firstChild);
-            }
+            // TODO
+            createAssignmentDropDown(number, []);
         }
     });
 }
@@ -613,48 +734,85 @@ function assignmentDropDownListener(number, courseList){
  * Handles functionality relating to the upload button for supporting documentation
  * @param {int} buttonId - HTML id for the upload button
  * @param {array} fileInputId - HTML id for the fileinput element
- * @param {int} fileContainerId - HTML id for the container which will display file information
+ * @param {int} tableId - HTML id for the table which will display file information
  * @param {array} uploadUrl - URL endpoint for uploading files
+ * @param {array} removeUrl - URL endpoint for removing files
  */
-function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
-    document.getElementById(buttonId).addEventListener('click', function() {
+function setupUploadButton(buttonId, fileInputId, tableId, uploadUrl, removeUrl) {
+    const buttonElement = document.getElementById(buttonId);
+    buttonElement.addEventListener('click', function() {
         document.getElementById(fileInputId).click();
     });
-    
+
     document.getElementById(fileInputId).addEventListener('change', function(event) {
         const file = event.target.files[0];
         const formData = new FormData();
         formData.append('user_id', getGlobalAppHeadersValue('user_id'));
         formData.append('file', file);
-        
+
         fetch(uploadUrl, {
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(() => {
-            const fileInfo = document.createElement('div');
-            fileInfo.innerHTML = `
-            <p>Filename: ${file.name}</p>
-            <p>Filesize: ${file.size} bytes</p>
-            <p>Datetime Uploaded: ${new Date().toISOString()}</p>
-            <button class="removeBtn">Remove</button>
-            `;
-            document.getElementById(fileContainerId).appendChild(fileInfo);
-            
-            fileInfo.querySelector('.removeBtn').addEventListener('click', function() {
-                fetch(uploadUrl, {
+            // Check if the table already exists
+            let table = document.getElementById(tableId)
+
+            // If the table does not exist, create a new one
+            if (!table) {
+                table = document.createElement('table');
+                table.style.tableLayout = 'fixed'; // set the table layout to fixed
+
+                const headerRow = table.insertRow();
+                for (const key in SUPP_DOC_HEADERS) {
+                    const th = document.createElement('th');
+                    th.innerText = SUPP_DOC_HEADERS[key];
+                    headerRow.appendChild(th);
+                }
+                const emptyHeader = document.createElement('th');
+                emptyHeader.textContent = '';
+                headerRow.appendChild(emptyHeader);
+            }
+
+            const row = table.insertRow();
+
+            const fileNameCell = row.insertCell();
+            fileNameCell.className = 'tableEntry fileNameCell';
+            fileNameCell.innerHTML = file.name;
+
+            const fileSizeCell = row.insertCell();
+            fileSizeCell.className = 'tableEntry';
+            fileSizeCell.innerHTML = formatBytes(file.size);
+
+            const removeCell = row.insertCell();
+            removeCell.className = 'tableEntry removeCell';
+            const removeButton = document.createElement('button');
+            removeButton.className = 'standardButton removeButton'; // Make sure the class name matches the one used in the event listener
+            removeButton.innerText = 'Remove';
+            removeCell.style.width = '50px'
+            removeCell.appendChild(removeButton);
+
+            // Handle remove functionality for the remove button
+            removeButton.addEventListener('click', function() {
+                const row = removeButton.parentNode.parentNode; // Get the parent row of the remove button
+                const fileName = row.querySelector('.fileNameCell').innerText; // Get the file name from the row
+
+                fetch(removeUrl, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ filename: file.name }),
+                    body: JSON.stringify({ filename: fileName }),
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        fileInfo.remove();
+                .then(response => {
+                    if (response.ok) {
+                        row.remove(); // remove the table row
                     }
+                })
+                .then(() => {
+                    // Reset the file input value to allow reuploading the same file immediately
+                    document.getElementById(fileInputId).value = '';
                 })
                 .catch(error => {
                     throw error;
@@ -666,6 +824,16 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
         });
     });
 }
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Handles functionality relating to the download button for supporting documentation
@@ -690,58 +858,7 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
 //     });
 // }
 
-/**
- * Pushes information to the database after a case is submitted
- * @param {int} numRequests - number of requests in this case
- */
-export function handleCaseSubmission(numRequests) {
 
-    let requestsData = new Array();
-    let requestsPromises = [];
-
-    for (let i=1; i <= numRequests; i++) {
-
-        let promise = loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
-            .then(data => {
-                let courses = data.courses;
-                for (let course of courses) {
-                    if (course.course_code == document.getElementById(`courseDropdown${i}`).value) {
-                        loadData('/api/data/assessments/?courseid=' + course.course_id, {})
-                            .then(data => {
-                                let assignments = data.assessments;
-                                let assignmentId = -1;
-
-                                assignments.forEach(assignment => {
-                                    if(assignment.assignment_name == document.getElementById(`assignmentDropdown${i}`).value){
-                                        assignmentId = assignment.assignment_id;
-                                    }
-                                });
-
-                                let requestData = {
-                                    'courseId': course.course_id,
-                                    'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
-                                    'assignmentId': assignmentId,
-                                    'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
-                                    'message': document.getElementById(`messageTextBox${i}`).value,
-                                    'supportingDocuments': -1,
-                                }
-                                requestsData.push(requestData);
-
-                            });
-                        break;
-                    }
-                }
-            });
-        requestsPromises.push(promise);
-    }
-
-    Promise.all(requestsPromises)
-        .then(() => {
-            // All requests are completed
-            postNewCase({'requests': requestsData});
-        });
-
-}
 
 /**
  * Pushes edits made to a request
@@ -787,62 +904,65 @@ export function saveEdits(currRequest, prevVersions) {
 /**
  * Generates the table which contains AAPs and the ability to upload and download them
  * @param {array} aapData - list of AAP JSONs
+ * @param {string} uploadUrl - URL to upload the files
+ * @param {string} removeUrl - URL to remove files
  */
-export function generateAAPTable(aapData) {
+export function generateAAPTable(aapData, uploadUrl, removeUrl) {
     const tableContainer = document.getElementById('aapTableContainer');
-	const table = document.createElement('table');
-	
-	// Create table header row
-	const headerRow = table.insertRow();
+    const table = document.createElement('table');
+    
+    // Create table header row
+    const headerRow = table.insertRow();
 
-	for (const key in AAP_TABLE_HEADERS) {
-		const th = document.createElement('th');
-		th.innerText = AAP_TABLE_HEADERS[key]
-		headerRow.appendChild(th);
-	}
-	
-	// Add two empty headers for the button columns
-	headerRow.appendChild(document.createElement('th'));
+    for (const key in AAP_TABLE_HEADERS) {
+        const th = document.createElement('th');
+        th.innerText = AAP_TABLE_HEADERS[key]
+        headerRow.appendChild(th);
+    }
+    
+    // Add two empty headers for the button columns
+    headerRow.appendChild(document.createElement('th'));
     headerRow.appendChild(document.createElement('th'));
     
     var aapNum = 0;
-	
-	aapData.forEach(aap => {
-		const row = table.insertRow();
-		
-        let file_name = aap.file_name;
-        let file_type = aap.file_type;
-        let file_data = aap.file_data;
-
+    
+    aapData.forEach((aap, index) => {
+        const row = table.insertRow();
         
+        let file_name = aap.file_name;
+        let file_type = aap.file_size;
+        let file_data = aap.file_data;
 
         // Create a Blob from the base64 data
         let blob = new Blob([atob(file_data)], {type: file_type});
 
+        const fileNameCell = row.insertCell();
+        fileNameCell.className = 'tableEntry fileNameCell';
+        fileNameCell.innerHTML = file_name;
 
-		const fileNameCell = row.insertCell();
-		fileNameCell.className = 'tableEntry';
-		fileNameCell.innerHTML = file_name;
+        const fileSizeCell = row.insertCell();
+        fileSizeCell.className = 'tableEntry';
+        fileSizeCell.innerHTML = formatBytes(blob.size)
 
-		const fileTypeCell = row.insertCell();
-		fileTypeCell.className = 'tableEntry';
-		fileTypeCell.innerHTML = file_type
-
-		// Download button
-		const downloadCell = row.insertCell();
-		downloadCell.className = 'tableEntry';
-		const downloadButton = document.createElement('button');
-		downloadButton.className = 'standardButton';
+        // Download button
+        const downloadCell = row.insertCell();
+        downloadCell.className = 'tableEntry';
+        const downloadButton = document.createElement('button');
+        downloadButton.className = 'standardButton';
         downloadButton.id = `downloadButton${aapNum}`
-		downloadButton.innerText = 'Download';
-
+        downloadButton.innerText = 'Download';
         downloadCell.appendChild(downloadButton)
 
-               // Handle download functionality for the download button
+        // Remove button
+        const removeCell = row.insertCell();
+        removeCell.className = 'tableEntry';
+        const removeButton = document.createElement('button');
+        removeButton.className = 'standardButton';
+        removeButton.innerText = 'Remove';
+        removeCell.appendChild(removeButton)
 
-        // Add an onclick event to the downloadButton
+        // Handle download functionality for the download button
         downloadButton.onclick = function() {
-            
             // Create a URL for the Blob
             let url = URL.createObjectURL(blob);
             
@@ -857,80 +977,139 @@ export function generateAAPTable(aapData) {
             // Trigger the download
             a.click();
 
+            // Remove the link from the body
+            document.body.removeChild(a);
         };
-        aapNum += 1;
 
-		// Remove button
-		const removeCell = row.insertCell();
-		removeCell.className = 'tableEntry';
-		const removeButton = document.createElement('button');
-		removeButton.className = 'standardButton';
-		removeButton.innerText = 'Remove';
-		removeButton.onclick = function () {
-			// NEED TO ADD REMOVE FUNCTIONALITY HERE
-            // Assuming that the item object has an id property
-            fetch('/api/data/files/remove?fileid=' + aap.id, {
+        // Handle remove functionality for the remove button
+        removeButton.onclick = function() {
+            fetch(removeUrl, {
                 method: 'DELETE',
-            }).then(response => response.json())
-                .then(() => {
-                    // Handle the response data here
-                    // TODO: manipulate data
-                })
-                .catch((error) => {
-                    throw error;
-                });
-        }
-        removeCell.appendChild(removeButton)
-	});
-
-    // Insert upload row
-    const row = table.insertRow();
-    for (let i = 0; i < 5; i++) {
-        if (i == 3) {
-            // Add the "Upload" button to the last cell
-            const uploadCell = row.insertCell();
-            uploadCell.className = 'tableEntry';
-            const uploadButton = document.createElement('button');
-            uploadButton.className = 'standardButton';
-            uploadButton.innerText = 'Upload';
-            uploadButton.onclick = function () {
-                // NEED TO ADD UPLOAD FUNCTIONALITY HERE
-                // Get the files from the input field
-                let files = document.querySelector('input[type="file"]').files;
-
-                let formData = new FormData();
-                formData.append('user_id', 'YourUserIdHere');
-
-                // Append each file to the form data
-                for(let i = 0; i < files.length; i++) {
-                    let file = files[i];
-                    formData.append('fileName[]', file, file.name);
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename: file_name }),
+            })
+            .then(response => {
+                response.json
+                if (response.ok) {
+                    table.deleteRow(index + 1); // +1 because the first row is the header
                 }
+            })
+        }
 
-                fetch('api/data/files/upload', {
-                    method: 'POST',
-                    body: formData
+        aapNum += 1;
+    });
+    
+    // Append the table to the container
+    tableContainer.appendChild(table);
+
+    // Create a new upload button below the table
+    const uploadButton = document.createElement('button');
+    uploadButton.className = 'standardButton';
+    uploadButton.innerText = 'Upload';
+    tableContainer.appendChild(document.createElement('br'));
+    tableContainer.appendChild(uploadButton);
+
+    // Create a hidden file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.style.display = 'none';
+    tableContainer.appendChild(fileInput);
+
+    // Setup the upload button
+    uploadButton.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    // Handle upload button click
+    fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append('user_id', getGlobalAppHeadersValue('user_id'));
+        formData.append('file', file);
+
+        fetch(uploadUrl, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(() => {
+            const row = table.insertRow();
+
+            const fileNameCell = row.insertCell();
+            fileNameCell.className = 'tableEntry fileNameCell';
+            fileNameCell.innerHTML = file.name;
+
+            const fileSizeCell = row.insertCell();
+            fileSizeCell.className = 'tableEntry';
+            fileSizeCell.innerHTML = formatBytes(file.size);
+
+            // Download button
+            const downloadCell = row.insertCell();
+            downloadCell.className = 'tableEntry';
+            const downloadButton = document.createElement('button');
+            downloadButton.className = 'standardButton';
+            downloadButton.innerText = 'Download';
+            downloadCell.appendChild(downloadButton)
+
+            // Remove button
+            const removeCell = row.insertCell();
+            removeCell.className = 'tableEntry';
+            const removeButton = document.createElement('button');
+            removeButton.className = 'standardButton';
+            removeButton.innerText = 'Remove';
+            removeCell.appendChild(removeButton)
+
+            // Handle download functionality for the download button
+            downloadButton.onclick = function() {
+                // Create a URL for the Blob
+                let url = URL.createObjectURL(file);
+                
+                // Create a link with a download attribute
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = file.name;
+                
+                // Append the link to the body
+                document.body.appendChild(a);
+                
+                // Trigger the download
+                a.click();
+
+                // Remove the link from the body
+                document.body.removeChild(a);
+            };
+
+            // Handle remove functionality for the remove button
+            removeButton.onclick = function() {
+                fetch(removeUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filename: file.name }),
                 })
-                .then(response => response.json())
-                .then(() => {
-                    // Handle the response data here
-                    // TODO: manipulate data
+                .then(response => { 
+                    response.json()
+                    if (response.ok) {
+                        row.remove(); // remove the table row          
+                    }
+                }).then(() => {
+                    // Reset the file input value to allow reuploading the same file immediately
+                    fileInput.value = '';
                 })
-                .catch((error) => {
+                .catch(error => {
                     throw error;
                 });
-            }
-            uploadCell.appendChild(uploadButton)
-        } else {
-            const cell = row.insertCell();
-            cell.className = 'tableEntry'; // Apply the CSS class to the cell
-            cell.innerHTML = '';
-        }
-    }
-	
-	// Append the table to the container
-	tableContainer.appendChild(table);
+            };
+        })
+        .catch(error => {
+            throw error;
+        });
+    });
 }
+
 
 /**
  * Generates a subject box which instructors can use to access subjects from the home page
@@ -958,7 +1137,6 @@ export function generateSubjectBox(subject) {
 	rightItems.classList.add('rightItems');
   
 	// Create the "View Requests & Queries" button
-    // Will have to hide or grey out and have popup on hover if tutor has not been given permission by subject coordinator to view any requests
 	const viewRequestsButton = document.createElement('button');
 	viewRequestsButton.classList.add('standardButton');
 	viewRequestsButton.textContent = 'View Requests & Queries';
@@ -967,19 +1145,26 @@ export function generateSubjectBox(subject) {
 		window.location.href = '/instructor/view-reqs/' + subject.course_id; 
 	};
   
+    // TODO:
 	// Create the "Settings" button
     // Will have to hide or grey out and have popup on hover if instructor is not subject coordinator
-	const settingsButton = document.createElement('button');
-	settingsButton.classList.add('standardButton');
-	settingsButton.textContent = 'Settings';
-	settingsButton.style = 'font-size:16px'
-	settingsButton.onclick = function() {
-		window.location.href = '/instructor/subject-settings/' + subject.course_id; 
-	};
+    loadData('/api/data/user/enrollment?courseid=' + subject.course_id + '&userid=' + getGlobalAppHeadersValue('user_id'), {})
+    .then(data => {
+        if (data.enrollment_role == "SCOORD") {
+            const settingsButton = document.createElement('button');
+            settingsButton.classList.add('standardButton');
+            settingsButton.textContent = 'Settings';
+            settingsButton.style = 'font-size:16px'
+            settingsButton.onclick = function() {
+                window.location.href = '/instructor/subject-settings/' + subject.course_id; 
+            };
+	        rightItems.appendChild(settingsButton);
+        }
+    });
+
   
 	// Append the elements to their respective parent elements
 	rightItems.appendChild(viewRequestsButton);
-	rightItems.appendChild(settingsButton);
 	standardBoxContents.appendChild(subjectCodeElement);
 	standardBoxContents.appendChild(rightItems);
 	standardBox.appendChild(standardBoxContents);
@@ -988,7 +1173,6 @@ export function generateSubjectBox(subject) {
 	document.getElementById('subjectBoxContainer').appendChild(standardBox);
 	document.getElementById('subjectBoxContainer').appendChild(document.createElement('br'));
 
-	fixStyling();
 }
 
 /**
@@ -1121,9 +1305,9 @@ export function generateRequestTable(threads, type) {
     // Add thread data
     threads.forEach(thread => {
         
-        // Check if this thread is meant to be displayed for this instructor or not, if not then skip this request
+        // Check if this thread is meant to be displayed for this instructor or not
         if (shouldDisplayRequest(thread.request_type, thread.complex_case, thread.course_id) == 1) {
-            // Otherwise proceeding with displaying the relevant information in this table row
+            // Display the relevant information in this table row
             const row = table.insertRow();
             
             const complexCaseCell = row.insertCell();
@@ -1209,29 +1393,27 @@ export function shouldDisplayRequest(requestType, isComplex, courseId) {
     
     // Retrieve the request permissions for the role of the current instructor
     loadData('/api/data/courses/?courseid=' + courseId + '&preferences=true', {})
-    .then(prefs => {
+    .then(data => {
+        prefs = data.coursepreferences;
 
-         // Get the role of the instructor (are they a tutor or a subject coordinator)
-        loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
-            .then(data => {
-            let role = data.enrollment_role.toLowerCase();
-    
-            // Use the course preferences of their role to determine which requests to display to them
+        // Get the role of the instructor (are they a tutor or a subject coordinator)
+        loadData('/api/data/user/enrollment?courseid=' + subject.course_id + '&userid=' + getGlobalAppHeadersValue('user_id'), {})
+        .then(data => {
+            let role = data.enrollment_role;
             let keyName;
             if (requestType == "QUIZCODE") {
                 keyName = "quiz" + `_${role}`;
-            } else {
+            }
+            else {
                 keyName = requestType.toLowerCase() + `_${role}`;
             }
-        
-            if ((role == 'tutor') || (role == 'scoord' && isComplex == 1)) {
+            if ((role == 'TUTOR') || (role == 'SCOORD' && isComplex == 1)) {
                 for (let key in prefs) {
                     if (key == keyName) {
                         return prefs[key];
                     }
                 }
-            } 
-
+            }
         });
     });
 }
@@ -1439,8 +1621,6 @@ export function populateAssessmentDropdown(assessmentList) {
     });
     assessmentDropdown.value = 'Global'
 
-    fixStyling();
-
 }
 
 /**
@@ -1476,15 +1656,19 @@ function respond(threadId, response){
 }
 
 /**
- * Posts a new case to the database 
- * @param {JSON} dataToSend - contains information about a case that needs to be submitted to the database
+ * Function to format size in bytes to KB, MB, GB, etc.
+ * @param {number} bytes - number of bytes
+ * @param {number} decimals - number of decimal places
+ * @returns {string} - returns the formatted file size
  */
-function postNewCase(dataToSend){
-    return postData(('/api/data/cases/new/'), dataToSend)
-        .then(() => {
-            return true;
-        })
-        .catch(error => {
-            throw error;
-        });
+function formatBytes(bytes, decimals = 2) {
+    if (!+bytes) return '0 Bytes';
+    
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
