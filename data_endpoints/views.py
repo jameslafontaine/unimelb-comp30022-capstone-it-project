@@ -484,41 +484,25 @@ def get_threads_user_endpoint(request):
             if check_param_not_integer(request.GET.get('courseid')):
                 return JsonResponse({'message': 'Invalid request.'}, status = 400)
             if not check_param_not_integer(request.GET.get('courseid')):
-                result = {
-                    "threads": [
-                        {
-                            'thread_id': 11,
-                            'case_id': 11,
-                            'course_id': 31,
-                            'date_updated': "11-09-2023",
-                            'request_type':'Extension', 
-                            'complex_case':1,
-                            'current_status':'PENDING',
-                            'assignment_id': 1,
-                        },
-                        {
-                            'thread_id': 12,
-                            'case_id': 12,
-                            'course_id': 31,
-                            'date_updated': "01-19-2023",
-                            'request_type':'Query',
-                            'complex_case':1,
-                            'current_status':'PENDING',
-                            'assignment_id':2,
-                        },
-                        {
-                            'thread_id': 13,
-                            'case_id': 12,
-                            'course_id': 31,
-                            'date_updated': "01-19-2023",
-                            'request_type':'Other',
-                            'complex_case':1,
-                            'current_status':'REJECTED',
-                            'assignment_id':3,
-                        }
-                    ]
-                }
-                return JsonResponse(result)
+                cursor = connection.cursor(dictionary=True)
+                cursor.execute("SELECT * FROM `db`.`Thread` WHERE `Thread`.`course_id` = %s", (request.GET.get('courseid'),))
+                rows = cursor.fetchall()
+                resultList = []
+                for row in rows:
+                    resultList.append({
+                        'thread_id': row['thread_id'],
+                        'case_id': row['case_id'],
+                        'course_id': row['course_Id'],
+                        'date_updated': row['date_updated'],
+                        'request_type': row['request_type'], 
+                        'complex_case': row['complex_case'],
+                        'current_status': row['current_status'],
+                        'assignment_id': row['assignment_id'],
+                    })
+                cursor.close()
+                return JsonResponse({
+                    'threads': resultList
+                })
 
     if len(request.GET) in [1, 2] and request.GET.get('userid') and request.GET.get('status'):
         if check_param_not_integer(request.GET.get('userid')) or \
