@@ -86,3 +86,24 @@ th:last-child::after {
 th:not(:last-child) {
     border-right: 1px solid rgb(0, 0, 0); /* Add white lines between columns */
 }
+
+.filenameCell {
+    width: 100px; 
+}
+
+.removeCell {
+    width: 20px;
+}
+
+.tableEntry {
+    padding: 8px;
+    border: 1px solid black;
+  }
+  
+.fileNameCell {
+    font-weight: normal; 
+}
+  
+#aapTableContainer {
+    margin-top: 20px;
+}

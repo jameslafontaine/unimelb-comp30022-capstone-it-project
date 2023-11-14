@@ -210,22 +210,10 @@ export function generateSuppDocTable(files, number) {
         
         let formatted_file_size = formatBytes(file_size);
         
-        // Function to format size in bytes to KB, MB, GB, etc.
-        function formatBytes(bytes, decimals = 2) {
-            if (!+bytes) return '0 Bytes';
-            
-            const k = 1024;
-            const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-            
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            
-            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-        }
 		const row = table.insertRow();
 
         const fileNameCell = row.insertCell();
-        fileNameCell.className = 'tableEntry';
+        fileNameCell.className = 'tableEntry fileNameCell';
         fileNameCell.innerHTML = file_name;
 
         const fileSizeCell = row.insertCell();
@@ -622,7 +610,7 @@ export function generateStudentRequest(number, courseList) {
 
     // CHANGE UPLOAD URL TO WHATEVER IS CORRECT FOR OUR DATABASE
     setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 
-    '/api/data/files/upload/');
+    '/api/data/files/upload/', '/api/data/files/remove/');
 
 }
 
@@ -725,8 +713,9 @@ function assignmentDropDownListener(number, courseList){
  * @param {int} fileContainerId - HTML id for the container which will display file information
  * @param {array} uploadUrl - URL endpoint for uploading files
  */
-function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
-    document.getElementById(buttonId).addEventListener('click', function() {
+function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl, removeUrl) {
+    const buttonElement = document.getElementById(buttonId);
+    buttonElement.addEventListener('click', function() {
         document.getElementById(fileInputId).click();
     });
     
@@ -742,17 +731,60 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
         })
         .then(response => response.json())
         .then(() => {
-            const fileInfo = document.createElement('div');
-            fileInfo.innerHTML = `
-            <p>Filename: ${file.name}</p>
-            <p>Filesize: ${file.size} bytes</p>
-            <p>Datetime Uploaded: ${new Date().toISOString()}</p>
-            <button class="removeBtn">Remove</button>
-            `;
-            document.getElementById(fileContainerId).appendChild(fileInfo);
+
+            // Check if the table already exists
+            let table = buttonElement.parentNode.getElementsByTagName('table')[0];
             
-            fileInfo.querySelector('.removeBtn').addEventListener('click', function() {
-                fetch(uploadUrl, {
+            // If the table does not exist, create a new one
+            if (!table) {
+                table = document.createElement('table');
+                table.style.tableLayout = 'fixed'; // set the table layout to fixed
+                
+                // Check if the table already has a header
+                let hasHeader = table.getElementsByTagName('tr').length > 0;
+                
+                // If the table does not have a header, add one
+                if (!hasHeader) {
+                    const headerRow = table.insertRow();
+                    for (const key in SUPP_DOC_HEADERS) {
+                        const th = document.createElement('th');
+                        th.innerText = SUPP_DOC_HEADERS[key];
+                        headerRow.appendChild(th);
+                    }
+                    const emptyHeader = document.createElement('th');
+                    emptyHeader.textContent = '';
+                    headerRow.appendChild(emptyHeader);
+                }
+
+                // Append the table just above the upload button
+                buttonElement.parentNode.insertBefore(table, buttonElement);
+
+                // Create space between table and upload button
+                const lineBreak = document.createElement('br');
+                buttonElement.parentNode.insertBefore(lineBreak, buttonElement);
+            }
+
+            const row = table.insertRow();
+
+            const fileNameCell = row.insertCell();
+            fileNameCell.className = 'tableEntry fileNameCell';
+            fileNameCell.innerHTML = file.name;
+
+            const fileSizeCell = row.insertCell();
+            fileSizeCell.className = 'tableEntry';
+            fileSizeCell.innerHTML = formatBytes(file.size);
+
+            const removeCell = row.insertCell();
+            removeCell.className = 'tableEntry removeCell';
+            const removeButton = document.createElement('button');
+            removeButton.className = 'standardButton';
+            removeButton.innerText = 'Remove';
+            removeCell.style.width = '50px'
+            removeCell.appendChild(removeButton);
+
+            // Handle remove functionality for the remove button
+            removeButton.onclick = function() {
+                fetch(removeUrl, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -762,19 +794,29 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        fileInfo.remove();
+                        row.remove(); // remove the table row
+                        // Remove the header if there are no files left
+                        if (table.getElementsByTagName('tr').length === 1) {
+                            table.deleteRow(0);
+                        }
                     }
                 })
                 .catch(error => {
                     throw error;
                 });
-            });
+            };
         })
         .catch(error => {
             throw error;
         });
     });
 }
+
+
+
+
+
+
 
 /**
  * Handles functionality relating to the download button for supporting documentation
@@ -845,62 +887,65 @@ export function saveEdits(currRequest, prevVersions) {
 /**
  * Generates the table which contains AAPs and the ability to upload and download them
  * @param {array} aapData - list of AAP JSONs
+ * @param {string} uploadUrl - URL to upload the files
+ * @param {string} removeUrl - URL to remove files
  */
-export function generateAAPTable(aapData) {
+export function generateAAPTable(aapData, uploadUrl, removeUrl) {
     const tableContainer = document.getElementById('aapTableContainer');
-	const table = document.createElement('table');
-	
-	// Create table header row
-	const headerRow = table.insertRow();
+    const table = document.createElement('table');
+    
+    // Create table header row
+    const headerRow = table.insertRow();
 
-	for (const key in AAP_TABLE_HEADERS) {
-		const th = document.createElement('th');
-		th.innerText = AAP_TABLE_HEADERS[key]
-		headerRow.appendChild(th);
-	}
-	
-	// Add two empty headers for the button columns
-	headerRow.appendChild(document.createElement('th'));
+    for (const key in AAP_TABLE_HEADERS) {
+        const th = document.createElement('th');
+        th.innerText = AAP_TABLE_HEADERS[key]
+        headerRow.appendChild(th);
+    }
+    
+    // Add two empty headers for the button columns
+    headerRow.appendChild(document.createElement('th'));
     headerRow.appendChild(document.createElement('th'));
     
     var aapNum = 0;
-	
-	aapData.forEach(aap => {
-		const row = table.insertRow();
-		
-        let file_name = aap.file_name;
-        let file_type = aap.file_type;
-        let file_data = aap.file_data;
-
+    
+    aapData.forEach((aap, index) => {
+        const row = table.insertRow();
         
+        let file_name = aap.file_name;
+        let file_type = aap.file_size;
+        let file_data = aap.file_data;
 
         // Create a Blob from the base64 data
         let blob = new Blob([atob(file_data)], {type: file_type});
 
+        const fileNameCell = row.insertCell();
+        fileNameCell.className = 'tableEntry fileNameCell';
+        fileNameCell.innerHTML = file_name;
 
-		const fileNameCell = row.insertCell();
-		fileNameCell.className = 'tableEntry';
-		fileNameCell.innerHTML = file_name;
+        const fileSizeCell = row.insertCell();
+        fileSizeCell.className = 'tableEntry';
+        fileSizeCell.innerHTML = formatBytes(blob.size)
 
-		const fileTypeCell = row.insertCell();
-		fileTypeCell.className = 'tableEntry';
-		fileTypeCell.innerHTML = file_type
-
-		// Download button
-		const downloadCell = row.insertCell();
-		downloadCell.className = 'tableEntry';
-		const downloadButton = document.createElement('button');
-		downloadButton.className = 'standardButton';
+        // Download button
+        const downloadCell = row.insertCell();
+        downloadCell.className = 'tableEntry';
+        const downloadButton = document.createElement('button');
+        downloadButton.className = 'standardButton';
         downloadButton.id = `downloadButton${aapNum}`
-		downloadButton.innerText = 'Download';
-
+        downloadButton.innerText = 'Download';
         downloadCell.appendChild(downloadButton)
 
-               // Handle download functionality for the download button
+        // Remove button
+        const removeCell = row.insertCell();
+        removeCell.className = 'tableEntry';
+        const removeButton = document.createElement('button');
+        removeButton.className = 'standardButton';
+        removeButton.innerText = 'Remove';
+        removeCell.appendChild(removeButton)
 
-        // Add an onclick event to the downloadButton
+        // Handle download functionality for the download button
         downloadButton.onclick = function() {
-            
             // Create a URL for the Blob
             let url = URL.createObjectURL(blob);
             
@@ -915,80 +960,140 @@ export function generateAAPTable(aapData) {
             // Trigger the download
             a.click();
 
+            // Remove the link from the body
+            document.body.removeChild(a);
         };
-        aapNum += 1;
 
-		// Remove button
-		const removeCell = row.insertCell();
-		removeCell.className = 'tableEntry';
-		const removeButton = document.createElement('button');
-		removeButton.className = 'standardButton';
-		removeButton.innerText = 'Remove';
-		removeButton.onclick = function () {
-			// NEED TO ADD REMOVE FUNCTIONALITY HERE
-            // Assuming that the item object has an id property
-            fetch('/api/data/files/remove?fileid=' + aap.id, {
+        // Handle remove functionality for the remove button
+        removeButton.onclick = function() {
+            fetch(removeUrl, {
                 method: 'DELETE',
-            }).then(response => response.json())
-                .then(() => {
-                    // Handle the response data here
-                    // TODO: manipulate data
-                })
-                .catch((error) => {
-                    throw error;
-                });
-        }
-        removeCell.appendChild(removeButton)
-	});
-
-    // Insert upload row
-    const row = table.insertRow();
-    for (let i = 0; i < 5; i++) {
-        if (i == 3) {
-            // Add the "Upload" button to the last cell
-            const uploadCell = row.insertCell();
-            uploadCell.className = 'tableEntry';
-            const uploadButton = document.createElement('button');
-            uploadButton.className = 'standardButton';
-            uploadButton.innerText = 'Upload';
-            uploadButton.onclick = function () {
-                // NEED TO ADD UPLOAD FUNCTIONALITY HERE
-                // Get the files from the input field
-                let files = document.querySelector('input[type="file"]').files;
-
-                let formData = new FormData();
-                formData.append('user_id', 'YourUserIdHere');
-
-                // Append each file to the form data
-                for(let i = 0; i < files.length; i++) {
-                    let file = files[i];
-                    formData.append('fileName[]', file, file.name);
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename: file_name }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    table.deleteRow(index + 1); // +1 because the first row is the header
                 }
+            })
+        }
 
-                fetch('api/data/files/upload', {
-                    method: 'POST',
-                    body: formData
+        aapNum += 1;
+    });
+    
+    // Append the table to the container
+    tableContainer.appendChild(table);
+
+    // Create a new upload button below the table
+    const uploadButton = document.createElement('button');
+    uploadButton.className = 'standardButton';
+    uploadButton.innerText = 'Upload';
+    tableContainer.appendChild(document.createElement('br'));
+    tableContainer.appendChild(uploadButton);
+
+    // Create a hidden file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.style.display = 'none';
+    tableContainer.appendChild(fileInput);
+
+    // Setup the upload button
+    uploadButton.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    // Handle upload button click
+    fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append('user_id', getGlobalAppHeadersValue('user_id'));
+        formData.append('file', file);
+
+        fetch(uploadUrl, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(() => {
+            const row = table.insertRow();
+
+            const fileNameCell = row.insertCell();
+            fileNameCell.className = 'tableEntry fileNameCell';
+            fileNameCell.innerHTML = file.name;
+
+            const fileSizeCell = row.insertCell();
+            fileSizeCell.className = 'tableEntry';
+            fileSizeCell.innerHTML = formatBytes(file.size);
+
+            // Download button
+            const downloadCell = row.insertCell();
+            downloadCell.className = 'tableEntry';
+            const downloadButton = document.createElement('button');
+            downloadButton.className = 'standardButton';
+            downloadButton.innerText = 'Download';
+            downloadCell.appendChild(downloadButton)
+
+            // Remove button
+            const removeCell = row.insertCell();
+            removeCell.className = 'tableEntry';
+            const removeButton = document.createElement('button');
+            removeButton.className = 'standardButton';
+            removeButton.innerText = 'Remove';
+            removeCell.appendChild(removeButton)
+
+            // Handle download functionality for the download button
+            downloadButton.onclick = function() {
+                // Create a URL for the Blob
+                let url = URL.createObjectURL(file);
+                
+                // Create a link with a download attribute
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = file.name;
+                
+                // Append the link to the body
+                document.body.appendChild(a);
+                
+                // Trigger the download
+                a.click();
+
+                // Remove the link from the body
+                document.body.removeChild(a);
+            };
+
+            // Handle remove functionality for the remove button
+            removeButton.onclick = function() {
+                fetch(removeUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filename: file.name }),
                 })
                 .then(response => response.json())
-                .then(() => {
-                    // Handle the response data here
-                    // TODO: manipulate data
+                .then(data => {
+                    if (data.success) {
+                        row.remove(); // remove the table row
+                        // Remove the header if there are no files left
+                        if (table.getElementsByTagName('tr').length === 1) {
+                            table.deleteRow(0);
+                        }
+                    }
                 })
-                .catch((error) => {
+                .catch(error => {
                     throw error;
                 });
-            }
-            uploadCell.appendChild(uploadButton)
-        } else {
-            const cell = row.insertCell();
-            cell.className = 'tableEntry'; // Apply the CSS class to the cell
-            cell.innerHTML = '';
-        }
-    }
-	
-	// Append the table to the container
-	tableContainer.appendChild(table);
+            };
+        })
+        .catch(error => {
+            throw error;
+        });
+    });
 }
+
 
 /**
  * Generates a subject box which instructors can use to access subjects from the home page
@@ -1538,4 +1643,22 @@ function respond(threadId, response){
         .catch(error => {
             throw error;
         });
+}
+
+/**
+ * Function to format size in bytes to KB, MB, GB, etc.
+ * @param {number} bytes - number of bytes
+ * @param {number} decimals - number of decimal places
+ * @returns {string} - returns the formatted file size
+ */
+function formatBytes(bytes, decimals = 2) {
+    if (!+bytes) return '0 Bytes';
+    
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }

@@ -229,7 +229,7 @@ export function viewAAPs() {
     createHeader('student');
     loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id') + '?aaps=true', {})
         .then(data => {
-            generateAAPTable(data.aaps);
+            generateAAPTable(data.aaps, '/api/data/files/upload/', '/api/data/files/remove/',);
             fixStyling();
         })
         .catch(() => {
@@ -240,7 +240,7 @@ export function viewAAPs() {
             };
     
             // Generate the AAP table with the dummy data
-            generateAAPTable(dummyData.aaps);
+            generateAAPTable(dummyData.aaps, '/api/data/files/upload/', '/api/data/files/remove/');
             fixStyling();
 
         });
@@ -592,7 +592,7 @@ export function viewProfile() {
     
     loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id')+ '?aaps=true', {})
         .then(data => {
-            generateAAPTable(data.aaps);
+            generateAAPTable(data.aaps, '/api/data/files/upload/', '/api/data/files/remove/');
         }).catch(() => {
             // Use a dummy placeholder JSON
             let dummyData = {
@@ -600,7 +600,7 @@ export function viewProfile() {
             };
     
             // Generate the AAP table with the dummy data
-            generateAAPTable(dummyData.aaps);
+            generateAAPTable(dummyData.aaps, '/api/data/files/upload/', '/api/data/files/remove/');
             fixStyling();
         });
 
