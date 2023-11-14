@@ -432,7 +432,7 @@ export function handleCaseSubmission(numRequests) {
                                     });
                             }
                             // DEBUGGING LINE
-                            console.log(`Assignment id = ${assignment.assignment_id}, + this is the end of dealing with this request in the loop`)
+                            //console.log(`Assignment id = ${assignment.assignment_id}, + this is the end of dealing with this request in the loop`)
                             break;
                         }
                     }
@@ -1035,14 +1035,14 @@ export function generateSubjectBox(subject) {
 		window.location.href = '/instructor/subject-settings/' + subject.course_id; 
 	};
 
-    loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
-    .then(data => {
-        let role = data.enrollment_role.toLowerCase();
+    // loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
+    // .then(data => {
+    //     let role = data.enrollment_role.toLowerCase();
 
-        if (role == 'tutor') {
-            settingsButton.style.display = 'none';
-        }
-    })
+    //     if (role == 'tutor') {
+    //         settingsButton.style.display = 'none';
+    //     }
+    // })
 
   
 	// Append the elements to their respective parent elements
