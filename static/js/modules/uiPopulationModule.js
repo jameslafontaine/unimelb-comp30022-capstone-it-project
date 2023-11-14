@@ -4,7 +4,6 @@
  * Description: Functions which generate and deal with the user interface
  */
 
-import { fixStyling } from './webHeaderModule.js';
 import { getGlobalAppHeadersValue } from './helperFunctionModule.js';
 import { AAP_TABLE_HEADERS, CASE_TABLE_HEADERS, REQUEST_TABLE_HEADERS, SUPP_DOC_HEADERS } from './constantsModule.js'
 import { loadData, postData, putData } from './dataModule.js';
@@ -52,26 +51,20 @@ export function generateStudentCases(cases) {
 
         // Create table header row
         const headerRow = table.insertRow();
+        for (const key in CASE_TABLE_HEADERS) {
+            const th = document.createElement('th');
+            th.innerText = CASE_TABLE_HEADERS[key];
+            headerRow.appendChild(th);
+        }
+        const emptyHeader = document.createElement('th');
+        emptyHeader.textContent = '';
+        headerRow.appendChild(emptyHeader);
 
-        // wait for the requests to load in and then continue
+        // Create table data rows
         loadData('/api/data/cases/?caseid=' + cases[i].case_id + '&threads=true', {})
             .then(data => {                
-                let threads = data.threads;
-
-                // Make the table headers
-
-                for (const key in CASE_TABLE_HEADERS) {
-                    const th = document.createElement('th');
-                    th.innerText = CASE_TABLE_HEADERS[key];
-                    headerRow.appendChild(th);
-                }
-
-                const emptyHeader = document.createElement('th');
-                emptyHeader.textContent = '';
-                headerRow.appendChild(emptyHeader);
-
-                // Create table data rows
-                threads.forEach(thread => {
+                console.log(data);
+                data.threads.forEach(thread => {
                   
                     const row = table.insertRow();
 
@@ -121,7 +114,9 @@ export function generateStudentCases(cases) {
                     container.appendChild(document.createElement("br"));
                 
                 });
-                fixStyling();
+            })
+            .catch(error => {
+                throw error;
             });
     }
     
@@ -341,7 +336,6 @@ export function generateVersionBox(version, number) {
     container.appendChild(expandableBoxSection);
     container.appendChild(document.createElement("br"));
 
-    fixStyling();
 
     loadData(`/api/data/files/${getGlobalAppHeadersValue('user_id')}/?requestid=${version.request_id}`, {})
         .then(data => {
@@ -353,6 +347,103 @@ export function generateVersionBox(version, number) {
     //container.appendChild(document.createElement("br"));
     //container.appendChild(document.createElement("br"));
     //container.appendChild(document.createElement("br"));
+}
+
+/**
+ * Pushes information to the database after a case is submitted
+ * @param {int} numRequests - number of requests in this case
+ */
+export function handleCaseSubmission(numRequests) {
+
+    // Current time
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = ("0" + (date.getMonth() + 1)).slice(-2);
+    var day = ("0" + date.getDate()).slice(-2);
+    var hours = ("0" + date.getHours()).slice(-2);
+    var minutes = ("0" + date.getMinutes()).slice(-2);
+    var seconds = ("0" + date.getSeconds()).slice(-2);
+    var formattedDate = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+
+    let submissionData = [];
+
+    let requestPromises = [];
+
+    let submissionTemplate;
+
+    if (numRequests > 0) {
+
+        for (let i = 1; i <= numRequests; i++) {
+            requestPromises.push(loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
+                .then(data => {
+                    submissionTemplate = {
+                        'date_created': formattedDate,
+                        'course_id': -1,
+                        'request_type': '',
+                        'assignment_id': null,
+                        'request_content': document.getElementById(`messageTextBox${i}`).value
+                    }
+                    for (let course of data.courses) {
+                        if (course.course_code == document.getElementById(`courseDropdown${i}`).value) {
+                            submissionTemplate.course_id = course.course_id;
+                            let requestType = document.getElementById(`requestTypeDropdown${i}`).value
+                            if ((requestType == 'General Query') || (requestType == 'Other')) {
+                                if (requestType == 'General Query') {
+                                    submissionTemplate.request_type = "QUERY";
+                                }
+                                if (requestType == 'Other') {
+                                    submissionTemplate.request_type = "OTHER";
+                                }
+                                submissionData.push(submissionTemplate);
+                            }
+                            if ((requestType == 'Extension') || (requestType == 'Remark') || (requestType == 'Quiz Code')) {
+                                if (requestType == 'Extension') {
+                                    submissionTemplate.request_type = "EXTENSION";
+                                }
+                                if (requestType == 'Remark') {
+                                    submissionTemplate.request_type = "REMARK";
+                                }
+                                if (requestType == 'Quiz Code') {
+                                    submissionTemplate.request_type = "QUIZCODE";
+                                }
+                                loadData('/api/data/assessments/?courseid=' + course.course_id, {})
+                                    .then(data => {
+                                        let assignments = data.assessments;
+                                        for (let assignment of assignments) {
+                                            if (assignment.assignment_name == document.getElementById(`assignmentDropdown${i}`).value) {
+                                                submissionTemplate.assignment_id = assignment.assignment_id;
+                                                submissionData.push(submissionTemplate);
+                                                break;
+                                            }
+                                        }
+                                    })
+                                    .catch(error => {
+                                        throw error
+                                    });
+                            }
+                            break;
+                        }
+                    }
+                }));
+        }
+        Promise.all(requestPromises)
+            .then(() => {
+                // TODO: Fix adding request messes up submissionData thing
+                console.log(submissionData);
+                postData(('/api/data/cases/new/'), {
+                    'user_id': getGlobalAppHeadersValue('user_id'),
+                    'requests': submissionData
+                }).then(() => {
+                    return true;
+                }).catch(error => {
+                    throw error;
+                });
+                // Uncomment this when adding request bug is removed 
+                // Commented for debugging
+                // window.location.href = '/student/'
+            });
+    }
+
 }
 
 /**
@@ -415,15 +506,6 @@ export function generateStudentRequest(number, courseList) {
     const requestTypeTextBox = document.createElement("textarea");
     requestTypeTextBox.className = "textBox";
 
-    const requestTitle = document.createElement("span");
-    requestTitle.className = "text";
-    requestTitle.textContent = "Request Title";
-    
-    const requestTitleTextBox = document.createElement("textarea");
-    requestTitleTextBox.className = "textBox";
-    requestTitleTextBox.style = 'height:30px; resize:none'
-    requestTitleTextBox.id = `requestTitleTextBox${number}`
-
     const message = document.createElement("span");
     message.className = "text";
     message.textContent = "Message";
@@ -477,10 +559,6 @@ export function generateStudentRequest(number, courseList) {
     expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(assignment);
     expandableBoxSection.appendChild(document.createElement("br"));
-    expandableBoxSection.appendChild(requestTitle);
-    expandableBoxSection.appendChild(document.createElement("br"));
-    expandableBoxSection.appendChild(requestTitleTextBox);
-    expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(message);
     expandableBoxSection.appendChild(document.createElement("br"));
     expandableBoxSection.appendChild(messageTextBox);
@@ -532,8 +610,6 @@ export function generateStudentRequest(number, courseList) {
     setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 
     '/api/data/files/upload/');
 
-    fixStyling();
-
 }
 
 /**
@@ -552,10 +628,11 @@ export function generateStudentRequest(number, courseList) {
     assignment.appendChild(assignmentDropdown);
     assignment.appendChild(document.createElement("br"));
 
-    let courseCode = courseList[0]; // use the first course unless it has been changed
+    let courseCode = courseList[0];
     const courseDropDown = document.getElementById(`courseDropdown${number}`);
     loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
         .then(data => {
+            courseCode = courseDropDown.value;
             let courses = data.courses;
             for (let course of courses) {
                 if (courseCode == course.course_code) {
@@ -574,9 +651,9 @@ export function generateStudentRequest(number, courseList) {
         });
     
     courseDropDown.addEventListener("change", function() {
-        courseCode = courseDropDown.value;
         loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
             .then(data => {
+                courseCode = courseDropDown.value;
                 let courses = data.courses;
                 for (let course of courses) {
                     if (courseCode == course.course_code) {
@@ -708,58 +785,7 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
 //     });
 // }
 
-/**
- * Pushes information to the database after a case is submitted
- * @param {int} numRequests - number of requests in this case
- */
-export function handleCaseSubmission(numRequests) {
 
-    let requestsData = new Array();
-    let requestsPromises = [];
-
-    for (let i=1; i <= numRequests; i++) {
-
-        let promise = loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
-            .then(data => {
-                let courses = data.courses;
-                for (let course of courses) {
-                    if (course.course_code == document.getElementById(`courseDropdown${i}`).value) {
-                        loadData('/api/data/assessments/?courseid=' + course.course_id, {})
-                            .then(data => {
-                                let assignments = data.assessments;
-                                let assignmentId = -1;
-
-                                assignments.forEach(assignment => {
-                                    if(assignment.assignment_name == document.getElementById(`assignmentDropdown${i}`).value){
-                                        assignmentId = assignment.assignment_id;
-                                    }
-                                });
-
-                                let requestData = {
-                                    'courseId': course.course_id,
-                                    'requestType': document.getElementById(`requestTypeDropdown${i}`).value,
-                                    'assignmentId': assignmentId,
-                                    'requestTitle': document.getElementById(`requestTitleTextBox${i}`).value,
-                                    'message': document.getElementById(`messageTextBox${i}`).value,
-                                    'supportingDocuments': -1,
-                                }
-                                requestsData.push(requestData);
-
-                            });
-                        break;
-                    }
-                }
-            });
-        requestsPromises.push(promise);
-    }
-
-    Promise.all(requestsPromises)
-        .then(() => {
-            // All requests are completed
-            postNewCase({'requests': requestsData});
-        });
-
-}
 
 /**
  * Pushes edits made to a request
@@ -1006,7 +1032,6 @@ export function generateSubjectBox(subject) {
 	document.getElementById('subjectBoxContainer').appendChild(standardBox);
 	document.getElementById('subjectBoxContainer').appendChild(document.createElement('br'));
 
-	fixStyling();
 }
 
 /**
@@ -1457,8 +1482,6 @@ export function populateAssessmentDropdown(assessmentList) {
     });
     assessmentDropdown.value = 'Global'
 
-    fixStyling();
-
 }
 
 /**
@@ -1485,20 +1508,6 @@ function respond(threadId, response){
         "thread_id": threadId,
         "response": response
     })
-        .then(() => {
-            return true;
-        })
-        .catch(error => {
-            throw error;
-        });
-}
-
-/**
- * Posts a new case to the database 
- * @param {JSON} dataToSend - contains information about a case that needs to be submitted to the database
- */
-function postNewCase(dataToSend){
-    return postData(('/api/data/cases/new/'), dataToSend)
         .then(() => {
             return true;
         })

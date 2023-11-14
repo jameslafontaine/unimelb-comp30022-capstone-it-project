@@ -106,7 +106,6 @@ if __name__ == "__main__":
     while not is_db_ready(input_host, input_port, input_user, input_password):
         time.sleep(1)
 
-
     # THIS
     mock_database()
 
