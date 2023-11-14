@@ -554,12 +554,6 @@ export function generateStudentRequest(number, courseList) {
 
     let courseCode = courseList[0]; // use the first course unless it has been changed
     const courseDropDown = document.getElementById(`courseDropdown${number}`);
-    
-    courseDropDown.addEventListener("change", function() {
-        courseCode = courseDropDown.value;
-    });
-
-    // Populate the dropdown
     loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
         .then(data => {
             let courses = data.courses;
@@ -578,6 +572,30 @@ export function generateStudentRequest(number, courseList) {
                 }
             }
         });
+    
+    courseDropDown.addEventListener("change", function() {
+        courseCode = courseDropDown.value;
+        loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
+            .then(data => {
+                let courses = data.courses;
+                for (let course of courses) {
+                    if (courseCode == course.course_code) {
+                        loadData('/api/data/assessments/?courseid=' + course.course_id, {})
+                            .then(data => {
+                                let assignments = data.assessments;
+                                document.getElementById(`assignmentDropdown${number}`).options.length = 0;
+                                assignments.forEach(assignment => {
+                                    const option = document.createElement('option');
+                                    option.textContent = assignment.assignment_name;
+                                    document.getElementById(`assignmentDropdown${number}`).appendChild(option);
+                                });
+                            });
+                        break;
+                    }
+                }
+            });
+    });
+
 }
 
 /**

@@ -659,7 +659,7 @@ def get_user_endpoint(request, user_id):
     validate_headers(request)
 
     if len(request.GET) == 0:
-        cursor = connection.cursor()
+        cursor = connection.cursor(dictionary=True)
         # Query the User table
         cursor.execute("SELECT * FROM `db`.`User` WHERE `User`.user_id = %s", (user_id,))
         user_data = cursor.fetchone()

@@ -170,7 +170,6 @@ export function submitRequest() {
 
     // Handle supporting documentation tables
 
-    fixStyling();
 
 }
 
