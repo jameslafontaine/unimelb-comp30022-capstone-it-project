@@ -54,12 +54,14 @@ export function sHome() {
     createHeader("student");
     loadData('/api/data/cases/?userid=' + getGlobalAppHeadersValue('user_id'), {}) 
         .then(data => {
+            console.log(data);
             generateStudentCases(data.cases);
-            fixStyling();
         })
         .catch(error => {
             throw error;
         });
+
+    fixStyling();
 }
 
 export function viewCases() {
@@ -67,7 +69,6 @@ export function viewCases() {
     loadData('/api/data/cases?userid=' + getGlobalAppHeadersValue('user_id'))
         .then(data => {
             generateStudentCases(data.cases);
-            fixStyling();
         })
 }
 
@@ -165,12 +166,9 @@ export function submitRequest() {
 
     submitButton.addEventListener('click', function() {
         handleCaseSubmission(numRequests);
-        window.location.href = '/student/';
+        // window.location.href = '/student/';
     });
 
-    // Handle supporting documentation tables
-
-    fixStyling();
 
 }
 
@@ -188,7 +186,6 @@ export function sEditRequest() {
         course: 'COMP30022 - IT Project',
         assessment: 'Project 1',
         requestType: 'Extension',
-        requestTitle: 'Project 1 Extension Request',
         message: 'I am sick ;\'( why must misfortune happen to me',
         status: 'Active',
         instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
