@@ -1,15 +1,5 @@
 # IT-Project-6-People
 
-These are the members that make up our team
-
-| **Name** | **Student Code** | **Email** |
-|-------------------|------------------	|----------- |
-|Callum Sharman|1171371|csharman@student.unimelb.edu.au|
-|James La Fontaine|1079860|jlafontaine@student.unimelb.edu.au|
-|Jun Youn |1171924|younj@student.unimelb.edu.au|
-| Ryan Goh |1191761|rrgoh@student.unimelb.edu.au|
-| Yan Zong Goh |1250945|yanzongg@student.unimelb.edu.au |
-
 ## Basic Setup
 
 Assuming using Windows - Programs you will need to install
@@ -50,6 +40,25 @@ Have Docker Desktop open, or you'll get an error
 5. Press Ctrl+C in the terminal to stop the app.
 
 
-## Configurability
+## Currently functional
+
+User workflow
+
+- Set email and dark mode preferences
+- Uploading / Removing files are functional
+
+Student workflow
+
+- Can submit requests of different types (known issue is that not all of it will submit or some will, please test with more than 1 request)
+
+Instructor workflow
+
+- View courses enrolled in
+
+- Can input Course Preference by pressing Save
+
+
+There is code for all the other requirements (except for Quiz Code extensions) but it is not seamlessly connected between front end and back end currently. However, these would be quick fixes and we'd probably put in some work to for maintenance even after this project is being marked
 
 ```mock_database``` function enters fake data into ```./wait_for_db.py```. This could 
+
