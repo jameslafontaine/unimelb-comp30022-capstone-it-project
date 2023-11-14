@@ -19,6 +19,7 @@ from .views import set_complex
 from .views import put_user_preferences
 from .views import get_assessment_preferences
 from .views import put_assessment_preferences
+from .views import delete_file
 
 urlpatterns = [
     # GET requests
@@ -44,4 +45,7 @@ urlpatterns = [
     path('user/', put_user_preferences, name = 'put_user_preferences'),
     path('assessments/setpreferences/', put_assessment_preferences, \
          name = 'put_assessment_extension_length'),
+
+    # DELETE request
+    path('files/remove/', delete_file, name = 'delete_file'),
 ]

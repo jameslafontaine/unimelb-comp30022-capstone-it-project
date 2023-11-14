@@ -1207,25 +1207,27 @@ export function handleComplexRequestFunctionality(thread) {
 
     // Perform the aforementioned steps on button click
     reserveButton.addEventListener('click', function() {
-        setComplex(thread.thread_id) // when returns true it has worked
-            .then(response => {
-                if(response == true){
-                    // set successfully, change the DOM
-                    const reserveButton = document.getElementById('reserveButton');
-                    // If a case has already been reserved then we show the unmark button
-                    loadData('/api/data/thread/' + thread.thread_id, {})
-                        .then(data => {
-                            let request = data.threadinfo.requests[0];
-                            if (data.threadinfo.thread.complex_case) { // it is complex now
-                                reserveButton.innerHTML = 'Unmark'
-                                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
-                            } else { // it is not complex
-                                reserveButton.innerHTML = 'Mark as complex'
-                                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
-                            }
-                        })
-                }
+        putData(('/api/data/thread/complex/'), {
+            "thread_id": threadId
+        }).then(() => {
+                // set successfully, change the DOM
+                const reserveButton = document.getElementById('reserveButton');
+                // If a case has already been reserved then we show the unmark button
+                loadData('/api/data/thread/' + thread.thread_id, {})
+                    .then(data => {
+                        let request = data.threadinfo.requests[0];
+                        if (data.threadinfo.thread.complex_case) { // it is complex now
+                            reserveButton.innerHTML = 'Unmark'
+                            document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+                        } else { // it is not complex
+                            reserveButton.innerHTML = 'Mark as complex'
+                            document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+                        }
+                    })
             })
+            .catch(error => {
+                throw error;
+            });
     });
 }
 
@@ -1611,21 +1613,6 @@ export function populateAssessmentDropdown(assessmentList) {
     });
     assessmentDropdown.value = 'Global'
 
-}
-
-/**
- * Sets a request to complex in the database
- * @param {int} threadId - numeric identifier for the current request
- */
-function setComplex(threadId){
-    return putData(('/api/data/thread/complex/'), {
-        "thread_id": threadId
-    }).then(() => {
-            return true;
-        })
-        .catch(error => {
-            throw error;
-        });
 }
 
 /**

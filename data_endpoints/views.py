@@ -760,13 +760,13 @@ def post_new_case(request):
     Returns:
     - JsonResponse: JSON response indicating the success of the request or an error message.
     '''
-    connection = mysql.connector.connect(
-        host="db",
-        port="3306",
-        user="root",
-        password="admin"
-    )
     if request.method == 'POST':
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
         data = json.loads(request.body)
         cursor = connection.cursor()
         user_id = data.get("user_id")
@@ -776,8 +776,8 @@ def post_new_case(request):
             cursor.execute("INSERT INTO `db`.`Thread` (case_id, course_id, date_updated, request_type, complex_case, current_status, assignment_id) VAUES (%s, %s, %s, %s, %s, %s, %s)", (case_id, request_data['course_id'], request_data['date_created'], request_data['request_type'], 0, "PENDING", request_data['assignment_id']))
             thread_id = cursor.lastrowid
             cursor.execute("INSERT INTO `db`.`Request` (thread_id, date_created, request_content, instructor_notes) VALUES (%s, %s, %s, %s)", (thread_id, request_data['date_created'], request_data['request_content'], ""))
-            connection.commit()
-        connection.close()
+        connection.commit()
+        cursor.close()
         return JsonResponse({"message": "Case created successfully"}, status=201)
     return JsonResponse({'message': 'Invalid request.'}, status=400)
 
@@ -816,35 +816,6 @@ def post_file(request):
     if not request.method == 'POST':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
-
-def validate_request_body(data, integer_fields, string_fields):
-    """
-    Validate the request body against the expected integer and string fields.
-
-    Parameters:
-    - data (dict): The request body data.
-    - integer_fields (list): List of fields expected to be integers.
-    - string_fields (list): List of fields expected to be strings.
-
-    Returns:
-    - HttpResponseBadRequest: If the validation fails.
-    - None: If the validation succeeds.
-    """
-    all_fields = integer_fields + string_fields
-    data_keys = list(data.keys())
-
-    if all_fields != data_keys:
-        return HttpResponseBadRequest("Request body does not have correct fields")
-
-    for field in integer_fields:
-        if not isinstance(data[field], int):
-            return HttpResponseBadRequest("Request body does not have correct fields")
-
-    for field in string_fields:
-        if not isinstance(data[field], str):
-            return HttpResponseBadRequest("Request body does not have correct fields")
-
-    return None
 
 @csrf_exempt
 def put_preferences(request):
@@ -1023,45 +994,24 @@ def set_complex(request):
     Request body should take form:
     {
         "thread_id": 0,
-        "complex_case": 1
     }
     '''
-    connection = mysql.connector.connect(
-        host="db",
-        port="3306",
-        user="root",
-        password="admin"
-    )
     if request.method == 'PUT':
-        try:
-            # Create a cursor to interact with the database
-            cursor = connection.cursor()
-            cursor.execute(f"USE {DATABASE_NAME}")
-            data = json.loads(request.body)
-
-            cursor.execute(f"SELECT complex_case FROM Thread WHERE thread_id = {data['thread_id']}")
-            current_complex_case = cursor.fetchall()[0][0]
-            print(current_complex_case)
-            # Toggle the 'complex_case' value (0 to 1 or 1 to 0)
-            new_complex_case = 1 if current_complex_case == 0 else 0
-
-            # Update the 'complex_case' value in the database
-            cursor.execute(
-                f"UPDATE Thread "
-                f"SET complex_case = {new_complex_case} "
-                f"WHERE thread_id = {data['thread_id']}"
-            )
-
-            # Commit the changes
-            connection.commit()
-
-            print(f"Complex_case for thread_id {data['thread_id']} updated to {new_complex_case}")
-            return JsonResponse({
-                "message": "Updated successfully"
-            }, status = 201)
-        except mysql.connector.Error as error:
-            print(error)
-            return JsonResponse({'message': 'Invalid request.'}, status = 400)
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor()
+        data = json.loads(request.body)
+        cursor.execute()
+        cursor.execute("UPDATE `db`.`Thread` SET `Thread`.complex_case = CASE WHEN complex_case = 0 THEN 1 WHEN complex_case = 1 THEN 0 ELSE complex_case END WHERE `Thread`.thread_id = %s", (data.get('thread_id')))
+        connection.commit()
+        cursor.close()
+        return JsonResponse({
+            "message": "Updated successfully"
+        }, status = 201)
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
@@ -1077,36 +1027,42 @@ def put_user_preferences(request):
         "darkmode_preference": 1
     }
     '''
-    connection = mysql.connector.connect(
-        host="db",
-        port="3306",
-        user="root",
-        password="admin"
-    )
     if request.method == 'PUT':
-        #
-        # UPDATE
-        #
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor()
+        data = json.loads(request.body)
+        cursor.execute("UPDATE `db`.`User` SET email_preference = %s, darkmode_preference = %s WHERE `User`.user_id = %s", (data.get('email_preference'), data.get('darkmode_preference'), data.get('user_id')) )
+        connection.commit()
+        cursor.close()
         return JsonResponse({'message': 'Has been set successfully'}, status = 201)
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
-def get_assessment_preferences(request):
+def get_assessment_preferences(request, assignment_id):
     '''
     GET /api/data/preferences/{assignment_id}
     No parameters
     '''
-    connection = mysql.connector.connect(
-        host="db",
-        port="3306",
-        user="root",
-        password="admin"
-    )
+
     if not request.GET:
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT extension_length FROM `db`.`AssignmentExtensionLength` WHERE `AssignmentExtensionLength`.assignment_id = %s", (assignment_id,))
         result = {
-            "extension_length": 4
+            "extension_length": cursor.fetchone()['extension_length']
         }
+        cursor.close()
         return JsonResponse(result)
 
     if request.GET:
@@ -1114,6 +1070,7 @@ def get_assessment_preferences(request):
 
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
+@csrf_exempt
 def put_assessment_preferences(request):
     '''
     PUT /api/data/assessments/setpreferences
@@ -1124,18 +1081,43 @@ def put_assessment_preferences(request):
         "extension_length": 0
     }
     '''
-    connection = mysql.connector.connect(
-        host="db",
-        port="3306",
-        user="root",
-        password="admin"
-    )
+
     if request.method == 'PUT':
-        # data = json.loads(request.body)
-        # SET AssignmentExtensionLength
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor(dictionary=True)
+        data = json.loads(request.body)
+        cursor.execute("UPDATE `db`.`AssignmentExtensionLength` SET extension_length = %s WHERE `AssignmentExtensionLength`.coursepreference_id = %s, `AssignmentExtensionLength`.assignment_id = %s", (data.get('extension_length'), data.get('coursepreference_id'), data.get('assignment_id')))
+        connection.commit()
+        cursor.close()
         return JsonResponse({'message': 'Has been set successfully'}, status = 201)
 
     if not request.method == 'PUT':
         return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+    return JsonResponse({'message': 'Invalid request.'}, status = 500)
+
+@csrf_exempt
+def delete_file(request):
+    '''
+    DELETE a file
+    '''
+    if request.method == 'DELETE':
+        data = json.loads(request.body)
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM `db`.`File` WHERE `File`.file_name = %s", (data.get('filename'),))
+        connection.commit()
+        cursor.close()
+        return JsonResponse({'message': 'Has been set successfully'}, status = 201)
 
     return JsonResponse({'message': 'Invalid request.'}, status = 500)

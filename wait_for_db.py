@@ -103,6 +103,7 @@ def mock_database():
     cursor.execute("INSERT INTO `db`.`Request` (thread_id, date_created, request_content, instructor_notes) VALUES (%s, %s, %s, %s)", (3,"2023-08-12 08:27:15", "I got shot multiple times whilst walking down to my local Walmart, currently in hospital", "skill issue please dodge"))
 
     connection.commit()
+    cursor.close()
 
 
     print("Database has been populated with test data")

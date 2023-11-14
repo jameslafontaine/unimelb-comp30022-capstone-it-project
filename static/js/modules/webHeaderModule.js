@@ -29,7 +29,17 @@ export function createHeader(instOrStudent) {
 				.then(usr => {
 					headerText.innerHTML = "Signed in as: " + usr.name;
 					setPreferences();
-					checkAndChangePrefs();
+					const emailNotifCheckBox = document.getElementById('emailNotifCheckBox');
+					emailNotifCheckBox.addEventListener("change", function() {
+						changePrefs(document.getElementById('emailNotifCheckBox').checked, 
+											document.getElementById('darkModeCheckBox').checked);
+					})
+
+					const darkModeCheckBox = document.getElementById('darkModeCheckBox');
+					darkModeCheckBox.addEventListener("change", function() {
+						changePrefs(document.getElementById('emailNotifCheckBox').checked, 
+											document.getElementById('darkModeCheckBox').checked);
+					})
 				}).catch(error => {
 					throw error;
 				});
@@ -238,7 +248,6 @@ function convertStylesToLightMode(){
  * Sets current preference values for emails and darkMode
  */
 function setPreferences(){
-	
 	loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
 		.then(user => {
 			// take the values 0 and 1
@@ -254,32 +263,6 @@ function setPreferences(){
 		});
 }
 
-/**
- * Checks for changes and resets the preferences accordingly
- */
-function checkAndChangePrefs(){
-	// email pref listener
-	const emailNotifCheckBox = document.getElementById('emailNotifCheckBox');
-	emailNotifCheckBox.addEventListener("change", function() {
-
-		changePrefs(document.getElementById('emailNotifCheckBox').checked, 
-							document.getElementById('darkModeCheckBox').checked);
-
-		setPreferences();
-	})
-
-	// dark mode pref listener
-	const darkModeCheckBox = document.getElementById('darkModeCheckBox');
-	darkModeCheckBox.addEventListener("change", function() {
-
-		changePrefs(document.getElementById('emailNotifCheckBox').checked, 
-							document.getElementById('darkModeCheckBox').checked);
-
-		setPreferences();
-	})
-
-}
-
 // emailPref and darkModePref should be 0 or 1
 function changePrefs(emailPref, darkModePref){
     return putData('/api/data/user/', {
@@ -288,7 +271,8 @@ function changePrefs(emailPref, darkModePref){
 		"darkmode_preference": darkModePref,
     })
         .then(() => {
-            return true;
+			setPreferences();
+
         })
         .catch(error => {
             throw error;
