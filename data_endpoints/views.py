@@ -488,21 +488,22 @@ def get_threads_user_endpoint(request):
                 cursor.execute("SELECT * FROM `db`.`Thread` WHERE `Thread`.`course_id` = %s", (request.GET.get('courseid'),))
                 rows = cursor.fetchall()
                 resultList = []
-                for row in rows:
-                    resultList.append({
-                        'thread_id': row['thread_id'],
-                        'case_id': row['case_id'],
-                        'course_id': row['course_Id'],
-                        'date_updated': row['date_updated'],
-                        'request_type': row['request_type'], 
-                        'complex_case': row['complex_case'],
-                        'current_status': row['current_status'],
-                        'assignment_id': row['assignment_id'],
+                if rows:
+                    for row in rows:
+                        resultList.append({
+                            'thread_id': row['thread_id'],
+                            'case_id': row['case_id'],
+                            'course_id': row['course_Id'],
+                            'date_updated': row['date_updated'],
+                            'request_type': row['request_type'], 
+                            'complex_case': row['complex_case'],
+                            'current_status': row['current_status'],
+                            'assignment_id': row['assignment_id'],
+                        })
+                    cursor.close()
+                    return JsonResponse({
+                        'threads': resultList
                     })
-                cursor.close()
-                return JsonResponse({
-                    'threads': resultList
-                })
 
     if len(request.GET) in [1, 2] and request.GET.get('userid') and request.GET.get('status'):
         if check_param_not_integer(request.GET.get('userid')) or \
