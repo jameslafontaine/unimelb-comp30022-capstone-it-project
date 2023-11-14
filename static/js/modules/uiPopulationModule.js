@@ -994,7 +994,6 @@ export function generateAAPTable(aapData, uploadUrl, removeUrl) {
             .then(response => {
                 response.json
                 if (response.ok) {
-                    aapData = aapData.filter(data => data.file_name !== file.name);
                     table.deleteRow(index + 1); // +1 because the first row is the header
                 }
             })
@@ -1092,15 +1091,14 @@ export function generateAAPTable(aapData, uploadUrl, removeUrl) {
                     },
                     body: JSON.stringify({ filename: file.name }),
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        row.remove(); // remove the table row
-                        // Remove the header if there are no files left
-                        if (table.getElementsByTagName('tr').length === 1) {
-                            table.deleteRow(0);
-                        }
+                .then(response => { 
+                    response.json()
+                    if (response.ok) {
+                        row.remove(); // remove the table row          
                     }
+                }).then(() => {
+                    // Reset the file input value to allow reuploading the same file immediately
+                    fileInput.value = '';
                 })
                 .catch(error => {
                     throw error;

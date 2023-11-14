@@ -116,7 +116,7 @@ if __name__ == "__main__":
     while not is_db_ready(input_host, input_port, input_user, input_password):
         time.sleep(1)
 
-    mock_database()
+    #mock_database()
 
     # Start the Django server
     os.system("python manage.py runserver 0.0.0.0:8000")
