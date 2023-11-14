@@ -107,7 +107,7 @@ if __name__ == "__main__":
         time.sleep(1)
 
     #os.system("python populate_database.py")
-    mock_database()
+    #mock_database()
 
     # Start the Django server
     os.system("python manage.py runserver 0.0.0.0:8000")

@@ -86,3 +86,11 @@ th:last-child::after {
 th:not(:last-child) {
     border-right: 1px solid rgb(0, 0, 0); /* Add white lines between columns */
 }
+
+.filenameCell {
+    width: 100px; 
+}
+
+.removeCell {
+    width: 20px;
+}

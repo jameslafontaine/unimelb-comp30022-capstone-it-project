@@ -215,18 +215,6 @@ export function generateSuppDocTable(files, number) {
         
         let formatted_file_size = formatBytes(file_size);
         
-        // Function to format size in bytes to KB, MB, GB, etc.
-        function formatBytes(bytes, decimals = 2) {
-            if (!+bytes) return '0 Bytes';
-            
-            const k = 1024;
-            const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-            
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            
-            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-        }
 		const row = table.insertRow();
 
         const fileNameCell = row.insertCell();
@@ -617,7 +605,8 @@ function assignmentDropDownListener(number, courseList){
  * @param {array} uploadUrl - URL endpoint for uploading files
  */
 function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
-    document.getElementById(buttonId).addEventListener('click', function() {
+    const buttonElement = document.getElementById(buttonId);
+    buttonElement.addEventListener('click', function() {
         document.getElementById(fileInputId).click();
     });
     
@@ -632,17 +621,59 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
             body: formData
         })
         .then(response => response.json())
-        .then(() => {
-            const fileInfo = document.createElement('div');
-            fileInfo.innerHTML = `
-            <p>Filename: ${file.name}</p>
-            <p>Filesize: ${file.size} bytes</p>
-            <p>Datetime Uploaded: ${new Date().toISOString()}</p>
-            <button class="removeBtn">Remove</button>
-            `;
-            document.getElementById(fileContainerId).appendChild(fileInfo);
+        .then(data => {
+            // Check if the table already exists
+            let table = buttonElement.parentNode.getElementsByTagName('table')[0];
             
-            fileInfo.querySelector('.removeBtn').addEventListener('click', function() {
+            // If the table does not exist, create a new one
+            if (!table) {
+                table = document.createElement('table');
+                table.style.tableLayout = 'fixed'; // set the table layout to fixed
+                
+                // Check if the table already has a header
+                let hasHeader = table.getElementsByTagName('tr').length > 0;
+                
+                // If the table does not have a header, add one
+                if (!hasHeader) {
+                    const headerRow = table.insertRow();
+                    for (const key in SUPP_DOC_HEADERS) {
+                        const th = document.createElement('th');
+                        th.innerText = SUPP_DOC_HEADERS[key];
+                        headerRow.appendChild(th);
+                    }
+                    const emptyHeader = document.createElement('th');
+                    emptyHeader.textContent = '';
+                    headerRow.appendChild(emptyHeader);
+                }
+
+                // Append the table just above the upload button
+                buttonElement.parentNode.insertBefore(table, buttonElement);
+
+                // Create space between table and upload button
+                const lineBreak = document.createElement('br');
+                buttonElement.parentNode.insertBefore(lineBreak, buttonElement);
+            }
+
+            const row = table.insertRow();
+
+            const fileNameCell = row.insertCell();
+            fileNameCell.className = 'tableEntry filenameCell';
+            fileNameCell.innerHTML = file.name;
+
+            const fileSizeCell = row.insertCell();
+            fileSizeCell.className = 'tableEntry';
+            fileSizeCell.innerHTML = formatBytes(file.size);
+
+            const removeCell = row.insertCell();
+            removeCell.className = 'tableEntry removeCell';
+            const removeButton = document.createElement('button');
+            removeButton.className = 'standardButton';
+            removeButton.innerText = 'Remove';
+            removeCell.style.width = '50px'
+            removeCell.appendChild(removeButton);
+
+            // Handle remove functionality for the remove button
+            removeButton.onclick = function() {
                 fetch(uploadUrl, {
                     method: 'DELETE',
                     headers: {
@@ -653,19 +684,29 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        fileInfo.remove();
+                        row.remove(); // remove the table row
+                        // Remove the header if there are no files left
+                        if (table.getElementsByTagName('tr').length === 1) {
+                            table.deleteRow(0);
+                        }
                     }
                 })
                 .catch(error => {
                     throw error;
                 });
-            });
+            };
         })
         .catch(error => {
             throw error;
         });
     });
 }
+
+
+
+
+
+
 
 /**
  * Handles functionality relating to the download button for supporting documentation
@@ -824,9 +865,9 @@ export function generateAAPTable(aapData) {
 		fileNameCell.className = 'tableEntry';
 		fileNameCell.innerHTML = file_name;
 
-		const fileTypeCell = row.insertCell();
-		fileTypeCell.className = 'tableEntry';
-		fileTypeCell.innerHTML = file_type
+		const fileSizeCell = row.insertCell();
+		fileSizeCell.className = 'tableEntry';
+		fileSizeCell.innerHTML = formatBytes(file.size)
 
 		// Download button
 		const downloadCell = row.insertCell();
@@ -1487,4 +1528,23 @@ function postNewCase(dataToSend){
         .catch(error => {
             throw error;
         });
+}
+
+// Function to format size in bytes to KB, MB, GB, etc.
+/**
+ * Posts a new case to the database 
+ * @param {number} bytes - number of bytes
+ * @param {number} decimals - number of decimal places
+ * @returns {string} - returns the formatted file size
+ */
+function formatBytes(bytes, decimals = 2) {
+    if (!+bytes) return '0 Bytes';
+    
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
