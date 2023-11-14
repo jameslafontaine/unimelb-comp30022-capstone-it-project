@@ -46,6 +46,10 @@
 
     </head>
     <body>
+
+        <!-- div to hold data passed from the view -->
+        <div id="load-data" data-course="{{ course_id }}"></div>
+
         <!-- Include the header using JavaScript -->
 	    <div id="webHeaderContainer"></div>
 
@@ -87,45 +91,10 @@
             </div>
             
         </div>
-
-        <script src="{% static 'js/modules/iWebHeader.js' %}"></script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script>
-            // Put subject code at start of title
-            subjectCode = "COMP30022";
-            
-            // Get the title by its ID
-            const myElement = document.getElementById("title").innerHTML = 
-            subjectCode + document.getElementById("title").innerHTML;
-
-
-            // All requests for the current subject the instructor is looking at
-            const jsonDataAwaiting = [
-                {
-                    reserved: true,
-                    date: '29/08/2023',
-                    studentName: 'Joe Bloggs',
-                    requestType: 'Extension',
-                    status: 'Pending'
-                },
-            ];
-
-            const jsonDataResolved = [
-                {
-                    reserved: false,
-                    date: '29/08/2023',
-                    studentName: 'Joe Bloggs',
-                    requestType: 'Extension',
-                    status: 'Rejected'
-                },
-            ];
-
-            // Call the function with the JSON data
-            generateRequestTable(jsonDataAwaiting, 'Awaiting');
-            generateRequestTable(jsonDataResolved, 'Resolved');
-
-            
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { viewRequests } from "{% static 'js/app.js' %}";
+            viewRequests();
         </script>
-
     </body>
 </html>

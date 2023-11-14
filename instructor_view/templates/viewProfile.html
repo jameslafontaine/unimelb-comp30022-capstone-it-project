@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-            <!-- Meta -->
+        <!-- Meta -->
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Instructor - View Student Profile</title>
@@ -52,6 +52,10 @@
         crossorigin="anonymous"></script>
     </head>
     <body>
+
+        <!-- div to hold data passed from the view -->
+        <div id="load-user-id" data-user-id="{{ user_id }}"></div>
+
         <div id="webHeaderContainer"></div>
 
         <div class="mainBody" style="width: 90%;">
@@ -115,77 +119,10 @@
                 </div>
             </div>
         </div>
-        <script src="{% static 'js/modules/iWebHeader.js' %}"></script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script>
-            // Need all active requests/queries linked to this particular student here
-            requestDataActive = [
-                {
-                    reserved: true,
-                    date: '29/08/2023',
-                    studentName: 'Callum Sharman',
-                    requestType: 'Extension',
-                    status: 'Pending'
-                },		
-                {
-                    reserved: false,
-                    date: '29/08/2023',
-                    studentName: 'Callum Sharman',
-                    requestType: 'Extension',
-                    status: 'Pending'
-                }
-            ]
-
-
-            // Need all resolved request/queries linked to this particular student here
-            requestDataResolved = [
-            {
-                reserved: true,
-                date: '29/08/2023',
-                studentName: 'Callum Sharman',
-                requestType: 'Extension',
-                status: 'Rejected'
-            },		
-            {
-                reserved: false,
-                date: '29/08/2023',
-                studentName: 'Callum Sharman',
-                requestType: 'Extension',
-                status: 'Accepted'
-            }
-        ]
-
-        generateRequestTable(requestDataActive, 'Awaiting')
-        generateRequestTable(requestDataResolved, 'Resolved')
-
-        </script>
-        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
-        <script>
-            student = {
-                firstName: 'Callum',
-                lastName: 'Sharman',
-                id: 1178429,
-                email: 'csharman@student.unimelb.edu.au'
-            }
-
-            // Need AAP data for this student here
-            aapData = [
-                {
-                    name: 'aap1.pdf',
-                    size: '20 TB',
-                    dateUpdated: '2001/10/10'
-                },
-                {
-                    name: 'aap2.pdf',
-                    size: '40 MB',
-                    dateUpdated: '2001/10/10'
-                },
-            ]
-                
-            
-        
-            fillStudentDetailsBox(student);
-            generateAAPTable(aapData)
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { viewProfile } from "{% static 'js/app.js' %}";
+            viewProfile();
         </script>
     </body>
 </html>

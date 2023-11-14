@@ -51,6 +51,10 @@
         crossorigin="anonymous"></script>
     </head>
     <body>
+
+        <!-- div to hold data passed from the view -->
+        <div id="load-thread-id" data-thread-id="{{ thread_id }}"></div>
+        
         <div id="webHeaderContainer"></div>
 
         <div class="mainBody" style="width: 90%;">
@@ -69,18 +73,12 @@
                     <p class="text">Request Type</p>
                     <textarea class="textBox" id="requestType" style="height:30px; resize:none" readonly></textarea>
 
-                    <p class="text">Request Title</p>
-                    <textarea class="textBox" id="requestTitle" style="height:30px; resize:none" readonly></textarea>
-
                     <p class="text">Message</p>
                     <textarea class="textBox" id="message" style="height:120px; resize:none" readonly>
                     </textarea>
 
                     <p class="text">Status</p>
                     <textarea class="textBox" id="status" style="height:30px; resize:none" readonly></textarea>
-                    
-                    <p class="text">Instructor Notes</p>
-                    <textarea class="textBox" id="notes" style="height:120px; resize:none" readonly></textarea>
 
                     <p></p>
 
@@ -105,7 +103,7 @@
                     <br><br>
                     <div style="text-align: center; width: fit-content; margin: 0 auto;">
                         <div>
-                            <p class="bigButton" id="editButton" onclick="window.location.href='sEditRequest.html'">
+                            <p class="bigButton" id="editButton">
                                 Edit
                             </p>
                             <p class="bigButton" onclick="window.location.href='/student/cases'">
@@ -116,88 +114,24 @@
                 </div>
             </div>
         </div>
-        <script src="{% static 'js/modules/sWebHeader.js' %}"></script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script>
-            const req1 = {
-                requestId: 987654,
-                creationDate: '10/10/2012',
-                resolveDate: '15/10/2012',
-                reserved: false,
-                course: 'COMP30022 - IT Project',
-                assessment: 'Project 1',
-                requestType: 'Extension',
-                requestTitle: 'Project 1 Extension Request',
-                message: 'I am sick ;\'( why must misfortune happen to me',
-                status: 'Active',
-                instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
-            };
-
-            const suppDocs = [
-                {
-                    name: 'iamsick.pdf',
-                    size: '20 TB'
-                },
-                {
-                    name: 'bible.pdf',
-                    size: '40 MB'
-                },
-                {
-                    name: 'medcert.pdf',
-                    size: '3 MB'
-                }
-            ]
-
-            const prevVersions = [
-                {
-                    date: "2011/09/24",
-                    message: "The power has died!! :(",
-                    documents: [
-                        { name: "iamsick.pdf", size: "20 TB" },
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                },
-                {
-                    date: "2011/09/23",
-                    message: "Haven't thought of an excuse yet.",
-                    documents: [
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                }
-            ];
-            
-
-            // Fill information relating to the current request from the database
-            fillCurrentRequestInformation(req1, prevVersions.length + 1, 'Student');
-
-            // Generate the supporting documentation for the current version of request
-            generateSuppDocTable(suppDocs, '');
-
-            // Generate version boxes for all request prevVersions in the data
-            for (let i = 0; i < prevVersions.length; i++) {
-                generateVersionBox(prevVersions[i], prevVersions.length - i)
-            }
-
-
-        </script>
-        <!-- Student Details Box Population -->
-        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
-        <script>
-            student = {
-                firstName: 'Callum',
-                lastName: 'Sharman',
-                id: 1178429,
-                email: 'csharman@student.unimelb.edu.au'
-            }
-        </script>
-        <script src="{% static 'js/modules/editRequest.js' %}"></script>
-        <!-- Editing related functionality -->
         <script>
             // Only show edit button for active cases
-            if (req1.status != 'Active') {
-                hideEditButton();
-            }
-        </script>
 
+            /*
+            loadData('/api/data/thread/' + threadId, {})
+                .then(data => {
+                    let thread = data.threadinfo.thread;
+                    if ((thread.current_status != 'APPROVED') ||
+                        (thread.current_status != 'REJECTED')) {
+                        document.getElementById("editButton").remove()
+                    }
+                })
+            */
+        </script>
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { viewRequest } from "{% static 'js/app.js' %}";
+            viewRequest();
+        </script>
     </body>
 </html>

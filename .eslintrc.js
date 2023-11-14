@@ -8,6 +8,13 @@ module.exports = {
   // Define the set of rules you want to enforce
   extends: 'eslint:recommended', // You can extend other ESLint configurations here
 
+  parser: "@babel/eslint-parser",
+  parserOptions: {
+    sourceType: "module",
+    allowImportExportEverywhere: true,
+    requireConfigFile: false
+  },
+
   // Add any custom rules or overrides
   rules: {
     // Example custom rule: disallow the use of console.log()

@@ -22,7 +22,7 @@
         <style>
             .pageAsATable{
                 display: grid;
-                grid-template-columns: 70% 1fr;
+                grid-template-columns: 60% 1fr;
             }
             .textBox{
                 height:20px
@@ -61,7 +61,7 @@
     <body>
         <div id="webHeaderContainer"></div>
 
-        <div class="mainBody" style="width: 90%;">
+        <div class="mainBody" style="width: 100%;">
             <div class="pageAsATable">
                 <div class="leftSide">
 
@@ -79,83 +79,26 @@
                     </span>   
                 </div>
                 <div class="rightSide">
-                    <p class="text" style="display:inline; position: fixed;">Disclaimer - This portal should be 
-                        used for any questions or requests that may be 
-                        personal or less suited towards existing 
-                        discussion boards. Otherwise, please refer to 
-                        those
-                    </p>
-
-                    <button class="bigButton" id='submitButton' style="position: fixed; margin-top: 60px;">
-                        Submit
-                    </button>
+                    <div style="position: fixed;">
+                        <p class="text">Disclaimer - This portal should be 
+                            used for any questions or requests that may be 
+                            personal or less suited towards existing 
+                            discussion boards. Otherwise, please refer to 
+                            those
+                        </p>
+    
+                        <button class="bigButton" id='submitButton' style="margin-top: 10px;">
+                            Submit
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <script src="{% static 'js/modules/sWebHeader.js' %}"></script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script>    
-            const MAX_REQUESTS = 16;
-
-            // List of students current courses
-            var courseList = [
-                'COMP30022',
-                'MAST30027',
-                'MAST30034'
-            ]
-
-            var numRequests = 1;
-
-            generateStudentRequest(numRequests, courseList)
-
-            const addButton = document.getElementById('addButton');            
-            const removeButton = document.getElementById('removeButton');
-
-            // Add a new request when the add request button is clicked
-            addButton.addEventListener('click', function() {
-                numRequests += 1;
-                generateStudentRequest(numRequests, courseList)
-                if (numRequests == MAX_REQUESTS) {
-                    addButton.style.display = 'none';   ; 
-                } else if (numRequests == 0) {
-                    removeButton.style.display = 'none'; 
-                } else if (numRequests > 0 & numRequests < MAX_REQUESTS) {
-                    removeButton.style.display = 'inline';
-                    addButton.style.display = 'inline';  
-                }
-            });
-            
-            // Remove a request when the remove request button is clicked
-            removeButton.addEventListener('click', function() {
-                document.getElementById(`expandableBox${numRequests}`).remove()
-                document.getElementById(`expandableBoxSection${numRequests}`).remove()
-                document.getElementById(`lastLineBreak${numRequests}`).remove()
-                numRequests -= 1;
-                if (numRequests == MAX_REQUESTS) {
-                    addButton.style.display = 'none';   ; 
-                } else if (numRequests == 0) {
-                    removeButton.style.display = 'none'; 
-                } else if (numRequests > 0 & numRequests < MAX_REQUESTS) {
-                    removeButton.style.display = 'inline';
-                    addButton.style.display = 'inline';  
-                }
-            });
-
-            // Handle submit button being clicked
-            var submitButton = document.getElementById('submitButton');
-
-            submitButton.addEventListener('click', function() {
-                handleCaseSubmission(numRequests);
-
-                window.location.href = '/student/';
-            });
-
-            // Handle supporting documentation tables
-            
-
-
-
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { submitRequest } from "{% static 'js/app.js' %}";
+            submitRequest();
         </script>
     </body>
 </html>
+

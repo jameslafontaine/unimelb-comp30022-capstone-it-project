@@ -7,7 +7,7 @@
         <!-- Meta -->
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Student - webHeader</title>
+        <title>Instructor - webHeader</title>
         
         <!--
             Author: James La Fontaine, Callum Sharman
@@ -23,28 +23,16 @@
     </head>
     <body>
         
-        <!-- div to hold data passed from the view -->
-        <div id="load-data" data-usr="{{ usr }}"></div>
-
         <div class="header">
             <!-- menu -->
-            <div class="dropDown">
-                <div class="dropDownBtn">
-                    <div class="dDBLine"></div><div class="dDBLine"></div><div class="dDBLine"></div>
-                </div>
-                <div class="dropDownMenu">
-                    <div class="dDSection" onclick="window.location.href='/instructor'">
-                        <p class="dDSectionText">Home</p>
-                    </div>
-                    <div class="dDSection" onclick="window.location.href='/instructor/view-reqs'">
-                        <p class="dDSectionText">View all requests</p>
-                    </div>
+            <div class="dropDown home">
+                <div class="dropDownBtn" style="display: flex; width:30px">
+                    <img class="homeBtn" src="{% static 'img/homeIcon.png' %}" style="align-self: center;" onclick="window.location.href='/instructor/'">
                 </div>
             </div>
         
             <img src="{% static 'img/uomLogo.JPG' %}" style="height: 38px;">
-            <div class="headerText" id="headerText">Signed in as: ________
-            </div>
+            <div class="headerText" id="headerText">Signed in as:</div>
         
             <!-- settings -->
             <div class="dropDown settings">
@@ -54,14 +42,20 @@
                 <div class="dropDownMenu inwards">
                     <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
                         <p class="dDSectionText">Email notifications</p>
-                        <input type="checkbox" style="width: 17px;height: 17px;">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="emailNotifCheckBox">
+                        </div>
+                        
                     </div>
                     <div class="dDSection" style="display:flex; justify-content: flex-end; padding-right:10px">
                         <p class="dDSectionText">Dark mode</p>
-                        <input type="checkbox" style="width: 17px;height: 17px;">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="darkModeCheckBox">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </body>
 </html>

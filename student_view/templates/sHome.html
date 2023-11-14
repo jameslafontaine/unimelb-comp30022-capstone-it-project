@@ -67,58 +67,10 @@
 
             </div>
         </div>
-        <script src="{% static 'js/modules/sWebHeader.js' %}"></script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script>
-            activeCaseList = [
-                [
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-
-                ],
-                [
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    },
-                    {
-                        dateSubmitted: '29/08/2023',
-                        requestType: 'Extension',
-                        status: 'Awaiting action'
-                    }
-                ]
-            ]
-
-            generateStudentCases(activeCaseList, activeCaseList.length)
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { sHome } from "{% static 'js/app.js' %}";
+            sHome();
         </script>
     </body>
 </html>

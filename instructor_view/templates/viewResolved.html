@@ -18,7 +18,7 @@
         <style>
             .pageAsATable {
                 display: grid;
-                grid-template-columns: 70% 1fr;
+                grid-template-columns: 60% 1fr;
             }
         </style>
 
@@ -54,9 +54,12 @@
         crossorigin="anonymous"></script>
     </head>
     <body>
+        <!-- div to hold data passed from the view -->
+        <div id="load-thread-id" data-thread-id="{{ thread_id }}"></div>
+
         <div id="webHeaderContainer"></div>
 
-        <div class="mainBody" style="width: 90%;">
+        <div class="mainBody" style="width: 100%;">
             <div class="pageAsATable">
                 <div class="leftSide">
                     <p class="title" id="requestNum"></p>
@@ -104,106 +107,60 @@
                     
                 </div>
 
-                <div class="rightSide" style="text-align: center;">
-                    <br><br>
-                    <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
-                    <div style="display: inline-block; text-align: center;">
-                        <p class="standardBox" style="width: 300px; height: 200px;">
-                            <span class="text" id="studentName"></span>
-                            <span class="text" id="studentId"></span>
-                            <span class="text" id="studentEmail" style="font-size: 14px;"></span>
-                            <span>
-                                <button class="standardButton" onclick="window.location.href='/instructor/view-profile/1'">
-                                    View Profile
-                                </button>
-                            </span>
-                        </p>
-                    </div>
-                    <br><br><br><br><br><br>
-                    <div style="text-align: center; width: fit-content; margin: 0 auto;">
-                        <div>
-                            <p class="bigButton" onclick="window.location.href='/instructor/view-reqs'">
-                                Back
+                <div class="rightSide" style="display: flex; 
+                                          justify-content: center; 
+                                          align-items: center;
+                                          height: 90vh;">
+                    <div style="position: fixed;">
+                        <br><br>
+                        <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
+                        <div style="display: inline-block; text-align: center;">
+                            <p class="standardBox" style="width: 300px; height: 200px;">
+                                <span class="text" id="studentName"></span>
+                                <span class="text" id="studentId"></span>
+                                <span class="text" id="studentEmail" style="font-size: 14px;"></span>
+                                <span>
+                                    <button class="standardButton" id="navProfileButton">
+                                        View Profile
+                                    </button>
+                                </span>
                             </p>
+                        </div>
+                        <br><br>
+                        <div style="text-align: center; width: fit-content; margin: 0 auto;">
+                            <div>
+                                <p class="bigButton" id="navBackButton">
+                                    Back
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <script src="{% static 'js/modules/iWebHeader.js' %}"></script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script>
-            const req2 = {
-                requestId: 987654,
-                creationDate: '10/10/2012',
-                resolveDate: '15/10/2012',
-                reserved: false,
-                course: 'COMP30022 - IT Project',
-                assessment: 'Project 1',
-                requestType: 'Extension',
-                requestTitle: 'Project 1 Extension Request',
-                message: 'I am sick ;\'( why must misfortune happen to me',
-                status: 'Rejected',
-                instructorNotes: 'Rejected because medicalcertificate.pdf is a handwritten illegible letter begging for sympathy'
-            };
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { viewResolved } from "{% static 'js/app.js' %}";
+            import { loadData } from "{% static 'js/modules/dataModule.js' %}";
+            viewResolved();
 
-            const suppDocs = [
-                {
-                    name: 'iamsick.pdf',
-                    size: '20 TB'
-                },
-                {
-                    name: 'bible.pdf',
-                    size: '40 MB'
-                },
-                {
-                    name: 'medcert.pdf',
-                    size: '3 MB'
-                }
-            ]
-
-            const prevVersions = [
-                {
-                    date: "2011/09/24",
-                    message: "The power has died!! :(",
-                    documents: [
-                        { name: "iamsick.pdf", size: "20 TB" },
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                },
-                {
-                    date: "2011/09/23",
-                    message: "Haven't thought of an excuse yet.",
-                    documents: [
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                }
-            ];
-            
-
-            // Fill information relating to the current request from the database
-            fillCurrentRequestInformation(req2, prevVersions.length + 1, 'Instructor');
-
-            // Generate the supporting documentation for the current version of request
-            generateSuppDocTable(suppDocs, '');
-
-            // Generate version boxes for all request prevVersions in the data
-            for (let i = 0; i < prevVersions.length; i++) {
-                generateVersionBox(prevVersions[i], prevVersions.length - i)
+            var navProfileButton = document.getElementById('navProfileButton');
+            function toProfile(){
+                loadData('/api/data/thread/?threadid=' + threadId, {})
+                    .then(data => {
+                        window.location.href = '/instructor/view-profile/' + data.student.user_id; 
+                    });
             }
+            navProfileButton.addEventListener("click", toProfile);
 
-        </script>
-        <!-- Student Details Box Population -->
-        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
-        <script>
-            student = {
-                firstName: 'Callum',
-                lastName: 'Sharman',
-                id: 1178429,
-                email: 'csharman@student.unimelb.edu.au'
+            var navBackButton = docuemnt.getElementById('navBackButton');
+            function back(){
+                loadData('/api/data/thread/' + threadId, {})
+                    .then(data => {
+                        window.location.href = '/instructor/view-reqs/' + data.threadinfo.thread.course_id;
+                    })
             }
-        
-            fillStudentDetailsBox(student);
+            navBackButton.addEventListener("click", back);
         </script>
     </body>
 </html>

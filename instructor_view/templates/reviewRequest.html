@@ -18,7 +18,7 @@
         <style>
             .pageAsATable {
                 display: grid;
-                grid-template-columns: 70% 1fr;
+                grid-template-columns: 60% 1fr;
             }
         </style>
 
@@ -55,6 +55,10 @@
         crossorigin="anonymous"></script>
     </head>
     <body>
+
+        <!-- div to hold data passed from the view -->
+        <div id="load-thread-id" data-thread-id="{{ thread_id }}"></div>
+
         <div id="webHeaderContainer"></div>
         
         <!----------------------------- Popup HTML starts here ----------------------------->
@@ -78,25 +82,25 @@
                         <span class="text" style="margin:10px">Current Deadline</span>
                         <span class="text" style="margin:10px">Default Extension</span>
                         <br>
-                        <textarea class="textBox" id="currentDeadline" style="margin-right: 30px; margin-top: 10px; width:20%; height:30px; resize:none; text-align:center" readonly></textarea>
-                        <textarea class="textBox" id="defaultExtension" style="margin-left: 30px; margin-top: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                        <textarea class="textBox" id="currentDeadline" style="margin-right: 20px; margin-top: 10px; width:35%; height:30px; resize:none; text-align:center" readonly></textarea>
+                        <textarea class="textBox" id="defaultExtension" style="margin-left: 20px; margin-top: 10px; width:35%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <div style="text-align:center">
                         <br><br>
-                        <label for="extensionOverride">Override Extension:</label>
+                        <label for="extensionOverride" class="text">Override Extension:</label>
                         <select id="extensionOverrideAExt">
                         </select>
                         <span class="text" style="font-weight:normal">day(s)</span>
                     </div>
                     </div>
-                    <br><br>
+                    <br>
                     <div style="text-align:center">
                         <p class="text">Student Selected Assessment</p>
-                        <textarea class="textBox" id="selectedAssessmentAExt" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                        <textarea class="textBox" id="selectedAssessmentAExt" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
                     <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
+                        <label for="assessmentOverride" class="text">Override Assessment:</label>
                         <select class="assessmentOverride" id="assessmentOverrideAExt">
                         </select>
                     </div>
@@ -125,15 +129,9 @@
                     
                     <div style="text-align:center">
                         <p class="text">Student Selected Assessment</p>
-                        <textarea class="textBox" id="selectedAssessmentRExt" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                        <textarea class="textBox" id="selectedAssessmentRExt" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
-                    <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
-                        <select class="assessmentOverride" id="assessmentOverrideRExt">
-                        </select>
-                    </div>
-                    <br><br>
                     <div class="popupButton" id="popupRejectButtonExt">Reject</div>
                     <br>
                 </div>
@@ -182,7 +180,7 @@
                     </div>
                     <br>
                     <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
+                        <label for="assessmentOverride" class="text">Override Assessment:</label>
                         <select class="assessmentOverride" id="assessmentOverrideARem">
                         </select>
                     </div>
@@ -214,12 +212,6 @@
                         <textarea class="textBox" id="selectedAssessmentRRem" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
-                    <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
-                        <select class="assessmentOverride" id="assessmentOverrideRRem">
-                        </select>
-                    </div>
-                    <br><br>
                     <div class="popupButton" id="popupRejectButtonRem">Reject</div>
                     <br>
                 </div>
@@ -227,7 +219,7 @@
         </div>
 
         <!-- Approve Quiz Code Popup -->
-        <div id="approveQuizPopup" class="popupBox">
+        <div id="approveQuiPopup" class="popupBox">
             <div class="popupContent">
                 <div class="popupHeaderBox">
                     <span class="popupHeaderContents">Approve Quiz Code
@@ -240,15 +232,18 @@
                         <p class="text">Instructor Notes</p>
                         <textarea class="textBox" id="instructorNotesAQui" placeholder="Enter your reasoning here..." style="margin: 10px; width:80%; height:90px; resize:none"></textarea>
                     </div>
-                    <br>
-                    
                     <div style="text-align:center">
-                        <p class="text">Student Selected Assessment</p>
-                        <textarea class="textBox" id="selectedAssessmentAQui" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                        <p class="text">Quiz password</p>
+                        <textarea class="textBox" id="quizPasswordAQui" placeholder="Enter quiz password here..." style="margin: 10px; width:80%; height:32px; resize:none"></textarea>
                     </div>
                     <br>
                     <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
+                        <p class="text">Student Selected Assessment</p>
+                        <textarea class="textBox" id="selectedAssessmentAQui" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                    </div>
+                    <br>
+                    <div style="text-align:center">
+                        <label for="assessmentOverride" class="text">Override Assessment:</label>
                         <select class="assessmentOverride" id="assessmentOverrideAQui">
                         </select>
                     </div>
@@ -260,7 +255,7 @@
         </div>
 
         <!-- Reject Quiz Code Popup -->
-        <div id="rejectQuizPopup" class="popupBox">
+        <div id="rejectQuiPopup" class="popupBox">
             <div class="popupContent">
                 <div class="popupHeaderBox">
                     <span class="popupHeaderContents">Reject Quiz Code
@@ -277,15 +272,9 @@
                     
                     <div style="text-align:center">
                         <p class="text">Student Selected Assessment</p>
-                        <textarea class="textBox" id="selectedAssessmentRQui" style="margin: 10px; width:20%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
+                        <textarea class="textBox" id="selectedAssessmentRQui" style="margin: 10px; width:60%; height:30px; resize:none; text-align:center" readonly>Project 1</textarea>
                     </div>
                     <br>
-                    <div style="text-align:center">
-                        <label for="assessmentOverride">Override Assessment:</label>
-                        <select class="assessmentOverride" id="assessmentOverrideRQui">
-                        </select>
-                    </div>
-                    <br><br>
                     <div class="popupButton" id="popupRejectButtonQui">Reject</div>
                     <br>
                 </div>
@@ -294,7 +283,7 @@
 
         <!----------------------------- Popup HTML ends here ----------------------------->
 
-        <div class="mainBody" style="width: 90%;">
+        <div class="mainBody" style="width: 100%;">
 
             <div class="pageAsATable">
                 
@@ -311,9 +300,6 @@
 
                     <p class="text">Request Type</p>
                     <textarea class="textBox" id="requestType" style="height:30px; resize:none" readonly></textarea>
-
-                    <p class="text">Request Title</p>
-                    <textarea class="textBox" id="requestTitle" style="height:30px; resize:none" readonly></textarea>
 
                     <p class="text">Message</p>
                     <textarea class="textBox" id="message" style="height:120px; resize:none" readonly>
@@ -342,155 +328,74 @@
 
                 </div>
 
-                <div class="rightSide" style="text-align: center;">
-                    <br><br>
-                    <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
-                    <div style="display: inline-block; text-align: center;">
-                        <p class="standardBox" style="width: 300px; height: 200px;">
-                            <span class="text" id="studentName"></span>
-                            <span class="text" id="studentId"></span>
-                            <span class="text" id="studentEmail" style="font-size: 14px;"></span>
-                            <span>
-                                <button class="standardButton" onclick="window.location.href='/instructor/view-profile/1'">
-                                    View Profile
-                                </button>
-                            </span>
-                        </p>
-                    </div>
-                    <br><br><br><br>
-                    <div style="text-align: center; width: fit-content; margin: 0 auto;">
-                        <div>
-                            <p class="bigButton" id="reserveButton">
-                                Mark as complex
+                <div class="rightSide" style="display: flex; 
+                                          justify-content: center; 
+                                          align-items: center;
+                                          height: 90vh;">
+
+                    <div style="position: fixed;">
+                        <p class="title" style="font-size: 24px; text-align: center;">Student Details</p>
+                        <div style="display: inline-block; text-align: center;">
+                            <p class="standardBox" style="width: 300px; height: 170px;">
+                                <span class="text" id="studentName"></span>
+                                <span class="text" id="studentId"></span>
+                                <span class="text" id="studentEmail" style="font-size: 14px;"></span>
+                                <span>
+                                    <button class="standardButton" id="navProfileButton">
+                                        View Profile
+                                    </button>
+                                </span>
                             </p>
-                            <p class="bigButton" id="answerButton" data-target="answerPopup">
-                                Answer
-                            </p>
-                            <p class="bigButton" id="approveButton">
-                                Approve Request
-                            </p>
-                            <p class="bigButton" id="rejectButton">
-                                Reject Request
-                            </p>
-                            <p class="bigButton" onclick="window.location.href='/instructor/view-reqs'">
-                                Back
-                            </p>
+                        </div>
+                        <br><br>
+                        <div style="text-align: center; width: fit-content; margin: 0 auto;">
+                            <div>
+                                <p class="bigButton" id="reserveButton" style="margin-bottom: 5px;">
+                                    Mark as complex
+                                </p>
+                                <p class="bigButton" id="answerButton" data-target="answerPopup" style="margin-bottom: 5px;">
+                                    Answer
+                                </p>
+                                <p class="bigButton" id="approveButton" style="margin-bottom: 5px;">
+                                    Approve Request
+                                </p>
+                                <p class="bigButton" id="rejectButton" style="margin-bottom: 5px;">
+                                    Reject Request
+                                </p>
+                                <p class="bigButton" id="navBackButton" style="margin-bottom: 5px;">
+                                    Back
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <script src="{% static 'js/modules/iWebHeader.js' %}"></script>
-        <script src="{% static 'js/modules/requests.js' %}"></script>
-        <script src="{% static 'js/modules/buttons.js' %}"></script>
-        <script>
-            var req1 = {
-                requestId: 123456,
-                creationDate: '10/10/2012',
-                resolveDate: '',
-                reserved: false,
-                course: 'COMP30022 - IT Project',
-                assessment: 'Project 1',
-                requestType: 'Extension',
-                requestTitle: 'Project 1 Extension Request',
-                message: 'I am sick ;\'( why must misfortune happen to me',
-                status: 'Waiting for action'
-            };
+        <script type="module" src="{% static 'js/app.js' %}"></script>
+        <script type="module">
+            import { reviewRequest } from "{% static 'js/app.js' %}";
+            import { loadData } from "{% static 'js/modules/dataModule.js' %}";
+            reviewRequest();
 
-            const suppDocs = [
-                {
-                    name: 'iamsick.pdf',
-                    size: '20 TB'
-                },
-                {
-                    name: 'bible.pdf',
-                    size: '40 MB'
-                },
-                {
-                    name: 'medcert.pdf',
-                    size: '3 MB'
-                }
-            ]
+            let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
 
-            const prevVersions = [
-                {
-                    date: "2011/09/24",
-                    message: "The power has died!! :(",
-                    documents: [
-                        { name: "iamsick.pdf", size: "20 TB" },
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                },
-                {
-                    date: "2011/09/23",
-                    message: "Haven't thought of an excuse yet.",
-                    documents: [
-                        { name: "bible.pdf", size: "40 MB" }
-                    ]
-                }
-            ];
-            
-
-            // Fill information relating to the current request from the database
-            fillCurrentRequestInformation(req1, prevVersions.length + 1, 'Instructor');
-
-            // Generate the supporting documentation for the current version of request
-            generateSuppDocTable(suppDocs, '');
-
-            // Generate version boxes for all previous request versions in the database
-            for (let i = 0; i < prevVersions.length; i++) {
-                generateVersionBox(prevVersions[i], prevVersions.length - i)
+            var navProfileButton = document.getElementById('navProfileButton');
+            function toProfile(){
+                loadData('/api/data/thread/?threadid=' + threadId, {})
+                    .then(data => {
+                        window.location.href = '/instructor/view-profile/' + data.student.user_id; 
+                    });
             }
+            navProfileButton.addEventListener("click", toProfile);
 
-            handleComplexRequestFunctionality(req1);
-
-        </script>
-        <script src="{% static 'js/modules/popups.js' %}"></script>
-        <!-- Popup related JS -->
-        <script>
-            
-            var req1 = {
-                requestId: 123456,
-                creationDate: '10/10/2012',
-                resolveDate: '',
-                reserved: false,
-                course: 'COMP30022 - IT Project',
-                assessment: 'Project 1',
-                requestType: 'Extension',
-                requestTitle: 'Project 1 Extension Request',
-                message: 'I am sick ;\'( why must misfortune happen to me',
-                status: 'Waiting for action',
-                instructorNotes: '',
-                dueDate: '2012/10/15',
-                defaultExtension: 3,
-                maxExtension: 10,
-                approvedExtension: 0
-            };
-
-            // List of assessments for this subject
-            const assessments = ['Project 1', 'Project 2', 'Mid Semester Test'];
-
-            setupOpenClosePopupButtons();
-            populatePopups(req1, assessments);
-            HideAndDisplayButtons(req1.requestType);
-            handleApprovalRejectionAnswer(req1, req1.requestType);
-            
-
-
-
-        </script>
-        <!-- Student Details Box Population -->
-        <script src="{% static 'js/modules/studentDetails.js' %}"></script>
-        <script>
-            student = {
-                firstName: 'Callum',
-                lastName: 'Sharman',
-                id: 1178429,
-                email: 'csharman@student.unimelb.edu.au'
+            var navBackButton = document.getElementById('navBackButton');
+            function back(){
+                loadData('/api/data/thread/' + threadId, {})
+                    .then(data => {
+                        window.location.href = '/instructor/view-reqs/' + data.threadinfo.thread.course_id;
+                    })
             }
-
-            fillStudentDetailsBox(student);
+            navBackButton.addEventListener("click", back);
         </script>
     </body>
 </html>
