@@ -500,10 +500,10 @@ def get_threads_user_endpoint(request):
                             'current_status': row['current_status'],
                             'assignment_id': row['assignment_id'],
                         })
-                    cursor.close()
-                    return JsonResponse({
-                        'threads': resultList
-                    })
+                cursor.close()
+                return JsonResponse({
+                    'threads': resultList
+                })
 
     if len(request.GET) in [1, 2] and request.GET.get('userid') and request.GET.get('status'):
         if check_param_not_integer(request.GET.get('userid')) or \
