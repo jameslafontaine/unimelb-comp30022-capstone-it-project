@@ -621,7 +621,9 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl, re
             body: formData
         })
         .then(response => response.json())
-        .then(data => {
+        .then(() => {
+
+            data + 1;
             // Check if the table already exists
             let table = buttonElement.parentNode.getElementsByTagName('table')[0];
             
@@ -912,7 +914,7 @@ export function generateAAPTable(aapData, uploadUrl, removeUrl) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ filename: file.name }),
+                body: JSON.stringify({ filename: file_name }),
             })
             .then(response => response.json())
             .then(data => {
@@ -958,7 +960,7 @@ export function generateAAPTable(aapData, uploadUrl, removeUrl) {
             body: formData
         })
         .then(response => response.json())
-        .then(data => {
+        .then(() => {
             const row = table.insertRow();
 
             const fileNameCell = row.insertCell();

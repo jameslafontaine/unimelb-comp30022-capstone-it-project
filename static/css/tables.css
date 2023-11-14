@@ -94,3 +94,16 @@ th:not(:last-child) {
 .removeCell {
     width: 20px;
 }
+
+.tableEntry {
+    padding: 8px;
+    border: 1px solid black;
+  }
+  
+  .filenameCell {
+    font-weight: bold;
+  }
+  
+  #aapTableContainer {
+    margin-top: 20px;
+  }
