@@ -369,13 +369,14 @@ export function handleCaseSubmission(numRequests) {
 
     let requestPromises = [];
 
-    let submissionTemplate;
+ 
 
     if (numRequests > 0) {
 
         for (let i = 1; i <= numRequests; i++) {
             requestPromises.push(loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
                 .then(data => {
+                    let submissionTemplate;
                     submissionTemplate = {
                         'date_created': formattedDate,
                         'course_id': -1,
@@ -383,10 +384,16 @@ export function handleCaseSubmission(numRequests) {
                         'assignment_id': null,
                         'request_content': document.getElementById(`messageTextBox${i}`).value
                     }
+
+                    console.log(`request_content ${i} = ${submissionTemplate.request_content}`)
                     for (let course of data.courses) {
                         if (course.course_code == document.getElementById(`courseDropdown${i}`).value) {
                             submissionTemplate.course_id = course.course_id;
+                            // DEBUGGING LINE
+                            console.log(`The course_id matched was ${course.course_id}`)
                             let requestType = document.getElementById(`requestTypeDropdown${i}`).value
+                            // DEBUGGING LINE
+                            console.log(`Request Type = ${requestType}`)
                             if ((requestType == 'General Query') || (requestType == 'Other')) {
                                 if (requestType == 'General Query') {
                                     submissionTemplate.request_type = "QUERY";
@@ -395,6 +402,7 @@ export function handleCaseSubmission(numRequests) {
                                     submissionTemplate.request_type = "OTHER";
                                 }
                                 submissionData.push(submissionTemplate);
+                                //break;
                             }
                             if ((requestType == 'Extension') || (requestType == 'Remark') || (requestType == 'Quiz Code')) {
                                 if (requestType == 'Extension') {
@@ -406,6 +414,8 @@ export function handleCaseSubmission(numRequests) {
                                 if (requestType == 'Quiz Code') {
                                     submissionTemplate.request_type = "QUIZCODE";
                                 }
+                                // DEBUGGING LINE
+                                console.log('About to load assessments for this course...')
                                 loadData('/api/data/assessments/?courseid=' + course.course_id, {})
                                     .then(data => {
                                         let assignments = data.assessments;
@@ -421,12 +431,16 @@ export function handleCaseSubmission(numRequests) {
                                         throw error
                                     });
                             }
+                            // DEBUGGING LINE
+                            console.log(`Assignment id = ${assignment.assignment_id}, + this is the end of dealing with this request in the loop`)
                             break;
                         }
                     }
                 }));
         }
-        Promise.all(requestPromises)
+        // DEBUGGING LINE
+        console.log(`doing promise stuff now`)
+        Promise.allSettled(requestPromises)
             .then(() => {
                 // TODO: Fix adding request messes up submissionData thing
                 console.log(submissionData);
@@ -1020,6 +1034,16 @@ export function generateSubjectBox(subject) {
 	settingsButton.onclick = function() {
 		window.location.href = '/instructor/subject-settings/' + subject.course_id; 
 	};
+
+    loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
+    .then(data => {
+        let role = data.enrollment_role.toLowerCase();
+
+        if (role == 'tutor') {
+            settingsButton.style.display = 'none';
+        }
+    })
+
   
 	// Append the elements to their respective parent elements
 	rightItems.appendChild(viewRequestsButton);
