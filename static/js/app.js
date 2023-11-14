@@ -54,6 +54,7 @@ export function sHome() {
     createHeader("student");
     loadData('/api/data/cases/?userid=' + getGlobalAppHeadersValue('user_id'), {}) 
         .then(data => {
+            console.log(data);
             generateStudentCases(data.cases);
         })
         .catch(error => {
@@ -68,7 +69,6 @@ export function viewCases() {
     loadData('/api/data/cases?userid=' + getGlobalAppHeadersValue('user_id'))
         .then(data => {
             generateStudentCases(data.cases);
-            fixStyling();
         })
 }
 
@@ -168,8 +168,6 @@ export function submitRequest() {
         handleCaseSubmission(numRequests);
         // window.location.href = '/student/';
     });
-
-    // Handle supporting documentation tables
 
 
 }

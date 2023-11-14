@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `db`.`Thread` (
   `thread_id` INT NOT NULL AUTO_INCREMENT,
   `case_id` INT NOT NULL,
   `course_id` INT NOT NULL,
-  `request_type` VARCHAR(8) NOT NULL,
+  `request_type` VARCHAR(10) NOT NULL,
   `complex_case` BIT(1) NOT NULL,
   `current_status` VARCHAR(8) NOT NULL DEFAULT 'Pending',
   `assignment_id` INT NULL,

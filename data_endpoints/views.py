@@ -154,61 +154,57 @@ def get_cases_endpoint(request):
         if not check_param_not_integer(request.GET.get('userid')):
             cursor = connection.cursor(dictionary=True)
             cursor.execute("SELECT * FROM `db`.`Case` WHERE `Case`.user_id = %s", (request.GET.get('userid'),))
-            result = {
-                "cases": []
-            }
-            for row in cursor.fetchall():
-                result["cases"].append({
+            returnCases = []
+            for row in cursor:
+                returnCases.append({
                     "case_id": row['case_id'],
                     "user_id": row["user_id"]
                 })
             cursor.close()
-            return JsonResponse(result)
-    if not request.GET.get('userid') and request.GET.get('caseid'):
+            return JsonResponse({
+                "cases": returnCases
+            })
+
+    if len(request.GET) == 1 and request.GET.get('caseid'):
         if check_param_not_integer(request.GET.get('caseid')):
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
         if not check_param_not_integer(request.GET.get('caseid')):
             if len(request.GET) == 1:
                 cursor = connection.cursor(dictionary=True)
-                cursor.execute(f"USE {DATABASE_NAME}")
                 # Execute a query to fetch case data for the given case_id
-                query = "SELECT * FROM `Case` WHERE case_id = %s"
-                cursor.execute(query, (request.GET.get('caseid'),))
-
+                cursor.execute("SELECT * FROM `db`.`Case` WHERE `Case`.case_id = %s", (request.GET.get('caseid'),))
                 case_data = cursor.fetchone()
-
                 if case_data:
-                    json_data = {
+                    return JsonResponse({
                         "case": {
                             "case_id": case_data["case_id"],
                             "user_id": case_data["user_id"]
                         }
-                    }
-                    return JsonResponse(json_data)
+                    })
 
                 if not case_data:
                     return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
-            if len(request.GET) == 2 and request.GET.get('threads').lower() == 'true':
-                cursor = connection.cursor(dictionary=True)
-                cursor.execute("SELECT * FROM `db`.`Thread` WHERE `Thread`.case_id = %s", (request.GET.get('caseid'),))
-                threads = []
-                for thread_data in cursor.fetchall():
-                    thread = {
-                        "thread_id": thread_data['thread_id'],  # Using integer indices
-                        "case_id": thread_data['case_id'],
-                        "course_id": thread_data['course_id'],
-                        "date_updated": thread_data['date_updated'],
-                        "request_type": thread_data['request_type'],
-                        "complex_case": thread_data['complex_case'],
-                        "current_status": thread_data['current_status'],
-                        "assignment_id": thread_data['assignment_id'] 
-                    }
-                    threads.append(thread)
-                cursor.close()
-                return JsonResponse({
-                    "threads": threads
-                })
+    if len(request.GET) == 2 and request.GET.get('caseid') and request.GET.get('threads').lower() == 'true':
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM `db`.`Thread` WHERE `Thread`.case_id = %s", (request.GET.get('caseid'),))
+        threads = []
+        for row in cursor:
+            threads.append({
+                "thread_id": row['thread_id'],
+                "case_id": row['case_id'],
+                "course_id": row['course_id'],
+                "date_updated": row['date_updated'],
+                "request_type": row['request_type'],
+                "complex_case": row['complex_case'],
+                "current_status": row['current_status'],
+                "assignment_id": row['assignment_id'] 
+            })
+        cursor.close()
+        return JsonResponse({
+            "threads": threads
+        })
+
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
 def get_courses_endpoint(request):
@@ -780,11 +776,10 @@ def post_new_case(request):
             cursor.execute("INSERT INTO `db`.`Thread` (case_id, course_id, date_updated, request_type, complex_case, current_status, assignment_id) VAUES (%s, %s, %s, %s, %s, %s, %s)", (case_id, request_data['course_id'], request_data['date_created'], request_data['request_type'], 0, "PENDING", request_data['assignment_id']))
             thread_id = cursor.lastrowid
             cursor.execute("INSERT INTO `db`.`Request` (thread_id, date_created, request_content, instructor_notes) VALUES (%s, %s, %s, %s)", (thread_id, request_data['date_created'], request_data['request_content'], ""))
-        connection.commit()
+            connection.commit()
         connection.close()
         return JsonResponse({"message": "Case created successfully"}, status=201)
     return JsonResponse({'message': 'Invalid request.'}, status=400)
-
 
 @csrf_exempt
 def post_file(request):

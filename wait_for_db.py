@@ -91,6 +91,17 @@ def mock_database():
     cursor.execute("INSERT INTO `db`.`Assignment` (course_id, assignment_name, assignment_type, assignment_weightage, start_date, due_date) VALUES (%s,%s,%s,%s,%s,%s)", (3, "Assignment 4", "submission", 17, "2023-10-15 09:00:00", "2023-10-30 23:59:59"))
     cursor.execute("INSERT INTO `db`.`Enrollment` (course_id, user_id, enrollment_role) VALUES (%s, %s, %s)", (3, 1, "STUDENT"))
 
+    # Fake case data #1
+    cursor.execute("INSERT INTO `db`.`Case` (user_id) VALUES (%s)", (1 ,))
+    cursor.execute("INSERT INTO `db`.`Thread` (case_id, course_id, date_updated, request_type, complex_case, current_status, assignment_id) VALUES (%s, %s, %s, %s, %s, %s, %s)", (1, 1, "2023-08-14 13:45:02", "EXTENSION", 1, "APPROVED", 1))
+    cursor.execute("INSERT INTO `db`.`Request` (thread_id, date_created, request_content, instructor_notes) VALUES (%s, %s, %s, %s)", (1,"2023-08-12 08:27:15", "I got shot multiple times whilst walking down to my local Walmart, currently in hospital", "is bro okay"))
+
+    cursor.execute("INSERT INTO `db`.`Thread` (case_id, course_id, date_updated, request_type, complex_case, current_status, assignment_id) VALUES (%s, %s, %s, %s, %s, %s, %s)", (1, 2, "2023-08-12 11:33:57", "EXTENSION", 1, "APPROVED", 5))
+    cursor.execute("INSERT INTO `db`.`Request` (thread_id, date_created, request_content, instructor_notes) VALUES (%s, %s, %s, %s)", (2,"2023-08-12 08:27:15", "I got shot multiple times whilst walking down to my local Walmart, currently in hospital", "???"))
+
+    cursor.execute("INSERT INTO `db`.`Thread` (case_id, course_id, date_updated, request_type, complex_case, current_status, assignment_id) VALUES (%s, %s, %s, %s, %s, %s, %s)", (1, 3, "2023-08-13 07:43:20", "EXTENSION", 1, "REJECTED", 6))
+    cursor.execute("INSERT INTO `db`.`Request` (thread_id, date_created, request_content, instructor_notes) VALUES (%s, %s, %s, %s)", (3,"2023-08-12 08:27:15", "I got shot multiple times whilst walking down to my local Walmart, currently in hospital", "skill issue please dodge"))
+
     connection.commit()
 
 
