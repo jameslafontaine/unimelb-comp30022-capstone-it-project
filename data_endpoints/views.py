@@ -235,9 +235,7 @@ def get_courses_endpoint(request):
             cursor.execute(f"USE {DATABASE_NAME}")
 
             # Execute a query to fetch the courses for the given user_id
-            query = "SELECT c.course_id, c.course_name, c.course_code FROM Course c " \
-                    "INNER JOIN Enrollment e ON c.course_id = e.course_id " \
-                    "WHERE e.user_id = %s"
+            query = "SELECT c.course_id, c.course_name, c.course_code FROM Course c INNER JOIN Enrollment e ON c.course_id = e.course_id WHERE e.user_id = %s"
             cursor.execute(query, (request.GET.get('userid'),))
 
             courses = []
@@ -280,30 +278,34 @@ def get_courses_endpoint(request):
                     return JsonResponse(course_info)
             if len(request.GET) == 2 and request.GET.get('preferences') \
                 and request.GET.get('preferences').lower() == 'true':
+                cursor = connection.cursor(dictionary=True)
+                cursor.execute("SELECT * FROM `db`.`CoursePreferences` WHERE `CoursePreferences`.course_id = %s", (request.GET.get('courseid'),))
+                row = cursor.fetchone()
                 result = {
                     "coursepreferences": {
-                        "coursepreference_id": 1,
-                        "course_id": 1,
-                        "global_extension_length": 3,
-                        "general_tutor": 1,
-                        "extension_tutor": 1,
-                        "quiz_tutor": 1,
-                        "remark_tutor": 1,
-                        "other_tutor": 1,
-                        "general_scoord": 1,
-                        "extension_scoord": 1,
-                        "quiz_scoord": 1,
-                        "remark_scoord": 1,
-                        "other_scoord": 1,
-                        "general_reject": "",
-                        "extension_approve": "",
-                        "extension_reject": "",
-                        "quiz_approve": "",
-                        "quiz_reject": "lmao",
-                        "remark_approve": "",
-                        "remark_reject": ""
+                        "coursepreference_id": row['coursepreference_id'],
+                        "course_id": request.GET.get('course_id'),
+                        "global_extension_length": row['global_extension_length'],
+                        "general_tutor": row['general_tutor'],
+                        "extension_tutor": row['extension_tutor'],
+                        "quiz_tutor": row['quiz_tutor'],
+                        "remark_tutor": row['remark_tutor'],
+                        "other_tutor": row['other_tutor'],
+                        "general_scoord": row['general_scoord'],
+                        "extension_scoord": row['general_scoord'],
+                        "quiz_scoord": row['general_scoord'],
+                        "remark_scoord": row['remark_scoord'],
+                        "other_scoord": row['other_scoord'],
+                        "general_reject": row['general_reject'],
+                        "extension_approve": row['extension_approve'],
+                        "extension_reject": row['extension_reject'],
+                        "quiz_approve": row['quiz_approve'],
+                        "quiz_reject": row['quiz_reject'],
+                        "remark_approve": row['remark_approve'],
+                        "remark_reject": row['remark_reject']
                     }
                 }
+                cursor.close()
                 return JsonResponse(result)
 
             if not course_data:
@@ -623,6 +625,36 @@ def get_threads_endpoint(request, thread_id):
         if not thread_info:
             return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
+def get_user_enrollment(request):
+    '''
+    GET /api/data/user/enrollment/
+    Request body:
+    {
+        'course_id': int
+        'user_id': int
+    }
+    Returns enrollment_role
+    '''
+    if len(request.GET) == 2:
+        connection = mysql.connector.connect(
+            host="db",
+            port="3306",
+            user="root",
+            password="admin"
+        )
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM `db`.`Enrollment` WHERE `Enrollment`.course_id = %s AND `Enrollment`.user_id = %s", (request.GET.get('courseid'), request.GET.get('userid')))
+        row = cursor.fetchone()
+        if row:
+            result = {
+                "enrollment_role": row['enrollment_role']
+            }
+            cursor.close()
+            return JsonResponse(result)
+        return JsonResponse({'message': 'Invalid request.'}, status=400)
+
+    return JsonResponse({'message': 'Invalid request.'}, status=500)
+
 def get_user_endpoint(request, user_id):
     '''
     GET /api/data/user/{user_id}/
@@ -642,10 +674,8 @@ def get_user_endpoint(request, user_id):
         # Query the User table
         cursor.execute("SELECT * FROM `db`.`User` WHERE `User`.user_id = %s", (user_id,))
         user_data = cursor.fetchone()
-        cursor.execute("SELECT enrollment_role FROM `db`.`Enrollment` WHERE `Enrollment`.user_id = %s", (user_id,))
-        enrollment_data = cursor.fetchone()
 
-        if user_data and enrollment_data:
+        if user_data:
             # Create the JSON structure
             result = {
                 "user_id": user_data['user_id'],
@@ -655,12 +685,10 @@ def get_user_endpoint(request, user_id):
                 "email": user_data['email'],
                 "email_preference": user_data['email_preference'],
                 "darkmode_preference": user_data['darkmode_preference'],
-                "enrollment_role": 
-                enrollment_data['enrollment_role'] if enrollment_data else None
             }
             return JsonResponse(result)
 
-        if not user_data or not enrollment_data:
+        if not user_data:
             return JsonResponse({'message': "Data wasn't able to be pulled, try again."}, status=400)
 
     if len(request.GET) == 1 and request.GET.get('courseid'):
@@ -772,11 +800,9 @@ def post_new_case(request):
         cursor = connection.cursor()
         user_id = data.get("user_id")
         cursor.execute("INSERT INTO `db`.`Case` (user_id) VALUES (%s)", (user_id,))
-        connection.commit()
         case_id = cursor.lastrowid
         for request_data in data.get("requests"):
             cursor.execute("INSERT INTO `db`.`Thread` (case_id, course_id, date_updated, request_type, complex_case, current_status, assignment_id) VALUES (%s, %s, %s, %s, %s, %s, %s)", (case_id, request_data['course_id'], request_data['date_created'], request_data['request_type'], 0, "PENDING", request_data['assignment_id']))
-            connection.commit()
             thread_id = cursor.lastrowid
             cursor.execute("INSERT INTO `db`.`Request` (thread_id, date_created, request_content, instructor_notes) VALUES (%s, %s, %s, %s)", (thread_id, request_data['date_created'], request_data['request_content'], ""))
         connection.commit()
@@ -866,7 +892,10 @@ def put_preferences(request):
         cursor.execute("""
             UPDATE CoursePreferences
             SET
-                global_extension_length = %s,
+                global_extension_length = CASE 
+                    WHEN global_extension_length != -1 THEN %s
+                    ELSE global_extension_length
+                END,
                 general_tutor = %s,
                 extension_tutor = %s,
                 quiz_tutor = %s,
@@ -887,7 +916,6 @@ def put_preferences(request):
             WHERE
                 coursepreference_id = %s AND course_id = %s
         """, tuple(values))
-
 
         # Commit the changes
         connection.commit()
@@ -1061,12 +1089,15 @@ def get_assessment_preferences(request, assignment_id):
             password="admin"
         )
         cursor = connection.cursor(dictionary=True)
-        cursor.execute("SELECT extension_length FROM `db`.`AssignmentExtensionLength` WHERE `AssignmentExtensionLength`.assignment_id = %s", (assignment_id,))
-        result = {
-            "extension_length": cursor.fetchone()['extension_length']
-        }
-        cursor.close()
-        return JsonResponse(result)
+        cursor.execute("SELECT * FROM `db`.`AssignmentExtensionLength` WHERE `AssignmentExtensionLength`.assignment_id = %s", (assignment_id,))
+        row = cursor.fetchone()
+        if row:
+            result = {
+                "extension_length": row['extension_length']
+            }
+            cursor.close()
+            return JsonResponse(result)
+        return JsonResponse({'message': 'Invalid request.'}, status = 400)
 
     if request.GET:
         return JsonResponse({'message': 'Invalid request.'}, status = 400)

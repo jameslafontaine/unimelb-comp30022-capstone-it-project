@@ -424,7 +424,6 @@ export function handleCaseSubmission(numRequests) {
                     'requests': submissionData
                 }).then(() => {
                     window.location.href = '/student/'
-                    return true;
                 }).catch(error => {
                     throw error;
                 });
@@ -1149,27 +1148,23 @@ export function generateSubjectBox(subject) {
     // TODO:
 	// Create the "Settings" button
     // Will have to hide or grey out and have popup on hover if instructor is not subject coordinator
-	const settingsButton = document.createElement('button');
-	settingsButton.classList.add('standardButton');
-	settingsButton.textContent = 'Settings';
-	settingsButton.style = 'font-size:16px'
-	settingsButton.onclick = function() {
-		window.location.href = '/instructor/subject-settings/' + subject.course_id; 
-	};
-
-    // loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
-    // .then(data => {
-    //     let role = data.enrollment_role.toLowerCase();
-
-    //     if (role == 'tutor') {
-    //         settingsButton.style.display = 'none';
-    //     }
-    // })
+    loadData('/api/data/user/enrollment?courseid=' + subject.course_id + '&userid=' + getGlobalAppHeadersValue('user_id'), {})
+    .then(data => {
+        if (data.enrollment_role == "SCOORD") {
+            const settingsButton = document.createElement('button');
+            settingsButton.classList.add('standardButton');
+            settingsButton.textContent = 'Settings';
+            settingsButton.style = 'font-size:16px'
+            settingsButton.onclick = function() {
+                window.location.href = '/instructor/subject-settings/' + subject.course_id; 
+            };
+	        rightItems.appendChild(settingsButton);
+        }
+    });
 
   
 	// Append the elements to their respective parent elements
 	rightItems.appendChild(viewRequestsButton);
-	rightItems.appendChild(settingsButton);
 	standardBoxContents.appendChild(subjectCodeElement);
 	standardBoxContents.appendChild(rightItems);
 	standardBox.appendChild(standardBoxContents);
@@ -1310,9 +1305,9 @@ export function generateRequestTable(threads, type) {
     // Add thread data
     threads.forEach(thread => {
         
-        // Check if this thread is meant to be displayed for this instructor or not, if not then skip this request
+        // Check if this thread is meant to be displayed for this instructor or not
         if (shouldDisplayRequest(thread.request_type, thread.complex_case, thread.course_id) == 1) {
-            // Otherwise proceeding with displaying the relevant information in this table row
+            // Display the relevant information in this table row
             const row = table.insertRow();
             
             const complexCaseCell = row.insertCell();
@@ -1398,29 +1393,27 @@ export function shouldDisplayRequest(requestType, isComplex, courseId) {
     
     // Retrieve the request permissions for the role of the current instructor
     loadData('/api/data/courses/?courseid=' + courseId + '&preferences=true', {})
-    .then(prefs => {
+    .then(data => {
+        prefs = data.coursepreferences;
 
-         // Get the role of the instructor (are they a tutor or a subject coordinator)
-        loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
-            .then(data => {
-            let role = data.enrollment_role.toLowerCase();
-    
-            // Use the course preferences of their role to determine which requests to display to them
+        // Get the role of the instructor (are they a tutor or a subject coordinator)
+        loadData('/api/data/user/enrollment?courseid=' + subject.course_id + '&userid=' + getGlobalAppHeadersValue('user_id'), {})
+        .then(data => {
+            let role = data.enrollment_role;
             let keyName;
             if (requestType == "QUIZCODE") {
                 keyName = "quiz" + `_${role}`;
-            } else {
+            }
+            else {
                 keyName = requestType.toLowerCase() + `_${role}`;
             }
-        
-            if ((role == 'tutor') || (role == 'scoord' && isComplex == 1)) {
+            if ((role == 'TUTOR') || (role == 'SCOORD' && isComplex == 1)) {
                 for (let key in prefs) {
                     if (key == keyName) {
                         return prefs[key];
                     }
                 }
-            } 
-
+            }
         });
     });
 }

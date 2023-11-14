@@ -20,6 +20,7 @@ from .views import put_user_preferences
 from .views import get_assessment_preferences
 from .views import put_assessment_preferences
 from .views import delete_file
+from .views import get_user_enrollment
 
 urlpatterns = [
     # GET requests
@@ -32,7 +33,8 @@ urlpatterns = [
     path('user/<int:user_id>/', get_user_endpoint, name = 'get_user'),
     path('files/<int:user_id>/', get_files_endpoint, name = 'get_files'),
     path('preferences/<int:assignment_id>/', get_assessment_preferences, \
-         name = 'get_assessment_extension_length'),
+        name = 'get_assessment_extension_length'),
+    path('user/enrollment/', get_user_enrollment, name = 'get_user_enrollment'),
 
     # POST requests
     path('cases/new/', post_new_case, name = 'post_new_case'),
@@ -44,7 +46,7 @@ urlpatterns = [
     path('thread/complex/', set_complex, name = 'set_complex'),
     path('user/', put_user_preferences, name = 'put_user_preferences'),
     path('assessments/setpreferences/', put_assessment_preferences, \
-         name = 'put_assessment_extension_length'),
+        name = 'put_assessment_extension_length'),
 
     # DELETE request
     path('files/remove/', delete_file, name = 'delete_file'),

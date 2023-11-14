@@ -393,10 +393,10 @@ export function subjectSettings() {
     let coursePrefData;
 
     // Initialise variables
-    loadData('/api/data/courses?courseid=' + courseId + '&preferences=true')
+    loadData('/api/data/courses?courseid=' + courseId + '&preferences=true', {})
         .then(data => {
             coursePrefData = data.coursepreferences;
-            //console.log(coursePrefData);
+
             document.getElementById('extensionLengthInput').value = coursePrefData.global_extension_length;
             
             var extensionTutorCheckBox = document.getElementById('extensionTutorCheck');
@@ -411,19 +411,6 @@ export function subjectSettings() {
                 this.checked ? coursePrefData.extension_scoord = 1 : coursePrefData.extension_scoord = 0;
             });
 
-            var extensionApproveSaveButton = document.getElementById('extensionApproveSave');
-            var extensionApproveMsgBox = document.getElementById('extensionApproveMsg');
-            extensionApproveMsgBox.value = coursePrefData.extension_approve;
-            extensionApproveSaveButton.addEventListener("click", function() {
-                coursePrefData.extension_approve = extensionApproveMsgBox.value;
-            });
-
-            var extensionRejectSaveButton = document.getElementById('extensionRejectSave');
-            var extensionRejectMsgBox = document.getElementById('extensionRejectMsg');
-            extensionRejectMsgBox.value = coursePrefData.extension_reject;
-            extensionRejectSaveButton.addEventListener("click", function() {
-                coursePrefData.extension_reject = extensionRejectMsgBox.value;
-            });
 
             var generalTutorCheckBox = document.getElementById('generalTutorCheck');
             (coursePrefData.general_tutor == 1) ? generalTutorCheckBox.checked = true : generalTutorCheckBox.checked = false;
@@ -435,13 +422,6 @@ export function subjectSettings() {
             (coursePrefData.general_scoord == 1) ? generalCoordCheckBox.checked = true : generalCoordCheckBox.checked = false;
             generalCoordCheckBox.addEventListener("change", function() {
                 this.checked ? coursePrefData.general_scoord = 1 : coursePrefData.general_scoord = 0;
-            });
-
-            var generalRejectSaveButton = document.getElementById('generalRejectSave');
-            var generalRejectMsgBox = document.getElementById('generalRejectMsg');
-            generalRejectMsgBox.value = coursePrefData.general_reject;
-            generalRejectSaveButton.addEventListener("click", function() {
-                coursePrefData.general_reject = generalRejectMsgBox.value;
             });
 
             var remarkTutorCheckBox = document.getElementById('remarkTutorCheck');
@@ -456,20 +436,6 @@ export function subjectSettings() {
                 this.checked ? coursePrefData.remark_scoord = 1 : coursePrefData.remark_scoord = 0;
             });
 
-            var remarkApproveSaveButton = document.getElementById('remarkApproveSave');
-            var remarkApproveMsgBox = document.getElementById('remarkApproveMsg');
-            remarkApproveMsgBox.value = coursePrefData.remark_approve;
-            remarkApproveSaveButton.addEventListener("click", function() {
-                coursePrefData.remark_approve = remarkApproveMsgBox.value;
-            });
-
-            var remarkRejectSaveButton = document.getElementById('remarkRejectSave');
-            var remarkRejectMsgBox = document.getElementById('remarkRejectMsg');
-            remarkRejectMsgBox.value = coursePrefData.remark_reject;
-            remarkRejectSaveButton.addEventListener("click", function() {
-                coursePrefData.remark_reject = remarkRejectMsgBox.value;
-            });
-
             var quizTutorCheckBox = document.getElementById('quizTutorCheck');
             (coursePrefData.quiz_tutor == 1) ? quizTutorCheckBox.checked = true : quizTutorCheckBox.checked = false;
             quizTutorCheckBox.addEventListener("change", function() {
@@ -480,20 +446,6 @@ export function subjectSettings() {
             (coursePrefData.quiz_scoord == 1) ? quizCoordCheckBox.checked = true : quizCoordCheckBox.checked = false;
             quizCoordCheckBox.addEventListener("change", function() {
                 this.checked ? coursePrefData.quiz_scoord = 1 : coursePrefData.quiz_scoord = 0;
-            });
-
-            var quizApproveSaveButton = document.getElementById('quizApproveSave');
-            var quizApproveMsgBox = document.getElementById('quizApproveMsg');
-            quizApproveMsgBox.value = coursePrefData.quiz_approve;
-            quizApproveSaveButton.addEventListener("click", function() {
-                coursePrefData.quiz_approve = quizApproveMsgBox.value;
-            });
-
-            var quizRejectSaveButton = document.getElementById('quizRejectSave');
-            var quizRejectMsgBox = document.getElementById('quizRejectMsg');
-            quizRejectMsgBox.value = coursePrefData.quiz_reject;
-            quizRejectSaveButton.addEventListener("click", function() {
-                coursePrefData.quiz_reject = quizRejectMsgBox.value;
             });
 
             var otherTutorCheckBox = document.getElementById('otherTutorCheck');
@@ -508,11 +460,45 @@ export function subjectSettings() {
                 this.checked ? coursePrefData.other_scoord = 1 : coursePrefData.other_scoord = 0;
             });
 
-            var otherRejectSaveButton = document.getElementById('otherRejectSave');
-            var otherRejectMsgBox = document.getElementById('otherRejectMsg');
-            otherRejectMsgBox.value = coursePrefData.other_reject;
-            otherRejectSaveButton.addEventListener("click", function() {
-                coursePrefData.general_reject = otherRejectMsgBox.value;
+            var coursePreferencesSaveButton = document.getElementById('coursePreferencesSave');
+            coursePreferencesSaveButton.addEventListener("click", function() {
+                var generalTutorCheck = document.getElementById("generalTutorCheck");
+                var extensionTutorCheck = document.getElementById("extensionTutorCheck");
+                var quizTutorCheck = document.getElementById("quizTutorCheck");
+                var remarkTutorCheck = document.getElementById("remarkTutorCheck");
+                var otherTutorCheck = document.getElementById("otherTutorCheck");
+                var generalCoordCheck = document.getElementById("generalCoordCheck");
+                var extensionCoordCheck = document.getElementById("extensionCoordCheck");
+                var quizCoordCheck = document.getElementById("quizCoordCheck");
+                var remarkCoordCheck = document.getElementById("remarkCoordCheck");
+                var otherCoordCheck = document.getElementById("otherCoordCheck");
+                let requestBody = {
+                    'coursepreference_id': coursePrefData.coursepreference_id,
+                    'course_id': courseId,
+                    "global_extension_length": -1,
+                    "general_tutor": generalTutorCheck.checked ? 1 : 0,
+                    "extension_tutor": extensionTutorCheck.checked ? 1 : 0,
+                    "quiz_tutor": quizTutorCheck.checked ? 1 : 0,
+                    "remark_tutor": remarkTutorCheck.checked ? 1 : 0,
+                    "other_tutor": otherTutorCheck.checked ? 1 : 0,
+                    "general_scoord": generalCoordCheck.checked ? 1 : 0,
+                    "extension_scoord": extensionCoordCheck.checked ? 1 : 0,
+                    "quiz_scoord": quizCoordCheck.checked ? 1 : 0,
+                    "remark_scoord": remarkCoordCheck.checked ? 1 : 0,
+                    "other_scoord": otherCoordCheck.checked ? 1 : 0,
+                    "general_reject": document.getElementById("generalRejectMsg").value,
+                    "extension_approve": document.getElementById("extensionApproveMsg").value,
+                    "extension_reject": document.getElementById("extensionRejectMsg").value,
+                    "quiz_approve": document.getElementById("quizApproveMsg").value,
+                    "quiz_reject": document.getElementById("quizRejectMsg").value,
+                    "remark_approve": document.getElementById("remarkApproveMsg").value,
+                    "remark_reject": document.getElementById("remarkRejectMsg").value
+                }
+                putData('/api/data/courses/setpreferences/', requestBody)
+                    .then(() => {})
+                    .catch(error => {
+                        throw error
+                    });
             });
 
         });
@@ -523,7 +509,7 @@ export function subjectSettings() {
         if (this.value == "Global") {
             document.getElementById('extensionLengthInput').value = coursePrefData.global_extension_length;
         } else {
-            loadData('/api/data/assessments?courseid=' + courseId)
+            loadData('/api/data/assessments?courseid=' + courseId, {})
                 .then(data => {
                     let assessments = data.assessments;
                     for (let i = 0; i < assessments.length; i++) {
@@ -545,7 +531,7 @@ export function subjectSettings() {
         if (this.value == "Global") {
             coursePrefData.global_extension_length = document.getElementById('extensionLengthInput').value;
         } else {
-            loadData('/api/data/assessments?courseid=' + courseId)
+            loadData('/api/data/assessments?courseid=' + courseId, {})
                 .then(data => {
                     let assessments = data.assessments;
                     for (let i = 0; i < assessments.length; i++) {

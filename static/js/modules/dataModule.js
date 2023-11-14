@@ -62,6 +62,9 @@ export function postData(url, json){
             body: JSON.stringify(json)
         })
         .then(response => response.json())
+        .then(data => {
+            return data;
+        })
         .catch(() => {
             throw new Error('Network response was not ok');
         });
