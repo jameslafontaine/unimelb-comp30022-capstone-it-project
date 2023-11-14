@@ -27,18 +27,20 @@ export function createHeader(instOrStudent) {
 			let headerText = document.querySelector('.headerText');
             loadData('/api/data/user/' + getGlobalAppHeadersValue('user_id'), {})
 				.then(usr => {
-					headerText.innerHTML = "Signed in as: " + usr.name;
 					setPreferences();
+					headerText.innerHTML = "Signed in as: " + usr.name;
 					const emailNotifCheckBox = document.getElementById('emailNotifCheckBox');
 					emailNotifCheckBox.addEventListener("change", function() {
 						changePrefs(document.getElementById('emailNotifCheckBox').checked, 
 											document.getElementById('darkModeCheckBox').checked);
+						setPreferences();
 					})
 
 					const darkModeCheckBox = document.getElementById('darkModeCheckBox');
 					darkModeCheckBox.addEventListener("change", function() {
 						changePrefs(document.getElementById('emailNotifCheckBox').checked, 
 											document.getElementById('darkModeCheckBox').checked);
+						setPreferences();
 					})
 				}).catch(error => {
 					throw error;
