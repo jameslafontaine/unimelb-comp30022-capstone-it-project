@@ -638,6 +638,17 @@ export function generateStudentRequest(number, courseList) {
         .then(data => {
             courseCode = courseDropDown.value;
             let courses = data.courses;
+            const requestDropdown = document.getElementById(`requestTypeDropdown${number}`);
+            const selectedRequestType = requestDropdown.value;
+            console.log(`first assessment dropdown population run, request type = ${selectedRequestType}`)
+            if (selectedRequestType == 'General Query' || selectedRequestType == 'Other') {
+                document.getElementById(`assignment${number}`).style.visibility = 'hidden';
+                //document.getElementById(`assignmentDropdown${number}`).style.visibility = 'hidden';
+                return;
+            } else {
+                document.getElementById(`assignment${number}`).style.visibility = 'visible';
+                //document.getElementById(`assignmentDropdown${number}`).style.visibility = 'visible';
+            }
             for (let course of courses) {
                 if (courseCode == course.course_code) {
                     loadData('/api/data/assessments/?courseid=' + course.course_id, {})
@@ -657,8 +668,19 @@ export function generateStudentRequest(number, courseList) {
     courseDropDown.addEventListener("change", function() {
         loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
             .then(data => {
+                
                 courseCode = courseDropDown.value;
                 let courses = data.courses;
+                const requestDropdown = document.getElementById(`requestTypeDropdown${number}`);
+                const selectedRequestType = requestDropdown.value;
+                console.log(`event listener triggered, request type = ${selectedRequestType}`)
+                if (selectedRequestType == 'General Query' || selectedRequestType == 'Other') {
+                    document.getElementById(`assignment${number}`).style.visibility = 'hidden';
+                    return;
+                } else {
+                    document.getElementById(`assignment${number}`).style.visibility = 'visible';
+                    //document.getElementById(`assignmentDropdown${number}`).style.visibility = 'visible';
+                }
                 for (let course of courses) {
                     if (courseCode == course.course_code) {
                         loadData('/api/data/assessments/?courseid=' + course.course_id, {})
@@ -692,6 +714,8 @@ function assignmentDropDownListener(number, courseList){
     requestDropDown.addEventListener("change", function() {
         const selectedValue = requestDropDown.value;
 
+        console.log(`selected request type = ${selectedValue}`)
+        
         // when the request type is any of these the user must pick the assignment as well
         if((selectedValue == "Extension") || 
            (selectedValue == "Remark") || 
