@@ -218,7 +218,7 @@ export function generateSuppDocTable(files, number) {
 		const row = table.insertRow();
 
         const fileNameCell = row.insertCell();
-        fileNameCell.className = 'tableEntry';
+        fileNameCell.className = 'tableEntry fileNameCell';
         fileNameCell.innerHTML = file_name;
 
         const fileSizeCell = row.insertCell();
@@ -623,7 +623,6 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl, re
         .then(response => response.json())
         .then(() => {
 
-            data + 1;
             // Check if the table already exists
             let table = buttonElement.parentNode.getElementsByTagName('table')[0];
             
@@ -659,7 +658,7 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl, re
             const row = table.insertRow();
 
             const fileNameCell = row.insertCell();
-            fileNameCell.className = 'tableEntry filenameCell';
+            fileNameCell.className = 'tableEntry fileNameCell';
             fileNameCell.innerHTML = file.name;
 
             const fileSizeCell = row.insertCell();
@@ -863,7 +862,7 @@ export function generateAAPTable(aapData, uploadUrl, removeUrl) {
         let blob = new Blob([atob(file_data)], {type: file_type});
 
         const fileNameCell = row.insertCell();
-        fileNameCell.className = 'tableEntry';
+        fileNameCell.className = 'tableEntry fileNameCell';
         fileNameCell.innerHTML = file_name;
 
         const fileSizeCell = row.insertCell();
@@ -964,7 +963,7 @@ export function generateAAPTable(aapData, uploadUrl, removeUrl) {
             const row = table.insertRow();
 
             const fileNameCell = row.insertCell();
-            fileNameCell.className = 'tableEntry filenameCell';
+            fileNameCell.className = 'tableEntry fileNameCell';
             fileNameCell.innerHTML = file.name;
 
             const fileSizeCell = row.insertCell();

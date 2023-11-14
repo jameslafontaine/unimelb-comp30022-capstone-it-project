@@ -100,10 +100,10 @@ th:not(:last-child) {
     border: 1px solid black;
   }
   
-  .filenameCell {
-    font-weight: bold;
-  }
+.fileNameCell {
+    font-weight: normal; 
+}
   
-  #aapTableContainer {
+#aapTableContainer {
     margin-top: 20px;
-  }
+}
