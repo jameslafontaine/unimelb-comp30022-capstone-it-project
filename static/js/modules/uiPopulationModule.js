@@ -518,7 +518,7 @@ export function generateStudentRequest(number, courseList) {
 
     // CHANGE UPLOAD URL TO WHATEVER IS CORRECT FOR OUR DATABASE
     setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 
-    '/api/data/files/upload/');
+    '/api/data/files/upload/', '/api/data/files/remove/');
 
     fixStyling();
 
@@ -604,7 +604,7 @@ function assignmentDropDownListener(number, courseList){
  * @param {int} fileContainerId - HTML id for the container which will display file information
  * @param {array} uploadUrl - URL endpoint for uploading files
  */
-function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
+function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl, removeUrl) {
     const buttonElement = document.getElementById(buttonId);
     buttonElement.addEventListener('click', function() {
         document.getElementById(fileInputId).click();
@@ -674,7 +674,7 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl) {
 
             // Handle remove functionality for the remove button
             removeButton.onclick = function() {
-                fetch(uploadUrl, {
+                fetch(removeUrl, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -828,62 +828,65 @@ export function saveEdits(currRequest, prevVersions) {
 /**
  * Generates the table which contains AAPs and the ability to upload and download them
  * @param {array} aapData - list of AAP JSONs
+ * @param {string} uploadUrl - URL to upload the files
+ * @param {string} removeUrl - URL to remove files
  */
-export function generateAAPTable(aapData) {
+export function generateAAPTable(aapData, uploadUrl, removeUrl) {
     const tableContainer = document.getElementById('aapTableContainer');
-	const table = document.createElement('table');
-	
-	// Create table header row
-	const headerRow = table.insertRow();
+    const table = document.createElement('table');
+    
+    // Create table header row
+    const headerRow = table.insertRow();
 
-	for (const key in AAP_TABLE_HEADERS) {
-		const th = document.createElement('th');
-		th.innerText = AAP_TABLE_HEADERS[key]
-		headerRow.appendChild(th);
-	}
-	
-	// Add two empty headers for the button columns
-	headerRow.appendChild(document.createElement('th'));
+    for (const key in AAP_TABLE_HEADERS) {
+        const th = document.createElement('th');
+        th.innerText = AAP_TABLE_HEADERS[key]
+        headerRow.appendChild(th);
+    }
+    
+    // Add two empty headers for the button columns
+    headerRow.appendChild(document.createElement('th'));
     headerRow.appendChild(document.createElement('th'));
     
     var aapNum = 0;
-	
-	aapData.forEach(aap => {
-		const row = table.insertRow();
-		
-        let file_name = aap.file_name;
-        let file_type = aap.file_type;
-        let file_data = aap.file_data;
-
+    
+    aapData.forEach((aap, index) => {
+        const row = table.insertRow();
         
+        let file_name = aap.file_name;
+        let file_type = aap.file_size;
+        let file_data = aap.file_data;
 
         // Create a Blob from the base64 data
         let blob = new Blob([atob(file_data)], {type: file_type});
 
+        const fileNameCell = row.insertCell();
+        fileNameCell.className = 'tableEntry';
+        fileNameCell.innerHTML = file_name;
 
-		const fileNameCell = row.insertCell();
-		fileNameCell.className = 'tableEntry';
-		fileNameCell.innerHTML = file_name;
+        const fileSizeCell = row.insertCell();
+        fileSizeCell.className = 'tableEntry';
+        fileSizeCell.innerHTML = formatBytes(blob.size)
 
-		const fileSizeCell = row.insertCell();
-		fileSizeCell.className = 'tableEntry';
-		fileSizeCell.innerHTML = formatBytes(file.size)
-
-		// Download button
-		const downloadCell = row.insertCell();
-		downloadCell.className = 'tableEntry';
-		const downloadButton = document.createElement('button');
-		downloadButton.className = 'standardButton';
+        // Download button
+        const downloadCell = row.insertCell();
+        downloadCell.className = 'tableEntry';
+        const downloadButton = document.createElement('button');
+        downloadButton.className = 'standardButton';
         downloadButton.id = `downloadButton${aapNum}`
-		downloadButton.innerText = 'Download';
-
+        downloadButton.innerText = 'Download';
         downloadCell.appendChild(downloadButton)
 
-               // Handle download functionality for the download button
+        // Remove button
+        const removeCell = row.insertCell();
+        removeCell.className = 'tableEntry';
+        const removeButton = document.createElement('button');
+        removeButton.className = 'standardButton';
+        removeButton.innerText = 'Remove';
+        removeCell.appendChild(removeButton)
 
-        // Add an onclick event to the downloadButton
+        // Handle download functionality for the download button
         downloadButton.onclick = function() {
-            
             // Create a URL for the Blob
             let url = URL.createObjectURL(blob);
             
@@ -898,80 +901,140 @@ export function generateAAPTable(aapData) {
             // Trigger the download
             a.click();
 
+            // Remove the link from the body
+            document.body.removeChild(a);
         };
-        aapNum += 1;
 
-		// Remove button
-		const removeCell = row.insertCell();
-		removeCell.className = 'tableEntry';
-		const removeButton = document.createElement('button');
-		removeButton.className = 'standardButton';
-		removeButton.innerText = 'Remove';
-		removeButton.onclick = function () {
-			// NEED TO ADD REMOVE FUNCTIONALITY HERE
-            // Assuming that the item object has an id property
-            fetch('/api/data/files/remove?fileid=' + aap.id, {
+        // Handle remove functionality for the remove button
+        removeButton.onclick = function() {
+            fetch(removeUrl, {
                 method: 'DELETE',
-            }).then(response => response.json())
-                .then(() => {
-                    // Handle the response data here
-                    // TODO: manipulate data
-                })
-                .catch((error) => {
-                    throw error;
-                });
-        }
-        removeCell.appendChild(removeButton)
-	});
-
-    // Insert upload row
-    const row = table.insertRow();
-    for (let i = 0; i < 5; i++) {
-        if (i == 3) {
-            // Add the "Upload" button to the last cell
-            const uploadCell = row.insertCell();
-            uploadCell.className = 'tableEntry';
-            const uploadButton = document.createElement('button');
-            uploadButton.className = 'standardButton';
-            uploadButton.innerText = 'Upload';
-            uploadButton.onclick = function () {
-                // NEED TO ADD UPLOAD FUNCTIONALITY HERE
-                // Get the files from the input field
-                let files = document.querySelector('input[type="file"]').files;
-
-                let formData = new FormData();
-                formData.append('user_id', 'YourUserIdHere');
-
-                // Append each file to the form data
-                for(let i = 0; i < files.length; i++) {
-                    let file = files[i];
-                    formData.append('fileName[]', file, file.name);
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename: file.name }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    table.deleteRow(index + 1); // +1 because the first row is the header
                 }
+            })
+        }
 
-                fetch('api/data/files/upload', {
-                    method: 'POST',
-                    body: formData
+        aapNum += 1;
+    });
+    
+    // Append the table to the container
+    tableContainer.appendChild(table);
+
+    // Create a new upload button below the table
+    const uploadButton = document.createElement('button');
+    uploadButton.className = 'standardButton';
+    uploadButton.innerText = 'Upload';
+    tableContainer.appendChild(document.createElement('br'));
+    tableContainer.appendChild(uploadButton);
+
+    // Create a hidden file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.style.display = 'none';
+    tableContainer.appendChild(fileInput);
+
+    // Setup the upload button
+    uploadButton.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    // Handle upload button click
+    fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append('user_id', getGlobalAppHeadersValue('user_id'));
+        formData.append('file', file);
+
+        fetch(uploadUrl, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const row = table.insertRow();
+
+            const fileNameCell = row.insertCell();
+            fileNameCell.className = 'tableEntry filenameCell';
+            fileNameCell.innerHTML = file.name;
+
+            const fileSizeCell = row.insertCell();
+            fileSizeCell.className = 'tableEntry';
+            fileSizeCell.innerHTML = formatBytes(file.size);
+
+            // Download button
+            const downloadCell = row.insertCell();
+            downloadCell.className = 'tableEntry';
+            const downloadButton = document.createElement('button');
+            downloadButton.className = 'standardButton';
+            downloadButton.innerText = 'Download';
+            downloadCell.appendChild(downloadButton)
+
+            // Remove button
+            const removeCell = row.insertCell();
+            removeCell.className = 'tableEntry';
+            const removeButton = document.createElement('button');
+            removeButton.className = 'standardButton';
+            removeButton.innerText = 'Remove';
+            removeCell.appendChild(removeButton)
+
+            // Handle download functionality for the download button
+            downloadButton.onclick = function() {
+                // Create a URL for the Blob
+                let url = URL.createObjectURL(file);
+                
+                // Create a link with a download attribute
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = file.name;
+                
+                // Append the link to the body
+                document.body.appendChild(a);
+                
+                // Trigger the download
+                a.click();
+
+                // Remove the link from the body
+                document.body.removeChild(a);
+            };
+
+            // Handle remove functionality for the remove button
+            removeButton.onclick = function() {
+                fetch(removeUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filename: file.name }),
                 })
                 .then(response => response.json())
-                .then(() => {
-                    // Handle the response data here
-                    // TODO: manipulate data
+                .then(data => {
+                    if (data.success) {
+                        row.remove(); // remove the table row
+                        // Remove the header if there are no files left
+                        if (table.getElementsByTagName('tr').length === 1) {
+                            table.deleteRow(0);
+                        }
+                    }
                 })
-                .catch((error) => {
+                .catch(error => {
                     throw error;
                 });
-            }
-            uploadCell.appendChild(uploadButton)
-        } else {
-            const cell = row.insertCell();
-            cell.className = 'tableEntry'; // Apply the CSS class to the cell
-            cell.innerHTML = '';
-        }
-    }
-	
-	// Append the table to the container
-	tableContainer.appendChild(table);
+            };
+        })
+        .catch(error => {
+            throw error;
+        });
+    });
 }
+
 
 /**
  * Generates a subject box which instructors can use to access subjects from the home page
