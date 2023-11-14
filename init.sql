@@ -140,7 +140,7 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE TABLE IF NOT EXISTS `db`.`File` (
   `file_id` INT NOT NULL AUTO_INCREMENT,
   `file` LONGBLOB NOT NULL,
-  `file_name` VARCHAR(45) NOT NULL,
+  `file_name` VARCHAR(100) NOT NULL,
   `file_type` VARCHAR(18) NOT NULL COMMENT 'aap or supportingDocument',
   `user_id` INT NULL DEFAULT NULL,
   `request_id` INT NULL DEFAULT NULL,

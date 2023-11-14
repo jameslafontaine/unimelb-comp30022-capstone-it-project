@@ -504,28 +504,40 @@ export function generateStudentRequest(number, courseList) {
     const suppDoc = document.createElement("p");
     suppDoc.className = "text";
     suppDoc.textContent = "Supporting Documents";
-
+    
     const supDocContainer = document.createElement("div");
     supDocContainer.id = `suppDocContainer${number}`;
-
+    
+    const table = document.createElement('table');
+    table.style.tableLayout = 'fixed'; // set the table layout to fixed
+    table.id = `table${number}`;
+    
+    const headerRow = table.insertRow();
+    for (const key in SUPP_DOC_HEADERS) {
+        const th = document.createElement('th');
+        th.innerText = SUPP_DOC_HEADERS[key];
+        headerRow.appendChild(th);
+    }
+    const emptyHeader = document.createElement('th');
+    emptyHeader.textContent = '';
+    headerRow.appendChild(emptyHeader);
+    
+    supDocContainer.appendChild(table);
+    
     const uploadButton = document.createElement('button');
     uploadButton.className = 'standardButton';
     uploadButton.id = `uploadBtn${number}`;
     uploadButton.innerText = 'Upload';
-
+    
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.id = `fileInput${number}`;
     fileInput.style.display = 'none'; // Hide the file input element
-
-    const fileContainer = document.createElement('div');
-    fileContainer.id = `fileContainer${number}`;
-
-    supDocContainer.appendChild(fileContainer)
-
+    
     supDocContainer.appendChild(fileInput);
-
-    // Append the upload button to the document body 
+    
+    supDocContainer.appendChild(document.createElement('br'));
+    
     supDocContainer.appendChild(uploadButton);
 
 
@@ -594,7 +606,7 @@ export function generateStudentRequest(number, courseList) {
     // Setup upload button and make sure the files uploaded are displayed correctly and are allowed to be removed
 
     // CHANGE UPLOAD URL TO WHATEVER IS CORRECT FOR OUR DATABASE
-    setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `fileContainer${number}`, 
+    setupUploadButton(`uploadBtn${number}`, `fileInput${number}`, `table${number}`, 
     '/api/data/files/upload/', '/api/data/files/remove/');
 
 }
@@ -699,58 +711,45 @@ function assignmentDropDownListener(number, courseList){
  * Handles functionality relating to the upload button for supporting documentation
  * @param {int} buttonId - HTML id for the upload button
  * @param {array} fileInputId - HTML id for the fileinput element
- * @param {int} fileContainerId - HTML id for the container which will display file information
+ * @param {int} tableId - HTML id for the table which will display file information
  * @param {array} uploadUrl - URL endpoint for uploading files
+ * @param {array} removeUrl - URL endpoint for removing files
  */
-function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl, removeUrl) {
+function setupUploadButton(buttonId, fileInputId, tableId, uploadUrl, removeUrl) {
     const buttonElement = document.getElementById(buttonId);
     buttonElement.addEventListener('click', function() {
         document.getElementById(fileInputId).click();
     });
-    
+
     document.getElementById(fileInputId).addEventListener('change', function(event) {
         const file = event.target.files[0];
         const formData = new FormData();
         formData.append('user_id', getGlobalAppHeadersValue('user_id'));
         formData.append('file', file);
-        
+
         fetch(uploadUrl, {
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(() => {
-
             // Check if the table already exists
-            let table = buttonElement.parentNode.getElementsByTagName('table')[0];
-            
+            let table = document.getElementById(tableId)
+
             // If the table does not exist, create a new one
             if (!table) {
                 table = document.createElement('table');
                 table.style.tableLayout = 'fixed'; // set the table layout to fixed
-                
-                // Check if the table already has a header
-                let hasHeader = table.getElementsByTagName('tr').length > 0;
-                
-                // If the table does not have a header, add one
-                if (!hasHeader) {
-                    const headerRow = table.insertRow();
-                    for (const key in SUPP_DOC_HEADERS) {
-                        const th = document.createElement('th');
-                        th.innerText = SUPP_DOC_HEADERS[key];
-                        headerRow.appendChild(th);
-                    }
-                    const emptyHeader = document.createElement('th');
-                    emptyHeader.textContent = '';
-                    headerRow.appendChild(emptyHeader);
+
+                const headerRow = table.insertRow();
+                for (const key in SUPP_DOC_HEADERS) {
+                    const th = document.createElement('th');
+                    th.innerText = SUPP_DOC_HEADERS[key];
+                    headerRow.appendChild(th);
                 }
-
-                // Append the table just above the upload button
-                buttonElement.parentNode.insertBefore(table, buttonElement);
-
-                // Create space between table and upload button
-                const lineBreak = document.createElement('br');
-                buttonElement.parentNode.insertBefore(lineBreak, buttonElement);
+                const emptyHeader = document.createElement('th');
+                emptyHeader.textContent = '';
+                headerRow.appendChild(emptyHeader);
             }
 
             const row = table.insertRow();
@@ -766,40 +765,46 @@ function setupUploadButton(buttonId, fileInputId, fileContainerId, uploadUrl, re
             const removeCell = row.insertCell();
             removeCell.className = 'tableEntry removeCell';
             const removeButton = document.createElement('button');
-            removeButton.className = 'standardButton';
+            removeButton.className = 'standardButton removeButton'; // Make sure the class name matches the one used in the event listener
             removeButton.innerText = 'Remove';
             removeCell.style.width = '50px'
             removeCell.appendChild(removeButton);
 
             // Handle remove functionality for the remove button
-            removeButton.onclick = function() {
+            removeButton.addEventListener('click', function() {
+                const row = removeButton.parentNode.parentNode; // Get the parent row of the remove button
+                const fileName = row.querySelector('.fileNameCell').innerText; // Get the file name from the row
+
                 fetch(removeUrl, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ filename: file.name }),
+                    body: JSON.stringify({ filename: fileName }),
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
+                .then(response => {
+                    if (response.ok) {
                         row.remove(); // remove the table row
-                        // Remove the header if there are no files left
-                        if (table.getElementsByTagName('tr').length === 1) {
-                            table.deleteRow(0);
-                        }
                     }
+                })
+                .then(() => {
+                    // Reset the file input value to allow reuploading the same file immediately
+                    document.getElementById(fileInputId).value = '';
                 })
                 .catch(error => {
                     throw error;
                 });
-            };
+            });
         })
         .catch(error => {
             throw error;
         });
     });
 }
+
+
+
+
 
 
 
@@ -962,9 +967,10 @@ export function generateAAPTable(aapData, uploadUrl, removeUrl) {
                 },
                 body: JSON.stringify({ filename: file_name }),
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            .then(response => {
+                response.json
+                if (response.ok) {
+                    aapData = aapData.filter(data => data.file_name !== file.name);
                     table.deleteRow(index + 1); // +1 because the first row is the header
                 }
             })
@@ -1196,27 +1202,25 @@ export function handleComplexRequestFunctionality(thread) {
 
     // Perform the aforementioned steps on button click
     reserveButton.addEventListener('click', function() {
-        putData(('/api/data/thread/complex/'), {
-            "thread_id": threadId
-        }).then(() => {
-                // set successfully, change the DOM
-                const reserveButton = document.getElementById('reserveButton');
-                // If a case has already been reserved then we show the unmark button
-                loadData('/api/data/thread/' + thread.thread_id, {})
-                    .then(data => {
-                        let request = data.threadinfo.requests[0];
-                        if (data.threadinfo.thread.complex_case) { // it is complex now
-                            reserveButton.innerHTML = 'Unmark'
-                            document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
-                        } else { // it is not complex
-                            reserveButton.innerHTML = 'Mark as complex'
-                            document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
-                        }
-                    })
+        setComplex(thread.thread_id) // when returns true it has worked
+            .then(response => {
+                if(response == true){
+                    // set successfully, change the DOM
+                    const reserveButton = document.getElementById('reserveButton');
+                    // If a case has already been reserved then we show the unmark button
+                    loadData('/api/data/thread/' + thread.thread_id, {})
+                        .then(data => {
+                            let request = data.threadinfo.requests[0];
+                            if (data.threadinfo.thread.complex_case) { // it is complex now
+                                reserveButton.innerHTML = 'Unmark'
+                                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
+                            } else { // it is not complex
+                                reserveButton.innerHTML = 'Mark as complex'
+                                document.getElementById("requestNum").innerHTML = 'Request #' + request.request_id + '    <span style="font-size: 150%; ">☆</span>'
+                            }
+                        })
+                }
             })
-            .catch(error => {
-                throw error;
-            });
     });
 }
 
@@ -1602,6 +1606,21 @@ export function populateAssessmentDropdown(assessmentList) {
     });
     assessmentDropdown.value = 'Global'
 
+}
+
+/**
+ * Sets a request to complex in the database
+ * @param {int} threadId - numeric identifier for the current request
+ */
+function setComplex(threadId){
+    return putData(('/api/data/thread/complex/'), {
+        "thread_id": threadId
+    }).then(() => {
+            return true;
+        })
+        .catch(error => {
+            throw error;
+        });
 }
 
 /**
