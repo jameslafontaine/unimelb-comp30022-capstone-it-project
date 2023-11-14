@@ -54,7 +54,6 @@ export function sHome() {
     createHeader("student");
     loadData('/api/data/cases/?userid=' + getGlobalAppHeadersValue('user_id'), {}) 
         .then(data => {
-            console.log(data);
             generateStudentCases(data.cases);
         })
         .catch(error => {
@@ -137,7 +136,7 @@ export function submitRequest() {
                     addButton.style.display = 'none';
                 } else if (numRequests == 0) {
                     removeButton.style.display = 'none'; 
-                } else if (numRequests > 0 & numRequests < MAX_REQUESTS_IN_REQUEST) {
+                } else if ((numRequests > 0) && (numRequests < MAX_REQUESTS_IN_REQUEST)) {
                     removeButton.style.display = 'inline';
                     addButton.style.display = 'inline';  
                 }
@@ -153,7 +152,7 @@ export function submitRequest() {
                     addButton.style.display = 'none';
                 } else if (numRequests == 0) {
                     removeButton.style.display = 'none'; 
-                } else if (numRequests > 0 & numRequests < MAX_REQUESTS_IN_REQUEST) {
+                } else if ((numRequests > 0) && (numRequests < MAX_REQUESTS_IN_REQUEST)) {
                     removeButton.style.display = 'inline';
                     addButton.style.display = 'inline';  
                 }
@@ -166,7 +165,6 @@ export function submitRequest() {
 
     submitButton.addEventListener('click', function() {
         handleCaseSubmission(numRequests);
-        // window.location.href = '/student/';
     });
 
 
@@ -611,9 +609,8 @@ export function viewRequests() {
 
     // Put subject code at start of title
     var courseId = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
-    courseId = 31; // TODO: remove
 
-    loadData('/api/data/courses?courseid=' + courseId)
+    loadData('/api/data/courses?courseid=' + courseId, {})
         .then(data => {
             let subjectCode = data.course.course_code;
             document.getElementById("title").innerHTML = subjectCode + document.getElementById("title").innerHTML;

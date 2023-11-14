@@ -207,11 +207,12 @@ def get_cases_endpoint(request):
 
     return JsonResponse({'message': 'Invalid request.'}, status = 500)
 
+# TODO:
 def get_courses_endpoint(request):
     '''
     GET /api/data/courses/
     Valid parameter combinations:
-        - ?userid
+        - ?userid/get_
         - ?courseid
         - ?courseid&preferences
     '''
@@ -771,9 +772,11 @@ def post_new_case(request):
         cursor = connection.cursor()
         user_id = data.get("user_id")
         cursor.execute("INSERT INTO `db`.`Case` (user_id) VALUES (%s)", (user_id,))
+        connection.commit()
         case_id = cursor.lastrowid
         for request_data in data.get("requests"):
-            cursor.execute("INSERT INTO `db`.`Thread` (case_id, course_id, date_updated, request_type, complex_case, current_status, assignment_id) VAUES (%s, %s, %s, %s, %s, %s, %s)", (case_id, request_data['course_id'], request_data['date_created'], request_data['request_type'], 0, "PENDING", request_data['assignment_id']))
+            cursor.execute("INSERT INTO `db`.`Thread` (case_id, course_id, date_updated, request_type, complex_case, current_status, assignment_id) VALUES (%s, %s, %s, %s, %s, %s, %s)", (case_id, request_data['course_id'], request_data['date_created'], request_data['request_type'], 0, "PENDING", request_data['assignment_id']))
+            connection.commit()
             thread_id = cursor.lastrowid
             cursor.execute("INSERT INTO `db`.`Request` (thread_id, date_created, request_content, instructor_notes) VALUES (%s, %s, %s, %s)", (thread_id, request_data['date_created'], request_data['request_content'], ""))
         connection.commit()

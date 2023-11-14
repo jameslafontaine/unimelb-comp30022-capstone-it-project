@@ -201,6 +201,10 @@ export function generateSuppDocTable(files, number) {
         let file_type = file.file_type;
         let file_data = file.file_data;
 
+        // 'Pad' the base64 data so i don't get error (?)
+        while (file_data.length % 4 !== 0) {
+            file_data += '=';
+        }
 
         // Create a Blob from the base64 data
         let blob = new Blob([atob(file_data)], {type: file_type});
@@ -357,11 +361,9 @@ export function handleCaseSubmission(numRequests) {
 
     let requestPromises = [];
 
- 
-
     if (numRequests > 0) {
 
-        for (let i = 1; i <= numRequests; i++) {
+        for (let i = 0; i <= numRequests; i++) {
             requestPromises.push(loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
                 .then(data => {
                     let submissionTemplate;
@@ -372,16 +374,10 @@ export function handleCaseSubmission(numRequests) {
                         'assignment_id': null,
                         'request_content': document.getElementById(`messageTextBox${i}`).value
                     }
-
-                    console.log(`request_content ${i} = ${submissionTemplate.request_content}`)
                     for (let course of data.courses) {
                         if (course.course_code == document.getElementById(`courseDropdown${i}`).value) {
                             submissionTemplate.course_id = course.course_id;
-                            // DEBUGGING LINE
-                            console.log(`The course_id matched was ${course.course_id}`)
                             let requestType = document.getElementById(`requestTypeDropdown${i}`).value
-                            // DEBUGGING LINE
-                            console.log(`Request Type = ${requestType}`)
                             if ((requestType == 'General Query') || (requestType == 'Other')) {
                                 if (requestType == 'General Query') {
                                     submissionTemplate.request_type = "QUERY";
@@ -390,7 +386,6 @@ export function handleCaseSubmission(numRequests) {
                                     submissionTemplate.request_type = "OTHER";
                                 }
                                 submissionData.push(submissionTemplate);
-                                //break;
                             }
                             if ((requestType == 'Extension') || (requestType == 'Remark') || (requestType == 'Quiz Code')) {
                                 if (requestType == 'Extension') {
@@ -402,8 +397,6 @@ export function handleCaseSubmission(numRequests) {
                                 if (requestType == 'Quiz Code') {
                                     submissionTemplate.request_type = "QUIZCODE";
                                 }
-                                // DEBUGGING LINE
-                                console.log('About to load assessments for this course...')
                                 loadData('/api/data/assessments/?courseid=' + course.course_id, {})
                                     .then(data => {
                                         let assignments = data.assessments;
@@ -419,30 +412,22 @@ export function handleCaseSubmission(numRequests) {
                                         throw error
                                     });
                             }
-                            // DEBUGGING LINE
-                            //console.log(`Assignment id = ${assignment.assignment_id}, + this is the end of dealing with this request in the loop`)
                             break;
                         }
                     }
                 }));
         }
-        // DEBUGGING LINE
-        console.log(`doing promise stuff now`)
         Promise.allSettled(requestPromises)
             .then(() => {
-                // TODO: Fix adding request messes up submissionData thing
-                console.log(submissionData);
                 postData(('/api/data/cases/new/'), {
                     'user_id': getGlobalAppHeadersValue('user_id'),
                     'requests': submissionData
                 }).then(() => {
+                    window.location.href = '/student/'
                     return true;
                 }).catch(error => {
                     throw error;
                 });
-                // Uncomment this when adding request bug is removed 
-                // Commented for debugging
-                // window.location.href = '/student/'
             });
     }
 
@@ -630,7 +615,12 @@ export function generateStudentRequest(number, courseList) {
     assignment.appendChild(assignmentDropdown);
     assignment.appendChild(document.createElement("br"));
 
-    let courseCode = courseList[0];
+    let courseCode;
+    if (courseList.length > 0) {
+        courseCode = courseList[0];
+    } else {
+        courseCode = "";
+    }
     const courseDropDown = document.getElementById(`courseDropdown${number}`);
     loadData('/api/data/courses/?userid=' + getGlobalAppHeadersValue('user_id'), {})
         .then(data => {
@@ -699,9 +689,8 @@ function assignmentDropDownListener(number, courseList){
         // if the request type is any of the following any assignment dropdown much be removed
         else if((selectedValue == "General Query") ||
                   (selectedValue == "Other")){
-            while (assignment.firstChild) {
-                assignment.removeChild(assignment.firstChild);
-            }
+            // TODO
+            createAssignmentDropDown(number, []);
         }
     });
 }
@@ -1121,7 +1110,6 @@ export function generateSubjectBox(subject) {
 	rightItems.classList.add('rightItems');
   
 	// Create the "View Requests & Queries" button
-    // Will have to hide or grey out and have popup on hover if tutor has not been given permission by subject coordinator to view any requests
 	const viewRequestsButton = document.createElement('button');
 	viewRequestsButton.classList.add('standardButton');
 	viewRequestsButton.textContent = 'View Requests & Queries';
@@ -1130,6 +1118,7 @@ export function generateSubjectBox(subject) {
 		window.location.href = '/instructor/view-reqs/' + subject.course_id; 
 	};
   
+    // TODO:
 	// Create the "Settings" button
     // Will have to hide or grey out and have popup on hover if instructor is not subject coordinator
 	const settingsButton = document.createElement('button');
