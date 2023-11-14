@@ -493,7 +493,7 @@ def get_threads_user_endpoint(request):
                         resultList.append({
                             'thread_id': row['thread_id'],
                             'case_id': row['case_id'],
-                            'course_id': row['course_Id'],
+                            'course_id': row['course_id'],
                             'date_updated': row['date_updated'],
                             'request_type': row['request_type'], 
                             'complex_case': row['complex_case'],
