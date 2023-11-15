@@ -383,7 +383,7 @@
             function toProfile(){
                 loadData('/api/data/thread/?threadid=' + threadId, {})
                     .then(data => {
-                        window.location.href = '/instructor/view-profile/' + data.student.user_id; 
+                        window.location.href = '/instructor/view-profile/' + data.created_by; 
                     });
             }
             navProfileButton.addEventListener("click", toProfile);

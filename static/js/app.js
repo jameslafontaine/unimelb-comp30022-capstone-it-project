@@ -73,21 +73,6 @@ export function viewCases() {
 
 export function viewRequest() {
     createHeader("student");
-
-    const suppDocs = [
-        {
-            name: 'iamsick.pdf',
-            size: '20 TB'
-        },
-        {
-            name: 'bible.pdf',
-            size: '40 MB'
-        },
-        {
-            name: 'medcert.pdf',
-            size: '3 MB'
-        }
-    ]
     
     // read in thread id from the provided data
     let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
@@ -96,7 +81,18 @@ export function viewRequest() {
     fillCurrentRequestInformation(threadId, 'Student');
 
     // Generate the supporting documentation for the current version of request
-    generateSuppDocTable(suppDocs, '');
+    loadData('/api/data/thread/' + threadId, {})
+        .then(data => {
+            let requestId = data.threadinfo.requests[0].request_id 
+            loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id') + '/?requestid=' + requestId, {})
+            .then(data => {
+                generateSuppDocTable(data.supportingDocs, 0);
+                fixStyling();
+            });
+        });
+    
+    
+    
     
     // generate a list of all previous versions of a thread
     loadData('/api/data/thread/' + threadId, {})
@@ -266,28 +262,20 @@ export function reviewRequest() {
 
     // read in thread id from the provided data
     let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
-    
-    // read in supporting documentation list as a JSON
-    const suppDocs = [
-        {
-            name: 'iamsick.pdf',
-            size: '20 TB'
-        },
-        {
-            name: 'bible.pdf',
-            size: '40 MB'
-        },
-        {
-            name: 'medcert.pdf',
-            size: '3 MB'
-        }
-    ]
 
     // Fill information relating to the current request from the database
     fillCurrentRequestInformation(threadId, 'Instructor');
 
-    // Generate the supporting documentation for the current version of request
-    generateSuppDocTable(suppDocs, '');
+        // Generate the supporting documentation for the current version of request
+        loadData('/api/data/thread/' + threadId, {})
+        .then(data => {
+            let requestId = data.threadinfo.requests[0].request_id 
+            loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id') + '/?requestid=' + requestId, {})
+            .then(data => {
+                generateSuppDocTable(data.supportingDocs, 0);
+                fixStyling();
+            });
+        });
 
     // generate a list of all previous versions of a thread
     loadData('/api/data/thread/' + threadId, {})
@@ -315,34 +303,17 @@ export function reviewRequest() {
         });
 
     loadData('/api/data/thread/?threadid=' + threadId, {})
-        .then(data => {
-            fillStudentDetailsBox(data.student);
+        .then(studentData => {
+            console.log(`data[0] = ${studentData[0]}`)
+            console.log(`data = ${studentData}`)
+            console.log(`data.user_id = ${studentData.user_id}`)
+            fillStudentDetailsBox(studentData);
         });
-
-    var editButton = document.getElementById('editButton');
-    editButton.addEventListener("click", function() {
-        window.location.href = '/student/edit-req/' + threadId;
-    });
-
 }
 
 export function viewResolved() {
     createHeader('instructor');
 
-    const suppDocs = [
-        {
-            name: 'iamsick.pdf',
-            size: '20 TB'
-        },
-        {
-            name: 'bible.pdf',
-            size: '40 MB'
-        },
-        {
-            name: 'medcert.pdf',
-            size: '3 MB'
-        }
-    ]
 
     // read in thread id from the provided data
     let threadId = JSON.parse(document.getElementById('load-thread-id').getAttribute('data-thread-id'));
@@ -351,7 +322,15 @@ export function viewResolved() {
     fillCurrentRequestInformation(threadId, 'Instructor');
 
     // Generate the supporting documentation for the current version of request
-    generateSuppDocTable(suppDocs, '');
+    loadData('/api/data/thread/' + threadId, {})
+        .then(data => {
+            let requestId = data.threadinfo.requests[0].request_id 
+            loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id') + '/?requestid=' + requestId, {})
+            .then(data => {
+                generateSuppDocTable(data.supportingDocs, 0);
+                fixStyling();
+            });
+        });
 
     // generate a list of all previous versions of a thread
     loadData('/api/data/thread/' + threadId, {})
@@ -363,9 +342,12 @@ export function viewResolved() {
             }
         });
 
-    loadData('/api/data/thread/?threadid=' + threadId, {})
-        .then(data => {
-            fillStudentDetailsBox(data.student);
+        loadData('/api/data/thread/?threadid=' + threadId, {})
+        .then(studentData => {
+            console.log(`data[0] = ${studentData[0]}`)
+            console.log(`data = ${studentData}`)
+            console.log(`data.user_id = ${studentData.user_id}`)
+            fillStudentDetailsBox(studentData);
         });
 
 }
