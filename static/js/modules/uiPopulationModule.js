@@ -424,6 +424,7 @@ export function handleCaseSubmission(numRequests) {
                     'requests': submissionData
                 }).then(() => {
                     window.location.href = '/student/'
+                    return true;
                 }).catch(error => {
                     throw error;
                 });
@@ -602,6 +603,9 @@ export function generateStudentRequest(number, courseList) {
         document.getElementById(`requestTypeDropdown${number}`).appendChild(option);
     });
 
+
+
+
     // Setup upload button and make sure the files uploaded are displayed correctly and are allowed to be removed
 
     // CHANGE UPLOAD URL TO WHATEVER IS CORRECT FOR OUR DATABASE
@@ -610,7 +614,8 @@ export function generateStudentRequest(number, courseList) {
 
 }
 
-/**
+ 
+/*
  * Creates the assignment dropdown for a student submitting a request
  * @param {int} number - which request this is within the current case the student is making
  * @param {array} courseList - list of courses this student is enrolled in
@@ -697,7 +702,6 @@ export function generateStudentRequest(number, courseList) {
                 }
             });
     });
-
 }
 
 /**
@@ -1148,7 +1152,7 @@ export function generateSubjectBox(subject) {
     // TODO:
 	// Create the "Settings" button
     // Will have to hide or grey out and have popup on hover if instructor is not subject coordinator
-    loadData('/api/data/user/enrollment?courseid=' + subject.course_id + '&userid=' + getGlobalAppHeadersValue('user_id'), {})
+loadData('/api/data/user/enrollment?courseid=' + subject.course_id + '&userid=' + getGlobalAppHeadersValue('user_id'), {})
     .then(data => {
         if (data.enrollment_role == "SCOORD") {
             const settingsButton = document.createElement('button');
@@ -1158,7 +1162,7 @@ export function generateSubjectBox(subject) {
             settingsButton.onclick = function() {
                 window.location.href = '/instructor/subject-settings/' + subject.course_id; 
             };
-	        rightItems.appendChild(settingsButton);
+            rightItems.appendChild(settingsButton);
         }
     });
 
@@ -1286,98 +1290,115 @@ export function fillStudentDetailsBox(student) {
  * @param {string} type - denotes whether this is the table for active requests or resolved requests ('Awaiting' or 'Resolved)
  */
 export function generateRequestTable(threads, type) {
-	const tableContainer = document.getElementById('tableContainer' + type);
-	const table = document.createElement('table');
-	
-	// Create table header row
-	const headerRow = table.insertRow();
-
+    console.log('Now in generateRequestTable()')
+    console.log(`threads = ${threads}`)
+    const tableContainer = document.getElementById('tableContainer' + type);
+    const table = document.createElement('table');
+    
+    // Create table header row
+    const headerRow = table.insertRow();
+    
     for (const key in REQUEST_TABLE_HEADERS) {
         const th = document.createElement('th');
         th.innerText = REQUEST_TABLE_HEADERS[key];
         headerRow.appendChild(th);
     }
-
+    
     const emptyHeader = document.createElement('th');
     emptyHeader.textContent = '';
     headerRow.appendChild(emptyHeader);
-
+    
+    console.log('About to add thread data')
     // Add thread data
     threads.forEach(thread => {
         
-        // Check if this thread is meant to be displayed for this instructor or not
-        if (shouldDisplayRequest(thread.request_type, thread.complex_case, thread.course_id) == 1) {
-            // Display the relevant information in this table row
-            const row = table.insertRow();
-            
-            const complexCaseCell = row.insertCell();
-            complexCaseCell.className = 'tableEntry';
-            if (thread.complex_case == 0) {
-                const hollowStar = '<span style="font-size: 300%; ">☆</span>';
-                complexCaseCell.innerHTML = hollowStar;
-            } else if (thread.complex_case == 1) {
-                const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
-                complexCaseCell.innerHTML = yellowStar;
-            }
-
-            const requestTypeCell = row.insertCell();
-            requestTypeCell.className = 'tableEntry';
-            requestTypeCell.innerHTML = thread.request_type;
-
-            const assessmentNameCell = row.insertCell();
-            assessmentNameCell.className = 'tableEntry';
-            if (thread.assignment_id != null) {
-                loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
+        console.log(thread)
+        
+        // Example usage:
+        shouldDisplayRequest(thread.request_type, thread.complex_case, thread.course_id)
+        .then(result => {
+            console.log("Returned prefs[key]:", result);
+            // Check if this thread is meant to be displayed for this instructor or not, if not then skip this request
+            if (result == 1) {
+                // Proceed with displaying the relevant information in this table row if we should display it
+                console.log(`we should display this request, generating table now`)
+                const row = table.insertRow();
+                
+                const complexCaseCell = row.insertCell();
+                complexCaseCell.className = 'tableEntry';
+                if (thread.complex_case == 0) {
+                    const hollowStar = '<span style="font-size: 300%; ">☆</span>';
+                    complexCaseCell.innerHTML = hollowStar;
+                } else if (thread.complex_case == 1) {
+                    const yellowStar = '<span style="font-size: 300%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>';
+                    complexCaseCell.innerHTML = yellowStar;
+                }
+                
+                const requestTypeCell = row.insertCell();
+                requestTypeCell.className = 'tableEntry';
+                requestTypeCell.innerHTML = thread.request_type;
+                
+                const assessmentNameCell = row.insertCell();
+                assessmentNameCell.className = 'tableEntry';
+                if (thread.assignment_id != null) {
+                    loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
                     .then(assignmentData => {
                         assessmentNameCell.innerHTML = assignmentData.assignment_name;
                     });
-            } else {
-                assessmentNameCell.innerHTML = "None";
-            }
-
-            const currentStatusCell = row.insertCell();
-            currentStatusCell.className = 'tableEntry';
-            currentStatusCell.innerHTML = thread.current_status;
-
-            const dateUpdatedCell = row.insertCell();
-            dateUpdatedCell.className = 'tableEntry';
-            dateUpdatedCell.innerHTML = thread.date_updated;
-
-            const instructorNotesCell = row.insertCell();
-            instructorNotesCell.className = 'tableEntry';
-            loadData('/api/data/thread/' + thread.thread_id, {})
+                } else {
+                    assessmentNameCell.innerHTML = "None";
+                }
+                
+                const currentStatusCell = row.insertCell();
+                currentStatusCell.className = 'tableEntry';
+                currentStatusCell.innerHTML = thread.current_status;
+                
+                const dateUpdatedCell = row.insertCell();
+                dateUpdatedCell.className = 'tableEntry';
+                dateUpdatedCell.innerHTML = thread.date_updated;
+                
+                const instructorNotesCell = row.insertCell();
+                instructorNotesCell.className = 'tableEntry';
+                loadData('/api/data/thread/' + thread.thread_id, {})
                 .then(data => {
                     return data.threadinfo.requests[0].instructor_notes;
                 });
-
-            const reviewCell = row.insertCell();
-            reviewCell.className = 'tableEntry';
-            const requestButton = document.createElement('button');
-            requestButton.className = 'standardButton';
-            // Add the "Review" button to the last cell if this is the awaiting action table
-            if (type === 'Awaiting') {
-                requestButton.innerText = 'Review';
-                requestButton.onclick = function () {
-                    window.location.href = '/instructor/review-req/' + thread.thread_id; // id needs to be fetched and put in here 
-                };
-            // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
-            } else if (type === 'Resolved') {
-                requestButton.innerText = 'View details';
-                requestButton.onclick = function () {
-                    window.location.href = '/instructor/view-resolved/' + thread.thread_id; 
-                };
+                
+                const reviewCell = row.insertCell();
+                reviewCell.className = 'tableEntry';
+                const requestButton = document.createElement('button');
+                requestButton.className = 'standardButton';
+                // Add the "Review" button to the last cell if this is the awaiting action table
+                if (type === 'Awaiting') {
+                    requestButton.innerText = 'Review';
+                    requestButton.onclick = function () {
+                        window.location.href = '/instructor/review-req/' + thread.thread_id; // id needs to be fetched and put in here 
+                    };
+                    // Otherwise add the "View details" button to the last cell of a row if this is the resolved table
+                } else if (type === 'Resolved') {
+                    requestButton.innerText = 'View details';
+                    requestButton.onclick = function () {
+                        window.location.href = '/instructor/view-resolved/' + thread.thread_id; 
+                    };
+                }
+                reviewCell.appendChild(requestButton);
             }
-            reviewCell.appendChild(requestButton);
-        }
+            
+            
+            
+            
+            
+        });
         
-
-
-
-
+        // Append the table to the container
+        tableContainer.appendChild(table);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        // Handle the error
     });
-	
-	// Append the table to the container
-	tableContainer.appendChild(table);
+    
+    
 }
 
 /**
@@ -1390,31 +1411,52 @@ export function generateRequestTable(threads, type) {
  *
  */
 export function shouldDisplayRequest(requestType, isComplex, courseId) {
-    
-    // Retrieve the request permissions for the role of the current instructor
-    loadData('/api/data/courses/?courseid=' + courseId + '&preferences=true', {})
-    .then(data => {
-        prefs = data.coursepreferences;
+    // Wrap the entire logic in a Promise
+    return new Promise((resolve, reject) => {
+        // Retrieve the request permissions for the role of the current instructor
+        loadData('/api/data/courses/?courseid=' + courseId + '&preferences=true', {})
+            .then(data => {
+                let prefs = data.coursepreferences;
 
-        // Get the role of the instructor (are they a tutor or a subject coordinator)
-        loadData('/api/data/user/enrollment?courseid=' + subject.course_id + '&userid=' + getGlobalAppHeadersValue('user_id'), {})
-        .then(data => {
-            let role = data.enrollment_role;
-            let keyName;
-            if (requestType == "QUIZCODE") {
-                keyName = "quiz" + `_${role}`;
-            }
-            else {
-                keyName = requestType.toLowerCase() + `_${role}`;
-            }
-            if ((role == 'TUTOR') || (role == 'SCOORD' && isComplex == 1)) {
-                for (let key in prefs) {
-                    if (key == keyName) {
-                        return prefs[key];
-                    }
-                }
-            }
-        });
+                console.log(`prefs =  ${prefs}`);
+
+                console.log(`requestType = ${requestType}`);
+
+                console.log(`isComplex = ${isComplex}`);
+                // Get the role of the instructor (are they a tutor or a subject coordinator)
+                loadData('/api/data/user/enrollment?courseid=' + courseId + '&userid=' + getGlobalAppHeadersValue('user_id'), {})
+                    .then(data => {
+                        let role = data.enrollment_role;
+
+                        let keyName;
+                        if (requestType == "QUIZCODE") {
+                            keyName = "quiz" + `_${role.toLowerCase()}`;
+                            console.log(`key = ${keyName}`);
+                        } else if (requestType == "QUERY") {
+                            keyName = "general" + `_${role.toLowerCase()}`;
+                        } else {
+                            keyName = requestType.toLowerCase() + `_${role.toLowerCase()}`;
+                            console.log(`key = ${keyName}`);
+                        }
+                        console.log(`role = ${role}`);
+                        if ((role == 'TUTOR') || (role == 'SCOORD' && isComplex == 1)) {
+                            for (let key in prefs) {
+                                console.log(`currently iterating, reached key = ${key}`);
+                                if (key == keyName) {
+                                    console.log(`matched key = ${key}`);
+                                    console.log(`prefs[key] = ${prefs[key]}`);
+                                    // Resolve the Promise with the prefs[key] value
+                                    resolve(prefs[key]);
+                                    return;
+                                }
+                            }
+                        }
+                        // If the loop completes without finding a match, resolve with undefined
+                        resolve(undefined);
+                    })
+                    .catch(error => reject(error));  // Reject the Promise if there's an error in the inner loadData call
+            })
+            .catch(error => reject(error));  // Reject the Promise if there's an error in the outer loadData call
     });
 }
 

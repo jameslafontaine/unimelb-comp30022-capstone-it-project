@@ -507,15 +507,17 @@ export function subjectSettings() {
     var assessmentDropdownBox = document.getElementById('assessmentDropdown');
     assessmentDropdownBox.addEventListener("change", function() {
         if (this.value == "Global") {
-            document.getElementById('extensionLengthInput').value = coursePrefData.global_extension_length;
+            loadData('/api/data/courses?courseid=' + courseId + '&preferences=true')
+                .then(data => {
+                    document.getElementById('extensionLengthInput').value = data.coursepreferences.global_extension_length;
+                });
         } else {
             loadData('/api/data/assessments?courseid=' + courseId, {})
                 .then(data => {
-                    let assessments = data.assessments;
-                    for (let i = 0; i < assessments.length; i++) {
-                        if (assessments[i].assigment_name == this.value) {
-                            // Endpoint to get a specific assignment's preferences
-                            loadData('/api/data/preferences/' + assessments[i].assignment_id, {})
+                    console.log(this.value);
+                    for (let assessment in data.assessments) {
+                        if (assessment.assignment_name == document.getElementById('assessmentDropdown').value) {
+                            loadData('/api/data/preferences/' + assessment.assignment_id, {})
                                 .then(data => {
                                     document.getElementById('extensionLengthInput').value = data.extension_length;
                                 });
@@ -529,7 +531,28 @@ export function subjectSettings() {
     var saveExtensionLengthButton = document.getElementById('saveExtensionLength');
     saveExtensionLengthButton.addEventListener("click", function() {
         if (this.value == "Global") {
-            coursePrefData.global_extension_length = document.getElementById('extensionLengthInput').value;
+            putData('/api/data/assessments/setpreferences/', {
+                'coursepreference_id': coursePrefData.coursepreference_id,
+                'course_id': courseId,
+                "global_extension_length": -1,
+                "general_tutor": generalTutorCheck.checked ? 1 : 0,
+                "extension_tutor": extensionTutorCheck.checked ? 1 : 0,
+                "quiz_tutor": quizTutorCheck.checked ? 1 : 0,
+                "remark_tutor": remarkTutorCheck.checked ? 1 : 0,
+                "other_tutor": otherTutorCheck.checked ? 1 : 0,
+                "general_scoord": generalCoordCheck.checked ? 1 : 0,
+                "extension_scoord": extensionCoordCheck.checked ? 1 : 0,
+                "quiz_scoord": quizCoordCheck.checked ? 1 : 0,
+                "remark_scoord": remarkCoordCheck.checked ? 1 : 0,
+                "other_scoord": otherCoordCheck.checked ? 1 : 0,
+                "general_reject": document.getElementById("generalRejectMsg").value,
+                "extension_approve": document.getElementById("extensionApproveMsg").value,
+                "extension_reject": document.getElementById("extensionRejectMsg").value,
+                "quiz_approve": document.getElementById("quizApproveMsg").value,
+                "quiz_reject": document.getElementById("quizRejectMsg").value,
+                "remark_approve": document.getElementById("remarkApproveMsg").value,
+                "remark_reject": document.getElementById("remarkRejectMsg").value
+            });
         } else {
             loadData('/api/data/assessments?courseid=' + courseId, {})
                 .then(data => {
@@ -596,6 +619,7 @@ export function viewRequests() {
     // Put subject code at start of title
     var courseId = JSON.parse(document.getElementById('load-data').getAttribute('data-course'));
 
+    
     loadData('/api/data/courses?courseid=' + courseId, {})
         .then(data => {
             let subjectCode = data.course.course_code;

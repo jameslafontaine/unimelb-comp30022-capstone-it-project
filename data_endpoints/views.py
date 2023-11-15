@@ -484,41 +484,26 @@ def get_threads_user_endpoint(request):
             if check_param_not_integer(request.GET.get('courseid')):
                 return JsonResponse({'message': 'Invalid request.'}, status = 400)
             if not check_param_not_integer(request.GET.get('courseid')):
-                result = {
-                    "threads": [
-                        {
-                            'thread_id': 11,
-                            'case_id': 11,
-                            'course_id': 31,
-                            'date_updated': "11-09-2023",
-                            'request_type':'Extension', 
-                            'complex_case':1,
-                            'current_status':'PENDING',
-                            'assignment_id': 1,
-                        },
-                        {
-                            'thread_id': 12,
-                            'case_id': 12,
-                            'course_id': 31,
-                            'date_updated': "01-19-2023",
-                            'request_type':'Query',
-                            'complex_case':1,
-                            'current_status':'PENDING',
-                            'assignment_id':2,
-                        },
-                        {
-                            'thread_id': 13,
-                            'case_id': 12,
-                            'course_id': 31,
-                            'date_updated': "01-19-2023",
-                            'request_type':'Other',
-                            'complex_case':1,
-                            'current_status':'REJECTED',
-                            'assignment_id':3,
-                        }
-                    ]
-                }
-                return JsonResponse(result)
+                cursor = connection.cursor(dictionary=True)
+                cursor.execute("SELECT * FROM `db`.`Thread` WHERE `Thread`.`course_id` = %s", (request.GET.get('courseid'),))
+                rows = cursor.fetchall()
+                resultList = []
+                if rows:
+                    for row in rows:
+                        resultList.append({
+                            'thread_id': row['thread_id'],
+                            'case_id': row['case_id'],
+                            'course_id': row['course_id'],
+                            'date_updated': row['date_updated'],
+                            'request_type': row['request_type'], 
+                            'complex_case': row['complex_case'],
+                            'current_status': row['current_status'],
+                            'assignment_id': row['assignment_id'],
+                        })
+                cursor.close()
+                return JsonResponse({
+                    'threads': resultList
+                })
 
     if len(request.GET) in [1, 2] and request.GET.get('userid') and request.GET.get('status'):
         if check_param_not_integer(request.GET.get('userid')) or \
@@ -875,25 +860,11 @@ def put_preferences(request):
         cursor = connection.cursor()
         cursor.execute(f"USE {DATABASE_NAME}")
 
-        fields = [
-            "global_extension_length", "general_tutor", "extension_tutor", "quiz_tutor",
-            "remark_tutor", "other_tutor", "general_scoord", "extension_scoord", "quiz_scoord",
-            "remark_scoord", "other_scoord", "general_reject", "extension_approve",
-            "extension_reject", "quiz_approve", "quiz_reject", "remark_approve", "remark_reject"
-        ]
-
-        # Extract data from the JSON
-        values = [data[field] for field in fields]
-
-        # Add coursepreference_id and course_id to the values list
-        values.extend([data["coursepreference_id"], data["course_id"]])
-
-        # Update the 'CoursePreferences' table in the database
         cursor.execute("""
             UPDATE CoursePreferences
             SET
                 global_extension_length = CASE 
-                    WHEN global_extension_length != -1 THEN %s
+                    WHEN %s != -1 THEN %s
                     ELSE global_extension_length
                 END,
                 general_tutor = %s,
@@ -915,11 +886,16 @@ def put_preferences(request):
                 remark_reject = %s
             WHERE
                 coursepreference_id = %s AND course_id = %s
-        """, tuple(values))
+        """, (data['global_extension_length'], data['general_tutor'], data['extension_tutor'],
+              data['quiz_tutor'], data['remark_tutor'], data['other_tutor'], data['general_scoord'],
+              data['extension_scoord'], data['quiz_scoord'], data['remark_scoord'], data['other_scoord'],
+              data['general_reject'], data['extension_approve'], data['extension_reject'],
+              data['quiz_approve'], data['quiz_reject'], data['remark_approve'], data['remark_reject'],
+              data['coursepreference_id'], data['course_id']))
 
         # Commit the changes
         connection.commit()
-        print("CoursePreferences table updated successfully")
+        cursor.close()
         return JsonResponse({"message": "Course preferences updated successfully"}, status=201)
 
 @csrf_exempt
