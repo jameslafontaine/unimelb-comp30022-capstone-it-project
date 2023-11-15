@@ -1000,7 +1000,7 @@ def set_complex(request):
         )
         cursor = connection.cursor()
         data = json.loads(request.body)
-        cursor.execute("UPDATE `db`.`Thread` SET `Thread`.complex_case = CASE WHEN complex_case = 0 THEN 1 WHEN complex_case = 1 THEN 0 ELSE complex_case END WHERE `Thread`.thread_id = %s", (data.get('thread_id')))
+        cursor.execute("UPDATE `db`.`Thread` SET `Thread`.complex_case = CASE WHEN complex_case = 0 THEN 1 WHEN complex_case = 1 THEN 0 ELSE complex_case END WHERE `Thread`.thread_id = %s", (data.get('thread_id'),))
         connection.commit()
         cursor.close()
         return JsonResponse({

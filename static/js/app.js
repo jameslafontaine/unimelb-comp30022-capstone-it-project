@@ -303,11 +303,11 @@ export function reviewRequest() {
         });
 
     loadData('/api/data/thread/?threadid=' + threadId, {})
-        .then(studentData => {
-            console.log(`data[0] = ${studentData[0]}`)
-            console.log(`data = ${studentData}`)
-            console.log(`data.user_id = ${studentData.user_id}`)
-            fillStudentDetailsBox(studentData);
+        .then(data => {
+            loadData('/api/data/user/' + data.user_id, {})
+                .then(user => {
+                    fillStudentDetailsBox(user);
+                });
         });
 }
 
@@ -343,11 +343,11 @@ export function viewResolved() {
         });
 
         loadData('/api/data/thread/?threadid=' + threadId, {})
-        .then(studentData => {
-            console.log(`data[0] = ${studentData[0]}`)
-            console.log(`data = ${studentData}`)
-            console.log(`data.user_id = ${studentData.user_id}`)
-            fillStudentDetailsBox(studentData);
+        .then(data => {
+            loadData('/api/data/user/' + data.user_id, {})
+                .then(user => {
+                    fillStudentDetailsBox(user);
+                });
         });
 
 }
