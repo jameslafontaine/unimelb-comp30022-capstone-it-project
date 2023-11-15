@@ -860,25 +860,11 @@ def put_preferences(request):
         cursor = connection.cursor()
         cursor.execute(f"USE {DATABASE_NAME}")
 
-        fields = [
-            "global_extension_length", "general_tutor", "extension_tutor", "quiz_tutor",
-            "remark_tutor", "other_tutor", "general_scoord", "extension_scoord", "quiz_scoord",
-            "remark_scoord", "other_scoord", "general_reject", "extension_approve",
-            "extension_reject", "quiz_approve", "quiz_reject", "remark_approve", "remark_reject"
-        ]
-
-        # Extract data from the JSON
-        values = [data[field] for field in fields]
-
-        # Add coursepreference_id and course_id to the values list
-        values.extend([data["coursepreference_id"], data["course_id"]])
-
-        # Update the 'CoursePreferences' table in the database
         cursor.execute("""
             UPDATE CoursePreferences
             SET
                 global_extension_length = CASE 
-                    WHEN global_extension_length != -1 THEN %s
+                    WHEN %s != -1 THEN %s
                     ELSE global_extension_length
                 END,
                 general_tutor = %s,
@@ -900,11 +886,16 @@ def put_preferences(request):
                 remark_reject = %s
             WHERE
                 coursepreference_id = %s AND course_id = %s
-        """, tuple(values))
+        """, (data['global_extension_length'], data['general_tutor'], data['extension_tutor'],
+              data['quiz_tutor'], data['remark_tutor'], data['other_tutor'], data['general_scoord'],
+              data['extension_scoord'], data['quiz_scoord'], data['remark_scoord'], data['other_scoord'],
+              data['general_reject'], data['extension_approve'], data['extension_reject'],
+              data['quiz_approve'], data['quiz_reject'], data['remark_approve'], data['remark_reject'],
+              data['coursepreference_id'], data['course_id']))
 
         # Commit the changes
         connection.commit()
-        print("CoursePreferences table updated successfully")
+        cursor.close()
         return JsonResponse({"message": "Course preferences updated successfully"}, status=201)
 
 @csrf_exempt
