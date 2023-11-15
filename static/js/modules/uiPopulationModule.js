@@ -131,6 +131,9 @@ export function fillCurrentRequestInformation(threadId, view) {
 
     loadData('/api/data/thread/' + threadId, {})
         .then(data => {
+
+            let thread = data.threadinfo.thread
+
             let requestData = data.threadinfo.requests[0];
             if (data.threadinfo.thread.complex_case == 1 & view == 'Instructor') { // INSTRUCTOR COMPLEX
                 document.getElementById("requestNum").innerHTML = 'Request #' + requestData.request_id + '    <span style="font-size: 150%; color: yellow; text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;">&bigstar;</span>'
@@ -158,10 +161,12 @@ export function fillCurrentRequestInformation(threadId, view) {
                                         course.course_code + ' - ' + course.course_name;
                 })
             // assignment name
+            if (thread.assignment_id != null) {
             loadData('/api/data/assessments/?assignid=' + data.threadinfo.thread.assignment_id, {})
                 .then(assignment => {
                     document.getElementById("assessment").innerHTML = assignment.assignment_name;
                 })
+            }
             document.getElementById("requestType").innerHTML = data.threadinfo.thread.request_type;
             document.getElementById("status").innerHTML = data.threadinfo.thread.current_status;
 
@@ -192,6 +197,14 @@ export function generateSuppDocTable(files, number) {
 	emptyHeader.textContent = '';
 	headerRow.appendChild(emptyHeader);
 	
+    console.error("Logging files array");
+    console.log(files);
+
+    if (!files || files.length == 0) {
+        console.error("The 'files' array is undefined or empty.");
+        return;
+    }
+
     var fileNum = 0;
 	// Create table data rows
 	files.forEach(file => {
@@ -1469,17 +1482,18 @@ export function populatePopups(thread) {
     // Retrieve the template response and put it into the value of the instructor notes box
     loadData('/api/data/courses/?courseid=' + thread.course_id + '&preferences=true', {})
     .then(data => {
-        document.getElementById('instructorNotesAExt').value = data.coursepreferences.extension_approve;
-        document.getElementById('instructorNotesRExt').value = data.coursepreferences.extension_reject;
-        document.getElementById('instructorNotestARem').value = data.coursepreferences.remark_approve;
-        document.getElementById('instructorNotesRRem').value = data.coursepreferences.remark_reject;
-        document.getElementById('instructorNotesAQui').value = data.coursepreferences.quiz_approve;
-        document.getElementById('instructorNotesRQui').value = data.coursepreferences.quiz_reject;
-        document.getElementById('instructorNotesAns').value = data.coursepreferences.general_reject;
+        document.getElementById('instructorNotesAExt').value = data.coursepreferences.extension_approve || '';
+        document.getElementById('instructorNotesRExt').value = data.coursepreferences.extension_reject || '';
+        document.getElementById('instructorNotesARem').value = data.coursepreferences.remark_approve || '';
+        document.getElementById('instructorNotesRRem').value = data.coursepreferences.remark_reject || '';
+        document.getElementById('instructorNotesAQui').value = data.coursepreferences.quiz_approve || '';
+        document.getElementById('instructorNotesRQui').value = data.coursepreferences.quiz_reject || '';
+        document.getElementById('instructorNotesAns').value = data.coursepreferences.general_reject || '';
     });
 
 
-    loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
+    if (thread.assignment_id != null) {
+        loadData('/api/data/assessments/?assignid=' + thread.assignment_id, {})
         .then(assignment => {
             // Populate current deadline
             document.getElementById('currentDeadline').value = assignment.due_date;
@@ -1491,13 +1505,18 @@ export function populatePopups(thread) {
             document.getElementById('selectedAssessmentAQui').value = assignment.assignment_name;
             document.getElementById('selectedAssessmentRQui').value = assignment.assignment_name;
         });
-
-    // Populate override extension dropdown
-    for (let i = 1; i <= 10; i++) {
-        const option = document.createElement('option');
-        option.textContent = i;
-        document.getElementById('extensionOverrideAExt').appendChild(option);
     }
+    
+
+    if (thread.request_type == 'EXTENSION') {
+           // Populate override extension dropdown
+           for (let i = 1; i <= 10; i++) {
+            const option = document.createElement('option');
+            option.textContent = i;
+            document.getElementById('extensionOverrideAExt').appendChild(option);
+        }
+    }
+ 
 
     loadData('/api/data/thread/' + thread.thread_id, {})
         .then(data => {
@@ -1507,20 +1526,23 @@ export function populatePopups(thread) {
             // Set extension override to match default extension
             document.getElementById('extensionOverrideAExt').value = prefs.global_extension_length;
         })
-
-    // Populate the assignment override dropDown
-    loadData('/api/data/assessments/?courseid=' + thread.course_id, {})
-        .then(data => {
-            let assignments = data.assessments;
-            assignments.forEach(assignment => {
-                const option = document.createElement('option');
-                option.textContent = assignment.assignment_name;
-                let dropDownId = "assessmentOverrideA" + document.getElementById("requestType").innerHTML.substring(0,3);
-                document.getElementById(dropDownId).appendChild(option);
+        
+        if (thread.request_type != 'QUERY' && thread.request_type != 'OTHER') {
+            // Populate the assignment override dropDown
+            loadData('/api/data/assessments/?courseid=' + thread.course_id, {})
+            .then(data => {
+                let assignments = data.assessments;
+                assignments.forEach(assignment => {
+                    const option = document.createElement('option');
+                    option.textContent = assignment.assignment_name;
+                    let reqShort = thread.request_type.substring(0,3).toLowerCase();
+                    reqShort = reqShort.charAt(0).toUpperCase() + reqShort.slice(1);
+                    let dropDownId = "assessmentOverrideA" + reqShort;
+                    document.getElementById(dropDownId).appendChild(option);
+                });
             });
-        });
-
-}
+        }
+    }
 
 /**
  * Handles the displaying and hiding of buttons as needed depending on the type of request being reviewed
@@ -1528,13 +1550,14 @@ export function populatePopups(thread) {
  */
 export function hideAndDisplayButtons(thread) {
 
-    const reqShort = thread.request_type.substring(0,3);
+    let reqShort = thread.request_type.substring(0,3).toLowerCase();
+    reqShort = reqShort.charAt(0).toUpperCase() + reqShort.slice(1);
 
     var approveButton = document.getElementById('approveButton');
     var rejectButton = document.getElementById('rejectButton');
     var answerButton = document.getElementById('answerButton');
 
-    if (thread.request_type != 'Query' && thread.request_type != 'Other') {
+    if (thread.request_type != 'QUERY' && thread.request_type != 'OTHER') {
         approveButton.setAttribute('data-target', `approve${reqShort}Popup`);
         rejectButton.setAttribute('data-target', `reject${reqShort}Popup`);
         approveButton.style.display = '';
@@ -1555,11 +1578,13 @@ export function hideAndDisplayButtons(thread) {
 export function handleApprovalRejectionAnswer(thread) {
 
     // First 3 letters of request type used for HTML identifiers
-    let reqShort = thread.request_type.substring(0,3)
+    let reqShort = thread.request_type.substring(0,3).toLowerCase();
+    reqShort = reqShort.charAt(0).toUpperCase() + reqShort.slice(1);
+    console.log(`reqShort = ${reqShort}`)
     let responseJson;
 
     // Initialise approve and request buttons for all request types except queries, other and quiz
-    if (thread.request_type != "Query" && thread.request_type != "Other") {
+    if (thread.request_type != "QUERY" && thread.request_type != "OTHER") {
         // Get the Approve Request button
         const popupApproveButton = document.getElementById(`popupApproveButton${reqShort}`);
         
