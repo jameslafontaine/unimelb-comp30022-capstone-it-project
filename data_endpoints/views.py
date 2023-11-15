@@ -717,47 +717,35 @@ def get_files_endpoint(request, user_id):
         password="admin"
     )
     if len(request.GET) == 1:
-        if request.GET.get('aaps').lower() == 'true':
+        if request.GET.get('aaps') and request.GET.get('aaps').lower() == 'true':
             # Get all files that are AAPs from database
-            with connection.cursor() as cursor:
-                cursor.execute(f"USE {DATABASE_NAME}")
-                cursor.execute(
-                    "SELECT file_name, file_type, file "
-                    "FROM File "
-                    "WHERE user_id = %s AND file_type IN ('aap', 'AAP')",
-                    [user_id]
-                )
-                rows = cursor.fetchall()
+            cursor = connection.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM `db`.`File` WHERE `File`.user_id = %s AND `File`.request_id IS NULL", (user_id,))
+            rows = cursor.fetchall()
             files_list = []
-            for row in rows:
-                file_data = base64.b64encode(row[2]).decode()
-                files_list.append({
-                    'file_name': row[0],
-                    'file_type': row[1],
-                    'file_data': file_data 
-                })
+            if rows:
+                for row in rows:
+                    file_data = base64.b64encode(row['file']).decode()
+                    files_list.append({
+                        'file_name': row['file_name'],
+                        'file_type': row['file_type'],
+                        'file_data': file_data 
+                    })
             return JsonResponse({'aaps': files_list})
         if request.GET.get('requestid'):
-            if not isinstance(request.GET.get('requestid'), int):
-                return HttpResponseBadRequest('Invalid request, check input again. requestID error')
-            # Get all files under request ID
-            with connection.cursor() as cursor:
-                cursor.execute(f"USE {DATABASE_NAME}")
-                cursor.execute(
-                    "SELECT file_name, file_type, file "
-                    "FROM File "
-                    "WHERE user_id = %s",
-                    [user_id]
-                )
-                rows = cursor.fetchall()
+            # Get all files that are AAPs from database
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM `db`.`File` WHERE `File`.user_id = %s AND request_id = %s", (user_id, request.GET.get('requestid')))
+            rows = cursor.fetchall()
             files_list = []
-            for row in rows:
-                file_data = base64.b64encode(row[2]).decode()
-                files_list.append({
-                    'file_name': row[0],
-                    'file_type': row[1],
-                    'file_data': file_data 
-                })
+            if rows:
+                for row in rows:
+                    file_data = base64.b64encode(row['file']).decode()
+                    files_list.append({
+                        'file_name': row['file_name'],
+                        'file_type': row['file_type'],
+                        'file_data': file_data 
+                    })
             return JsonResponse({'supportingDocs': files_list})
     if not len(request.GET) == 1:
         return JsonResponse({'message': 'Invalid request.'}, status = 400)
@@ -1021,7 +1009,6 @@ def set_complex(request):
         )
         cursor = connection.cursor()
         data = json.loads(request.body)
-        cursor.execute()
         cursor.execute("UPDATE `db`.`Thread` SET `Thread`.complex_case = CASE WHEN complex_case = 0 THEN 1 WHEN complex_case = 1 THEN 0 ELSE complex_case END WHERE `Thread`.thread_id = %s", (data.get('thread_id')))
         connection.commit()
         cursor.close()

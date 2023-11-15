@@ -49,13 +49,16 @@ User workflow
 
 Student workflow
 
-- Can submit requests of different types (known issue is that not all of it will submit or some will, please test with more than 1 request)
+- Can submit requests of different types 
 
 Instructor workflow
 
 - View courses enrolled in
 
-- Can input Course Preference by pressing Save
+- Subject Coordinators cannot view any non-complex cases for a subject, only Tutors can
+
+- Can input Course Preference by pressing Save (this is a bit dodgy atm)
+
 
 
 There is code for all the other requirements (except for Quiz Code extensions) but it is not seamlessly connected between front end and back end currently. However, these would be quick fixes and we'd probably put in some work to for maintenance even after this project is being marked

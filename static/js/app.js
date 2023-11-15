@@ -85,8 +85,8 @@ export function viewRequest() {
         .then(data => {
             let requestId = data.threadinfo.requests[0].request_id 
             loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id') + '/?requestid=' + requestId, {})
-            .then(suppDocs => {
-                generateSuppDocTable(suppDocs, 0);
+            .then(data => {
+                generateSuppDocTable(data.supportingDocs, 0);
                 fixStyling();
             });
         });
@@ -271,8 +271,8 @@ export function reviewRequest() {
         .then(data => {
             let requestId = data.threadinfo.requests[0].request_id 
             loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id') + '/?requestid=' + requestId, {})
-            .then(suppDocs => {
-                generateSuppDocTable(suppDocs, 0);
+            .then(data => {
+                generateSuppDocTable(data.supportingDocs, 0);
                 fixStyling();
             });
         });
@@ -326,8 +326,8 @@ export function viewResolved() {
         .then(data => {
             let requestId = data.threadinfo.requests[0].request_id 
             loadData('/api/data/files/' + getGlobalAppHeadersValue('user_id') + '/?requestid=' + requestId, {})
-            .then(suppDocs => {
-                generateSuppDocTable(suppDocs, 0);
+            .then(data => {
+                generateSuppDocTable(data.supportingDocs, 0);
                 fixStyling();
             });
         });

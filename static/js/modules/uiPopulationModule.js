@@ -179,7 +179,7 @@ export function fillCurrentRequestInformation(threadId, view) {
  * @param {array} requestList - list of student requests
  * @param {int} number - which version of the request this is (i.e. which supporting doc table this is)
  */
-export function generateSuppDocTable(files, number) {
+export function generateSuppDocTable(inputFiles, number) {
 	const tableContainer = document.getElementById(`suppDocContainer${number}`);
 	const table = document.createElement('table');
 
@@ -197,79 +197,77 @@ export function generateSuppDocTable(files, number) {
 	emptyHeader.textContent = '';
 	headerRow.appendChild(emptyHeader);
 	
-    console.error("Logging files array");
-    console.log(files);
+    console.log("Logging files array");
 
-    if (!files || files.length == 0) {
-        console.error("The 'files' array is undefined or empty.");
+    if (!inputFiles || inputFiles.length == 0) {
+        console.log("The 'files' array is undefined or empty.");
         return;
     }
+    else {
+        var fileNum = 0;
+        // Create table data rows
+        inputFiles.forEach(file => {
+            let file_name = file.file_name;
+            let file_type = file.file_type;
+            let file_data = file.file_data;
 
-    var fileNum = 0;
-	// Create table data rows
-	files.forEach(file => {
+            // 'Pad' the base64 data so i don't get error (?)
+            while (file_data.length % 4 !== 0) {
+                file_data += '=';
+            }
 
+            // Create a Blob from the base64 data
+            let blob = new Blob([atob(file_data)], {type: file_type});
+
+            // Calculate the file size and format it
+            let file_size = blob.size;
+            
+            let formatted_file_size = formatBytes(file_size);
+            
+            const row = table.insertRow();
+
+            const fileNameCell = row.insertCell();
+            fileNameCell.className = 'tableEntry fileNameCell';
+            fileNameCell.innerHTML = file_name;
+
+            const fileSizeCell = row.insertCell();
+            fileSizeCell.className = 'tableEntry';
+            fileSizeCell.innerHTML = formatted_file_size;
+
+            const downloadCell = row.insertCell();
+            downloadCell.className = 'tableEntry';
+            const downloadButton = document.createElement('button');
+            downloadButton.className = 'standardButton';
+            downloadButton.id = `downloadButton_${number}_${fileNum}`
+
+            // Add the "Download" button to the last cell for each document
+            downloadButton.innerText = 'Download';
+
+            downloadCell.appendChild(downloadButton);
+
+            // Handle download functionality for the download button
+
+            // Add an onclick event to the downloadButton
+            downloadButton.onclick = function() {
                 
-        let file_name = file.file_name;
-        let file_type = file.file_type;
-        let file_data = file.file_data;
+                // Create a URL for the Blob
+                let url = URL.createObjectURL(blob);
+                
+                // Create a link with a download attribute
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = file_name;
+                
+                // Append the link to the body
+                document.body.appendChild(a);
+                
+                // Trigger the download
+                a.click();
 
-        // 'Pad' the base64 data so i don't get error (?)
-        while (file_data.length % 4 !== 0) {
-            file_data += '=';
-        }
-
-        // Create a Blob from the base64 data
-        let blob = new Blob([atob(file_data)], {type: file_type});
-
-        // Calculate the file size and format it
-        let file_size = blob.size;
-        
-        let formatted_file_size = formatBytes(file_size);
-        
-		const row = table.insertRow();
-
-        const fileNameCell = row.insertCell();
-        fileNameCell.className = 'tableEntry fileNameCell';
-        fileNameCell.innerHTML = file_name;
-
-        const fileSizeCell = row.insertCell();
-        fileSizeCell.className = 'tableEntry';
-        fileSizeCell.innerHTML = formatted_file_size;
-
-		const downloadCell = row.insertCell();
-		downloadCell.className = 'tableEntry';
-		const downloadButton = document.createElement('button');
-		downloadButton.className = 'standardButton';
-        downloadButton.id = `downloadButton_${number}_${fileNum}`
-
-		// Add the "Download" button to the last cell for each document
-		downloadButton.innerText = 'Download';
-
-        downloadCell.appendChild(downloadButton);
-
-        // Handle download functionality for the download button
-
-        // Add an onclick event to the downloadButton
-        downloadButton.onclick = function() {
-            
-            // Create a URL for the Blob
-            let url = URL.createObjectURL(blob);
-            
-            // Create a link with a download attribute
-            let a = document.createElement('a');
-            a.href = url;
-            a.download = file_name;
-            
-            // Append the link to the body
-            document.body.appendChild(a);
-            
-            // Trigger the download
-            a.click();
-
-        };
-        fileNum += 1;
-    });
+            };
+            fileNum += 1;
+        });
+    }
 
 	// Append the table to the container
 	tableContainer.appendChild(table);
@@ -344,8 +342,7 @@ export function generateVersionBox(version, number) {
 
     loadData(`/api/data/files/${getGlobalAppHeadersValue('user_id')}/?requestid=${version.request_id}`, {})
         .then(data => {
-            let files = data;
-            generateSuppDocTable(files, number);
+            generateSuppDocTable(data.supportingDocs, number);
         });
 
     
@@ -400,7 +397,7 @@ export function handleCaseSubmission(numRequests) {
                                 }
                                 submissionData.push(submissionTemplate);
                             }
-                            if ((requestType == 'Extension') || (requestType == 'Remark') || (requestType == 'Quiz Code')) {
+                            else {
                                 if (requestType == 'Extension') {
                                     submissionTemplate.request_type = "EXTENSION";
                                 }
@@ -1397,20 +1394,13 @@ export function generateRequestTable(threads, type) {
                 reviewCell.appendChild(requestButton);
             }
             
-            
-            
-            
-            
+        }).catch(error => {
+            console.error("Error:", error)
         });
         
         // Append the table to the container
         tableContainer.appendChild(table);
     })
-    .catch(error => {
-        console.error("Error:", error);
-        // Handle the error
-    });
-    
     
 }
 
