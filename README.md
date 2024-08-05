@@ -63,5 +63,5 @@ Instructor workflow
 
 There is code for all the other requirements (except for Quiz Code extensions) but it is not seamlessly connected between front end and back end currently. However, these would be quick fixes and we'd probably put in some work to for maintenance even after this project is being marked
 
-```mock_database``` function enters fake data into ```./wait_for_db.py```. This could 
+```mock_database``` function enters fake data into ```./wait_for_db.py```.
 
